@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import Webcam from './Webcam';
 import './App.css';
 
@@ -8,7 +7,6 @@ class App extends React.Component {
     super();
     this.state = {
       availableDevices : [],
-      activeDevices: []
     }
     this.getAvaiableWebCams();
     this.addWebCam = this.addWebCam.bind(this);
@@ -23,9 +21,14 @@ class App extends React.Component {
           devices.map(function(device) {
             console.log(device.kind + ": " + device.label +
                 " id = " + device.deviceId);
-            if (device.kind=='videoinput') {
-                videodevices.push(device.deviceId);
+            if (device.kind === 'videoinput') {
+                videodevices.push({
+                  id: device.deviceId,
+                  label: device.label,
+                  active: false
+                });
             }
+            return null;
           });
           this.setState({
             availableDevices: videodevices
@@ -36,22 +39,46 @@ class App extends React.Component {
             console.log(err.name + ": " + err.message);
         });
   }
-  addWebCam() {
+  removeWebCam(event, deviceId) {
+    let a = this.state.availableDevices;
+    a.map((data) => {
+      if (data.id === deviceId) {
+        data.active = false;
+      }
+      return null;
+    });
+    console.log(a);
     this.setState({
-      activeDevices: [this.state.availableDevices[0]]
+      availableDevices: a
     });
   }
-  render() {
-    let webcams = this.state.activeDevices.map((data) => {
-      return (<Webcam deviceId={data}></Webcam>);
+  addWebCam(event, deviceId) {
+    let a = this.state.availableDevices;
+    a.map((data) => {
+      if (data.id === deviceId) {
+        data.active = true;
+      }
+      return null;
     });
-    let avaiable = this.state.availableDevices.map((data)=>{return (<div>{data}</div>)});
+    console.log(a);
+    this.setState({
+      availableDevices: a
+    });
+//    this.activeDevices.push(deviceId);
+  }
+  render() {
+    let avaiable = this.state.availableDevices.map((data, i)=>{return (<button key={i} onClick={(e)=>{this.addWebCam(e, data.id)}}>{data.label+ "-" + data.id}</button>)});
     return (
     <div className="App">
-    {this.state.activeDevices.map((data)=>{return (data+',')})}<hr/>
+    {this.activeDevices}
+    <hr/>
     {avaiable}
-      <button onClick={this.addWebCam}>add</button>
-      {webcams}
+    {this.state.availableDevices.map((data) => {
+      if (data.active) {
+      return (<div><Webcam deviceId={data.id}></Webcam><button onClick={(e)=>{this.removeWebCam(e, data.id)}}>Remove</button></div>)
+    } else {
+      return '';
+    }})}
     </div>);
   };
 }

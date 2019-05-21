@@ -1,16 +1,23 @@
 import React from 'react';
 import RecordRTC from 'recordrtc';
+import FileSaver from 'file-saver';
 
 class Webcam extends React.Component {
     constructor(props) {
         super();
         this.state = {
             isRecording: false,
-            recorder : null
+            recorder: null,
+            videoSrc: null,
+            videoEle: React.createRef(),
+            startTime: '',
+            name: props.deviceId
         };
         this.video = React.createRef();
         this.startRecording = this.startRecording.bind(this);
         this.stopRecording = this.stopRecording.bind(this);
+        this.changeName = this.changeName.bind(this);
+        this.videoEle = React.createRef();
     }
     startRecording(e) {
         navigator.mediaDevices.getUserMedia({
@@ -28,11 +35,17 @@ class Webcam extends React.Component {
                 desiredSampRate: 16000,
                 numberOfAudioChannels: 2
             });
+            recorder.camera = camera;
             this.setState({
-                recorder: recorder
+                recorder: recorder,
+                startTime: this.getCurrentTime()
             });
-            this.video.srcObject = camera;
-            this.state.recorder.camera = camera;
+            let video = this.state.videoEle;
+            video.current.srcObject = camera;
+            this.setState({
+                videoEle: video
+            });
+            //this.state.videoEle.current.srcObject = camera;
             this.state.recorder.startRecording();
             this.setState({
                 isRecording: true
@@ -41,9 +54,23 @@ class Webcam extends React.Component {
         })
         .catch(error => {console.error(error);});
     }
-    
+    getCurrentTime() {
+        let today = new Date();
+        let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+        let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        return (date+'-'+time);
+    }
     stopRecording(e) {
         this.state.recorder.stopRecording(()=> {
+            let blob = this.state.recorder.getBlob();
+            FileSaver.saveAs(blob, this.state.startTime +'-' + this.state.name);
+            let video = this.state.videoEle;
+            video.current.srcObject = null;
+            video.current.src = URL.createObjectURL(blob);
+            //this.state.videoEle.current.src = 
+            this.setState({
+                videoEle: video
+            });
             this.state.recorder.camera.stop();
             this.state.recorder.destroy();
             this.setState({
@@ -54,12 +81,19 @@ class Webcam extends React.Component {
             isRecording: false
         });
     }
+    changeName(event) {
+        this.setState({
+            name: event.target.value
+        });
+    }
     render() {    
         return (
         <div className="App">
+        <h2>{this.state.startTime +'-' + this.state.name} </h2>
         <button disabled={this.state.isRecording} onClick={this.startRecording}>Start Recording</button>
         <button disabled={!this.state.isRecording} onClick={this.stopRecording}>Stop Recording</button>
-        <video controls autoplay playsinline ref={video => {this.video = video}} ></video>
+        <input type="text" onChange={this.changeName} value={this.state.name} />
+        <video controls autoPlay playsInline ref={this.state.videoEle}></video>
         </div>
         );
     }

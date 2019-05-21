@@ -60,7 +60,7 @@ class Webcam extends React.Component {
     getCurrentTime() {
         let today = new Date();
         let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-        let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+        let time = today.getTime();//today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
         return (date+'-'+time);
     }
     stopRecording() {
@@ -102,8 +102,9 @@ class Webcam extends React.Component {
                 <Card.Header>
                     <Card.Title>
                         {this.state.startTime +'-' + this.state.name}
-                        <a class="btn close" onClick={this.removeItself} role="button"><span aria-hidden="true">&times;</span></a>
-                    </Card.Title>                    
+                        <a class="btn close" onClick={this.removeItself} role="button"><span aria-hidden="true">&times;</span></a>                        
+                    </Card.Title>
+                    
                 </Card.Header>
                 <Card.Body className="p-0">
                     <div className="embed-responsive embed-responsive-16by9">

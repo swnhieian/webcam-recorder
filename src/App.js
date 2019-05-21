@@ -1,15 +1,18 @@
 import React from 'react';
 import Webcam from './Webcam';
 import './App.css';
+import {Container, Row, Col, ButtonGroup, Button, ToggleButton, ToggleButtonGroup} from 'react-bootstrap';
 
 class App extends React.Component {
   constructor() {
     super();
     this.state = {
       availableDevices : [],
+      activeDevices: []
     }
     this.getAvaiableWebCams();
-    this.addWebCam = this.addWebCam.bind(this);
+    this.removeWebCam = this.removeWebCam.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
   getAvaiableWebCams() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -24,8 +27,7 @@ class App extends React.Component {
             if (device.kind === 'videoinput') {
                 videodevices.push({
                   id: device.deviceId,
-                  label: device.label,
-                  active: false
+                  label: device.label
                 });
             }
             return null;
@@ -39,46 +41,56 @@ class App extends React.Component {
             console.log(err.name + ": " + err.message);
         });
   }
-  removeWebCam(event, deviceId) {
-    let a = this.state.availableDevices;
-    a.map((data) => {
-      if (data.id === deviceId) {
-        data.active = false;
-      }
-      return null;
-    });
+  removeWebCam(deviceId) {
+    let a = this.state.activeDevices.filter((a) => (a !== deviceId));
     console.log(a);
     this.setState({
-      availableDevices: a
+      activeDevices: a
     });
   }
-  addWebCam(event, deviceId) {
-    let a = this.state.availableDevices;
-    a.map((data) => {
-      if (data.id === deviceId) {
-        data.active = true;
-      }
-      return null;
-    });
-    console.log(a);
+  handleChange(value) {
     this.setState({
-      availableDevices: a
+      activeDevices: value
     });
-//    this.activeDevices.push(deviceId);
   }
   render() {
-    let avaiable = this.state.availableDevices.map((data, i)=>{return (<button key={i} onClick={(e)=>{this.addWebCam(e, data.id)}}>{data.label+ "-" + data.id}</button>)});
+    let avaiable = this.state.availableDevices.map((data, i)=>{return (<button key={i} onClick={(e)=>{this.addWebCam(data.id)}}>{data.label+ "-" + data.id}</button>)});
     return (
     <div className="App">
-    {this.activeDevices}
-    <hr/>
-    {avaiable}
-    {this.state.availableDevices.map((data) => {
-      if (data.active) {
-      return (<div><Webcam deviceId={data.id}></Webcam><button onClick={(e)=>{this.removeWebCam(e, data.id)}}>Remove</button></div>)
-    } else {
-      return '';
-    }})}
+      <Container fluid className="mt-5">
+        <Row>
+          <Col md="3">
+            <ButtonGroup vertical>
+              <ToggleButtonGroup
+                  vertical
+                  type="checkbox"
+                  value={this.state.activeDevices}
+                  onChange={this.handleChange}
+                >
+                {this.state.availableDevices.map((data, i) => {
+                  return (
+                    <ToggleButton variant="success" key={i} value={data.id}>{data.label}</ToggleButton>
+                  );
+                })}
+              </ToggleButtonGroup>
+            </ButtonGroup>
+          </Col>
+          <Col md="9">
+            <Row>
+              {this.state.availableDevices.map((data) => {
+                if (this.state.activeDevices.includes(data.id)) {
+                  return (           
+                    <Col md="4">
+                      <Webcam deviceId={data.id} remove={this.removeWebCam}></Webcam>
+                    </Col>
+                  );
+              } else {
+                return '';
+              }})}
+            </Row>  
+          </Col>
+        </Row>
+      </Container>
     </div>);
   };
 }

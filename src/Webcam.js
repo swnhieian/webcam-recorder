@@ -1,6 +1,8 @@
 import React from 'react';
 import RecordRTC from 'recordrtc';
 import FileSaver from 'file-saver';
+import {Card, Button, Form, Col, Row, Container} from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 class Webcam extends React.Component {
     constructor(props) {
@@ -10,16 +12,17 @@ class Webcam extends React.Component {
             recorder: null,
             videoSrc: null,
             videoEle: React.createRef(),
-            startTime: '',
+            startTime: 'time',
             name: props.deviceId
         };
         this.video = React.createRef();
         this.startRecording = this.startRecording.bind(this);
         this.stopRecording = this.stopRecording.bind(this);
         this.changeName = this.changeName.bind(this);
+        this.removeItself = this.removeItself.bind(this);
         this.videoEle = React.createRef();
     }
-    startRecording(e) {
+    startRecording() {
         navigator.mediaDevices.getUserMedia({
             audio: true,
             video: {
@@ -60,7 +63,7 @@ class Webcam extends React.Component {
         let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
         return (date+'-'+time);
     }
-    stopRecording(e) {
+    stopRecording() {
         this.state.recorder.stopRecording(()=> {
             let blob = this.state.recorder.getBlob();
             FileSaver.saveAs(blob, this.state.startTime +'-' + this.state.name);
@@ -86,15 +89,42 @@ class Webcam extends React.Component {
             name: event.target.value
         });
     }
+    removeItself() {
+        if (this.state.isRecording) {
+            this.stopRecording();
+        } else {
+            this.props.remove(this.props.deviceId);
+        }
+    }
     render() {    
         return (
-        <div className="App">
-        <h2>{this.state.startTime +'-' + this.state.name} </h2>
-        <button disabled={this.state.isRecording} onClick={this.startRecording}>Start Recording</button>
-        <button disabled={!this.state.isRecording} onClick={this.stopRecording}>Stop Recording</button>
-        <input type="text" onChange={this.changeName} value={this.state.name} />
-        <video controls autoPlay playsInline ref={this.state.videoEle}></video>
-        </div>
+            <Card>
+                <Card.Header>
+                    <Card.Title>
+                        {this.state.startTime +'-' + this.state.name}
+                        <a class="btn close" onClick={this.removeItself} role="button"><span aria-hidden="true">&times;</span></a>
+                    </Card.Title>                    
+                </Card.Header>
+                <Card.Body className="p-0">
+                    <div className="embed-responsive embed-responsive-16by9">
+                        <video className="embed-responsive-item" controls autoPlay playsInline muted ref={this.state.videoEle}></video>
+                    </div>
+                </Card.Body>
+                <Card.Footer>
+                        <Button variant="success" disabled={this.state.isRecording} onClick={this.startRecording}>Start Recording</Button>
+                        <Button variant="danger" disabled={!this.state.isRecording} onClick={this.stopRecording}>Stop Recording</Button>
+                    <Form className="m-4">
+                        <Form.Group as={Row} controlId="formPlaintextPassword">
+                            <Form.Label column sm="2">
+                            Name
+                            </Form.Label>
+                            <Col sm="10">
+                            <Form.Control type="text" onChange={this.changeName} value={this.state.name}/>
+                            </Col>
+                        </Form.Group>
+                    </Form>
+                </Card.Footer>
+            </Card>
         );
     }
 }

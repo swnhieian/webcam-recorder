@@ -1,5 +1,8 @@
 import React from 'react';
 import Webcam from './Webcam';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+
 import './App.css';
 import {Container, Row, Col, ButtonGroup, ToggleButton, ToggleButtonGroup, Button} from 'react-bootstrap';
 
@@ -8,7 +11,9 @@ class App extends React.Component {
     super();
     this.state = {
       availableDevices : [],
-      activeDevices: []
+      activeDevices: [], 
+      blobs: [],
+      recorded: false
     }
     this.getAvailableWebCams();
     this.removeWebCam = this.removeWebCam.bind(this);
@@ -76,12 +81,16 @@ class App extends React.Component {
   _getBtns = (btnType) => {
     const buttons = []
     if (btnType === 'start') {
-      btnType = 0
+      btnType = 0;
     } else if (btnType === 'stop') {
-      btnType = 1
+      btnType = 1;
+      this.setState({
+        recorded: true
+      })
     } else {
       return buttons;
     }
+
     if (this.camsOpen() && document.getElementsByClassName('col-md-9')) {
       const numOpen = document.getElementsByClassName('col-md-9')[0].children[0].childElementCount;
       for (let i = 0; i < numOpen; i++) {
@@ -91,17 +100,16 @@ class App extends React.Component {
     }
     return buttons;
   }
-
   _clickBtns = (btns) => {
-    btns.forEach((data) => {
-      data.click();
+    btns.forEach((btn) => {
+      btn.click();
     });
   }
   _changeRecordBtnLabel = () => {
+    console.log('laskdjfklasdfj');
     const recordBtn = document.getElementById('recordBtn');
     const label = recordBtn.innerHTML;
     recordBtn.innerHTML = (label === 'Start Recording') ? 'Stop Recording' : 'Start Recording'
-    // recordBtn.style();
   }
   _startedRecording = () => {
     const recordBtn = document.getElementById('recordBtn');
@@ -109,17 +117,35 @@ class App extends React.Component {
     return (label === 'Stop Recording');
   }
   record = (e) => {
+    const recordBtn = document.getElementById('recordBtn');
+    recordBtn.disabled = true;
+    setTimeout(() => {recordBtn.disabled = false}, 5000);
     if (!this._startedRecording()) {
       const startButtons = this._getBtns('start');
       this._clickBtns(startButtons);
+      recordBtn.className = 'btn btn-danger';
     }
     else {
       const stopButtons = this._getBtns('stop');
       this._clickBtns(stopButtons);
-
+      recordBtn.className = 'btn btn-primary';
     }
     this._changeRecordBtnLabel()
 
+  }
+  recordData = (blob, name) => {
+    this.state.blobs.push([name, blob]);
+  }
+  save = () => {
+    var zip = new JSZip();
+    this.state.blobs.forEach((blob, idx) => {
+      zip.file(blob[0] + '.webm', blob[1]);
+    })
+    const file_name = this.state.blobs[0][0] + ".zip";
+    zip.generateAsync({type: "blob"})
+      .then(function (content) {
+        saveAs(content, file_name);
+      });
   }
 
   render() {
@@ -155,6 +181,7 @@ class App extends React.Component {
                   </Button>
                   <Button id="recordBtn" disabled = { !this.camsOpen() } onClick = { this.record }>Start Recording</Button>
                 </ButtonGroup>
+                <Button disabled = { !this.state.recorded } onClick = {this.save }>Save All as ZIP</Button>
               </ButtonGroup>
             </Col>
             <Col md='9'>
@@ -166,6 +193,7 @@ class App extends React.Component {
                         <Webcam
                           deviceId={data.id}
                           remove={this.removeWebCam}
+                          recordData={this.recordData}
                         />
                       </Col>
                     );

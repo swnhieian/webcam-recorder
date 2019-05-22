@@ -64,9 +64,11 @@ class Webcam extends React.Component {
         return (date+'-'+time);
     }
     stopRecording() {
-        this.state.recorder.stopRecording(()=> {
+        this.state.recorder.stopRecording(() => {
             let blob = this.state.recorder.getBlob();
-            FileSaver.saveAs(blob, this.state.startTime +'-' + this.state.name);
+            // FileSaver.saveAs(blob, this.state.startTime +'-' + this.state.name);
+            console.log('%c recorded data', 'background: #222; color: #bada55', this.props.recordData(blob, this.state.startTime + '-' + this.state.name));
+
             let video = this.state.videoEle;
             video.current.srcObject = null;
             video.current.src = URL.createObjectURL(blob);

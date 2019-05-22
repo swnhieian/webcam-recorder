@@ -1,7 +1,7 @@
 import React from 'react';
 import Webcam from './Webcam';
 import './App.css';
-import {Container, Row, Col, ButtonGroup, Button, ToggleButton, ToggleButtonGroup} from 'react-bootstrap';
+import {Container, Row, Col, ButtonGroup, ToggleButton, ToggleButtonGroup} from 'react-bootstrap';
 
 class App extends React.Component {
   constructor() {
@@ -54,7 +54,6 @@ class App extends React.Component {
     });
   }
   render() {
-    let avaiable = this.state.availableDevices.map((data, i)=>{return (<button key={i} onClick={(e)=>{this.addWebCam(data.id)}}>{data.label+ "-" + data.id}</button>)});
     return (
     <div className="App">
       <Container fluid className="mt-5">
@@ -77,10 +76,10 @@ class App extends React.Component {
           </Col>
           <Col md="9">
             <Row>
-              {this.state.availableDevices.map((data) => {
+              {this.state.availableDevices.map((data, idx) => {
                 if (this.state.activeDevices.includes(data.id)) {
                   return (           
-                    <Col md="4">
+                    <Col md="4" key={idx}>
                       <Webcam deviceId={data.id} remove={this.removeWebCam}></Webcam>
                     </Col>
                   );

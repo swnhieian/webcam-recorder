@@ -1,7 +1,7 @@
 import React from 'react';
 import RecordRTC from 'recordrtc';
 import FileSaver from 'file-saver';
-import {Card, Button, Form, Col, Row, Container} from 'react-bootstrap';
+import {Card, Button, Form, Col, Row} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 class Webcam extends React.Component {
@@ -102,7 +102,7 @@ class Webcam extends React.Component {
                 <Card.Header>
                     <Card.Title>
                         {this.state.startTime +'-' + this.state.name}
-                        <a class="btn close" onClick={this.removeItself} role="button"><span aria-hidden="true">&times;</span></a>                        
+                        <Button className="btn close" onClick={this.removeItself} role="button"><span aria-hidden="true">&times;</span></Button>
                     </Card.Title>
                     
                 </Card.Header>

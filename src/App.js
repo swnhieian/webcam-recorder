@@ -3,6 +3,9 @@ import Recorder from './Recorder';
 import UserInterface from './UserInterface';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
+// -------------------------- Firebase ------------------------- //
+
+ 
 function Index() {
   return <h2>Home</h2>;
 }

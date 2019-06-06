@@ -3,13 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import admin from 'firebase-admin';
-import functions from 'firebase-functions';
 
-// -------------------------- Firebase ------------------------- //
-
-admin.initializeApp(functions.config().firebase);
-var db = admin.firestore();
 
 // --------------------------- React --------------------------- //
 

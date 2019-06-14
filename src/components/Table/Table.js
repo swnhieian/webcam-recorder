@@ -21,6 +21,7 @@ export default class Table extends Component {
     })
     console.log(this.state.curr_page);
   }
+
   render() {
 
     return (

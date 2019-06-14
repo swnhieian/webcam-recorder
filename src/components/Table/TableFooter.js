@@ -6,25 +6,27 @@ import prev from '../../assets/svg/expand-chevron.svg';
 import PropTypes from 'prop-types';
 
 export default class TableFooter extends Component {
+
+  handleChange = (event) => {
+    this.props.updatePage(Number(event.target.value));
+  }
+  
   render() {
     let curr_page = this.props.curr_page;
-    let nums = [];
-    for (let i = 1; i < 9; i++) {
-      let selected = false;
-      if (i === 1) {
-        selected = true;
-      }
-      nums.push(<PageNum num={i} selected={selected} key={i}/>);
-    }
+    let nums = [...Array(8).keys()];
+    let nums_list = nums.map((i) => {
+      i = i + 1;
+      return <PageNum num={i} selected={curr_page === i} key={i}/>
+    });
 
     return (
       <div>
         <div className='table_header_footer'>
           <div className='table_footer'>
             <div className='left_footer'>
-              <form action=''>
+              <form action='' >
                 <label htmlFor='page'>Page:</label>
-                <input type='text' value={curr_page} />
+                <input type='text' value={this.props.curr_page} onChange={this.handleChange} />
               </form>
             </div>
             <div className='right_footer'>
@@ -34,9 +36,9 @@ export default class TableFooter extends Component {
                 className='small_btn'
                 onClick={() => this.props.updatePage(curr_page - 1)}
               />
-              {nums}
+              {nums_list}
               <p>...</p>
-              <PageNum num={20} selected={false} />
+              <PageNum num={20} selected={curr_page === 20} />
               <img
                 src={next}
                 alt=''
@@ -53,5 +55,5 @@ export default class TableFooter extends Component {
 
 TableFooter.propTypes = {
   updatePage: PropTypes.func.isRequired,
-  curr_page: PropTypes.number.isRequired
+  curr_page: PropTypes.number.isRequired,
 };

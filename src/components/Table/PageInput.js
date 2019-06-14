@@ -12,16 +12,14 @@ export default class PageInput extends Component {
   render() {
     return (
       <div>
-        <div className='left_footer'>
-          <form onSubmit={this.handleSubmit}>
-            <label htmlFor='page'>Page:</label>
-            <input
-              type='text'
-              value={this.props.curr_page}
-              onChange={this.handleChange}
-            />
-          </form>
-        </div>
+        <form onSubmit={this.handleSubmit}>
+          <label htmlFor='page'>Page:</label>
+          <input
+            type='text'
+            value={this.props.curr_page}
+            onChange={this.handleChange}
+          />
+        </form>
       </div>
     );
   }

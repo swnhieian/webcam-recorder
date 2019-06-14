@@ -25,7 +25,9 @@ export default class TableFooter extends Component {
       <div>
         <div className='table_header_footer'>
           <div className='table_footer'>
-            <PageInput updatePage={this.props.updatePage} curr_page={this.props.curr_page}/>
+            <div className='left_footer'>
+              <PageInput updatePage={this.props.updatePage} curr_page={this.props.curr_page}/>
+            </div>
             <div className='right_footer'>
               <img
                 src={prev}

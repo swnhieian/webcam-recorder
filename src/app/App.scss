@@ -1,0 +1,29 @@
+
+.container {
+  border: red dashed 1px;
+  grid-template-columns: 50% 50%;
+  display: grid;
+  padding: 32px;
+  height: 91vh;
+}
+
+.item {
+  border: blue dashed 1px;
+}
+
+.nav_bar {
+  display: grid;
+  grid-template-columns: 50% 50%;
+}
+
+#btn_tester {
+  display: block;
+  margin-left: auto;
+  margin-right: 0;
+}
+.left_panel {
+  border: blue dashed 1px;
+  display: grid;
+  grid-template-rows: 30% 70%;
+}
+

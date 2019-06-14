@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="192px" height="144px" viewBox="0 0 192 144" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.1 (78136) - https://sketchapp.com -->
+    <title>sample_cam</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M2.02,5.65 C2.53000255,6.1500025 3.1349965,6.4 3.835,6.4 C4.5350035,6.4 5.13749747,6.14750252 5.6425,5.6425 C6.14750252,5.13749747 6.4,4.5350035 6.4,3.835 C6.4,3.1349965 6.14750252,2.53250252 5.6425,2.0275 C5.13749747,1.52249748 4.5350035,1.27 3.835,1.27 C3.1349965,1.27 2.53250252,1.52249748 2.0275,2.0275 C1.52249748,2.53250252 1.27,3.1349965 1.27,3.835 C1.27,4.5350035 1.5199975,5.13999745 2.02,5.65 Z M1.57,1.585 C2.20000315,0.95499685 2.9549956,0.64 3.835,0.64 C4.7150044,0.64 5.46749687,0.952496875 6.0925,1.5775 C6.71750313,2.20250313 7.03,2.9549956 7.03,3.835 C7.03,4.7150044 6.71750313,5.46749688 6.0925,6.0925 C5.46749687,6.71750313 4.7150044,7.03 3.835,7.03 C2.9549956,7.03 2.20250312,6.71750313 1.5775,6.0925 C0.952496875,5.46749688 0.64,4.7150044 0.64,3.835 C0.64,2.9549956 0.9499969,2.2050031 1.57,1.585 Z M2.695,2.71 C3.0150016,2.3899984 3.3949978,2.23 3.835,2.23 C4.2750022,2.23 4.65249843,2.38749843 4.9675,2.7025 C5.28250158,3.01750158 5.44,3.3949978 5.44,3.835 C5.44,4.2750022 5.28250158,4.65249843 4.9675,4.9675 C4.65249843,5.28250158 4.2750022,5.44 3.835,5.44 C3.3949978,5.44 3.01750158,5.28250158 2.7025,4.9675 C2.38749843,4.65249843 2.23,4.2750022 2.23,3.835 C2.23,3.3949978 2.38499845,3.02000155 2.695,2.71 Z" id="path-1"></path>
+        <path d="M23.925,39.5625 L38.325,28.7625 L23.925,17.9625 L23.925,39.5625 Z M11.775,11.8875 C16.5000236,7.16247637 22.162467,4.8 28.7625,4.8 C35.362533,4.8 41.0062266,7.14372656 45.69375,11.83125 C50.3812734,16.5187734 52.725,22.162467 52.725,28.7625 C52.725,35.362533 50.3812734,41.0062266 45.69375,45.69375 C41.0062266,50.3812734 35.362533,52.725 28.7625,52.725 C22.162467,52.725 16.5187734,50.3812734 11.83125,45.69375 C7.14372656,41.0062266 4.8,35.362533 4.8,28.7625 C4.8,22.162467 7.12497675,16.5375233 11.775,11.8875 Z" id="path-3"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Admin:-expanded" transform="translate(-48.000000, -97.000000)">
+            <g id="card/media/default" transform="translate(48.000000, 97.000000)">
+                <path d="M0.5,0.5 L0.5,139.998322 C0.5,141.930401 2.06779327,143.5 3.99915357,143.5 L188.000846,143.5 C189.93159,143.5 191.5,141.931332 191.5,139.998322 L191.5,0.5 L0.5,0.5 Z" id="Card-background" stroke-opacity="0.1" stroke="#000000" stroke-width="1" fill="#FFFFFF" fill-rule="evenodd"></path>
+                <g id="Group-2" stroke-width="1" fill-rule="evenodd" transform="translate(143.000000, 118.720000)">
+                    <g id="Group">
+                        <text id="Button-text" font-family="Nunito-Bold, Nunito" font-size="8" font-weight="bold" line-spacing="20" letter-spacing="0.5" fill="#FF0005">
+                            <tspan x="11" y="8">LIVE</tspan>
+                        </text>
+                        <g id="Icon/Radio-Filled" transform="translate(0.000000, 7.000000)">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="Fill" fill="#ED1D00" fill-rule="evenodd" xlink:href="#path-1"></use>
+                        </g>
+                    </g>
+                </g>
+                <text id="-↳-Title" font-family="Helvetica-Bold, Helvetica" font-size="12" font-weight="bold" line-spacing="26" fill="#000000" fill-opacity="0.9">
+                    <tspan x="17" y="126.64">Camera Name</tspan>
+                </text>
+                <g id="card/image/blank" transform="translate(1.000000, 1.000000)">
+                    <g id="Icon/Play-Circle" transform="translate(65.000000, 27.767442)">
+                        <mask id="mask-4" fill="white">
+                            <use xlink:href="#path-3"></use>
+                        </mask>
+                        <use id="Fill" fill="#A3A2A2" fill-rule="evenodd" xlink:href="#path-3"></use>
+                    </g>
+                    <rect id="Overlay" fill-opacity="0.05" fill="#000000" fill-rule="evenodd" x="0" y="0" width="190" height="115"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -20,7 +20,6 @@ export default class Table extends Component {
     this.setState({
       curr_page: (new_page >= 1) ? new_page : 1
     })
-    console.log(this.state.curr_page);
   }
 
   render() {

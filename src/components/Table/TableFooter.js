@@ -4,16 +4,10 @@ import PageNum from './PageNum.js'
 import next from '../../assets/svg/collapse-chevron.svg'
 import prev from '../../assets/svg/expand-chevron.svg';
 import PropTypes from 'prop-types';
-
+import PageInput from './PageInput.js'
 export default class TableFooter extends Component {
 
-  handleChange = (event) => {
-    this.props.updatePage(Number(event.target.value));
-  }
-
-  handleSubmit = (event) => {
-    event.preventDefault();
-  }
+  
   updatePage=(page_num) => {
     this.props.updatePage(page_num);
 
@@ -26,22 +20,12 @@ export default class TableFooter extends Component {
       i = i + 1;
       return <PageNum num={i} selected={curr_page === i} key={i} updatePage={this.props.updatePage}/>
     });
-    console.log(this.props.total_data);
 
     return (
       <div>
         <div className='table_header_footer'>
           <div className='table_footer'>
-            <div className='left_footer'>
-              <form onSubmit={this.handleSubmit}>
-                <label htmlFor='page'>Page:</label>
-                <input
-                  type='text'
-                  value={this.props.curr_page}
-                  onChange={this.handleChange}
-                />
-              </form>
-            </div>
+            <PageInput updatePage={this.props.updatePage} curr_page={this.props.curr_page}/>
             <div className='right_footer'>
               <img
                 src={prev}

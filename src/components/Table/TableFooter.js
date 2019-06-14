@@ -5,6 +5,8 @@ import next from '../../assets/svg/collapse-chevron.svg'
 import prev from '../../assets/svg/expand-chevron.svg';
 import PropTypes from 'prop-types';
 import PageInput from './PageInput.js'
+import beg from '../../assets/svg/beg.svg'
+import end from '../../assets/svg/end.svg';
 
 export default class TableFooter extends Component {
   updatePage=(page_num) => {
@@ -37,9 +39,18 @@ export default class TableFooter extends Component {
         <div className='table_header_footer'>
           <div className='table_footer'>
             <div className='left_footer'>
-              <PageInput updatePage={this.props.updatePage} curr_page={this.props.curr_page}/>
+              <PageInput
+                updatePage={this.props.updatePage}
+                curr_page={this.props.curr_page}
+              />
             </div>
             <div className='right_footer'>
+              <img
+                src={beg}
+                alt=''
+                className='small_btn'
+                onClick={() => this.props.updatePage(1)}
+              />
               <img
                 src={prev}
                 alt=''
@@ -47,17 +58,17 @@ export default class TableFooter extends Component {
                 onClick={() => this.props.updatePage(curr_page - 1)}
               />
               {nums_list}
-              {/* <p>...</p>
-              <PageNum
-                num={max_page}
-                selected={curr_page === max_page}
-                updatePage={this.props.updatePage}
-              /> */}
               <img
                 src={next}
                 alt=''
                 className='small_btn'
                 onClick={() => this.props.updatePage(curr_page + 1)}
+              />
+              <img
+                src={end}
+                alt=''
+                className='small_btn'
+                onClick={() => this.props.updatePage(max_page)}
               />
             </div>
           </div>

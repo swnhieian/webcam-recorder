@@ -9,7 +9,8 @@ export default class Table extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      curr_page: 1
+      curr_page: 1,
+      max_per_page: 8
     }
   }
   updatePage = (new_page) => {
@@ -27,8 +28,17 @@ export default class Table extends Component {
     return (
       <div>
         <TableHeader />
-        <TableData data={this.props.data} />
-        <TableFooter updatePage={this.updatePage} curr_page={this.state.curr_page}/>
+        <TableData
+          data={this.props.data}
+          curr_page={this.state.curr_page}
+          max_per_page={this.state.max_per_page}
+        />
+        <TableFooter
+          total_data={this.props.data.length}
+          updatePage={this.updatePage}
+          curr_page={this.state.curr_page}
+          max_per_page={this.state.max_per_page}
+        />
       </div>
     );
   }

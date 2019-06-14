@@ -32,6 +32,7 @@ class App extends React.Component {
       }
     }
     rawFile.send(null);
+    console.log(allText.split('\n'));
     return allText.split('\n');
   }
 

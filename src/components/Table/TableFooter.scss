@@ -1,0 +1,27 @@
+.table_footer {
+  display: grid;
+  grid-template-columns: 23% 77%;
+  width: 43vw;
+  border: 1px black solid;
+  font-weight: 800;
+  font-size: 0.8em;
+  padding: 0.5em;
+  .left_footer {
+    border-right: 1px #00000050 solid;
+  }
+  .right_footer {
+    margin-left: 1em;
+  }
+  label[for="page"] {
+    margin-right: 0.5em;
+  }
+  input[type="text"] {
+    width: 30px;
+    text-align: center;
+  } 
+}
+
+.page_num {
+  display: inline;
+  margin-right: 1em;
+}

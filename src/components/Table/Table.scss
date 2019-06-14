@@ -1,8 +1,10 @@
-.table {
-  display: flex;
-  flex-flow: row wrap;
-  align-content: flex-start;
-  justify-content: space-evenly;
-  max-height: 52vh;
-  overflow: scroll;
+.table_header_footer {
+  background: #00000007;
+  display: grid;
+  grid-template-columns: 45% 25% 30%;
+  padding-top: 1em;
+  border: #00000010 solid 1px;
+  height: 30px;
+  font-weight: 800;
+  padding-left: 0.5em;
 }

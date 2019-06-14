@@ -1,8 +1,10 @@
 .table_row {
   display: grid;
   grid-template-columns: 45% 25% 30%;
-  border-bottom: #00000010 solid 1px;
-  margin-bottom: 0.8em;
+  border: #00000010 solid 1px;
+  border-right: none;
+  padding-bottom: 0.5em;
+  padding-top: 0.5em;
 }
 
 .row_item {
@@ -10,5 +12,10 @@
   overflow-x: scroll;
   width: 90%;
   white-space: nowrap;
+  padding-left: 0.5em;
 }
 
+.read {
+  color: black;
+  font-weight: 800;
+}

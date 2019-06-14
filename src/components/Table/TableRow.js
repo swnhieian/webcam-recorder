@@ -9,7 +9,7 @@ export default class TableRow extends Component {
     return (
       <div>
         <div className='table_row'>
-          <div className='row_item'>{ this.props.sentence}</div>
+          <div className={ (this.props.read) ? "read row_item" : "row_item" }>{ this.props.sentence}</div>
           <div className='row_item'>00:00 / { this.props.time } </div>
           <Actions />
         </div>
@@ -20,5 +20,6 @@ export default class TableRow extends Component {
 
 TableRow.propTypes =  {
   sentence: PropTypes.string.isRequired,
-  time: PropTypes.number.isRequired
+  time: PropTypes.number.isRequired,
+  read: PropTypes.bool.isRequired
 }

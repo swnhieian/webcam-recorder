@@ -3,6 +3,7 @@ import TableHeader from './TableHeader.js'
 import './Table.scss'
 import TableData from './TableData.js'
 import PropTypes from 'prop-types';
+import TableFooter from './TableFooter';
 
 export default class Table extends Component {
   render() {
@@ -10,9 +11,8 @@ export default class Table extends Component {
     return (
       <div>
         <TableHeader />
-        <div className="table">
           <TableData data={this.props.data} />
-        </div>
+        <TableFooter />
       </div>
     );
   }

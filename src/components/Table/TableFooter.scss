@@ -1,11 +1,12 @@
+
 .table_footer {
   display: grid;
   grid-template-columns: 23% 77%;
   width: 43vw;
-  border: 1px black solid;
   font-weight: 800;
   font-size: 0.8em;
   padding: 0.5em;
+  padding-top: 0;
   .left_footer {
     border-right: 1px #00000050 solid;
   }
@@ -19,9 +20,24 @@
     width: 30px;
     text-align: center;
   } 
+  p {
+    // display: inline;
+    float: left;
+    margin: 0;
+    margin-top: -0.3em;
+  }
 }
 
 .page_num {
-  display: inline;
-  margin-right: 1em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+  float: left;
+  
+}
+
+.small_btn {
+  height: 18px;
+  float: left;
+  margin-left: 0.25em;
+  margin-right: 0.25em;
 }

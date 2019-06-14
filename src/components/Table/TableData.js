@@ -5,13 +5,14 @@ import './TableData.scss';
 
 export default class TableData extends Component {
   render() {
-    let rows = [];
+    // let rows = [];
     let data = this.props.data;
-    for (let i = 0; i < 40; i++) {
-      rows.push(<TableRow sentence={data[i]} time="00:00" read={ false } key = {i}/>)
-    }
 
-    return <div className="table">{rows}</div>;
+    let rowItems = data.map((sentence) => 
+      <TableRow sentence={sentence} time="00:00" read={ false } key = {sentence}/>
+    );
+
+    return <div className='table'>{rowItems}</div>;
   }
 }
 

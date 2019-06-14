@@ -8,7 +8,7 @@ import PropTypes from 'prop-types';
 export default class TableFooter extends Component {
   render() {
     let curr_page = this.props.curr_page;
-    let nums = []
+    let nums = [];
     for (let i = 1; i < 9; i++) {
       let selected = false;
       if (i === 1) {

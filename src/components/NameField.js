@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import './InputField.scss'
+import './NameField.scss'
 
 export default class InputField extends Component {
   render() {

@@ -4,15 +4,11 @@ body {
   font-weight: 300;
 }
 .container {
-  border: red dashed 1px;
+  // border: red dashed 1px;
   grid-template-columns: 50% 50%;
   display: grid;
   padding: 17px;
   height: 100%;
-}
-
-.item {
-  border: blue dashed 1px;
 }
 
 .nav_bar {
@@ -26,9 +22,11 @@ body {
   margin-right: 0;
 }
 .left_panel {
-  border: blue dashed 1px;
+  // border: blue dashed 1px;
   display: grid;
   grid-template-rows: 54px auto;
+  border-right: 1px #00000010 solid;
+  padding-right: 1em;
 }
 
 .cameras {
@@ -41,11 +39,26 @@ body {
 }
 
 .cam {
-  border: orange dashed 1px;
-  width: 178px;
+  // border: orange dashed 1px;
+  width: 168px;
   margin: 0.5em;
 }
 
-.data_panel {
+.name_field {
   padding: 0.5em;
+}
+
+.right_panel {
+  padding-left: 1em;
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0, 0, 0, .2);
+  box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }

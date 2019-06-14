@@ -12,7 +12,8 @@ import btn_tester from '../assets/svg/tester-button.svg'
 import sample_cam from '../assets/svg/sample-cam.svg'
 
 // components
-import InputField from '../Components/InputField'
+import NameField from '../Components/NameField';
+import DataTable from '../Components/DataTable';
 
 class App extends React.Component {
   render() {
@@ -51,8 +52,11 @@ class App extends React.Component {
               <img id='btn_tester' src={btn_tester} alt='' />
             </div>
           </div>
-          <div className='data_panel'>
-            <InputField /> 
+          <div className='name_field'>
+            <NameField />
+          </div>
+          <div className="data_table">
+            <DataTable />
           </div>
         </div>
       </div>

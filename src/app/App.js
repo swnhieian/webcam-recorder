@@ -9,13 +9,15 @@ import tsinghua_logo from '../assets/svg/tsinghua.svg'
 import collapse from '../assets/svg/collapse-chevron.svg'
 // import expand from '../assets/svg/expand-chevron.svg'
 import btn_tester from '../assets/svg/tester-button.svg'
-import sample_cam from '../assets/svg/sample-cam.svg'
 
 // components
 import NameField from '../Components/NameField';
-import DataTable from '../Components/DataTable';
+import Table from '../Components/DataTable/Table';
+import CameraList from '../Components/CameraList/CameraList';
 
 class App extends React.Component {
+  
+
   render() {
     return (
       <div className='container'>
@@ -23,25 +25,7 @@ class App extends React.Component {
           <div className='logo'>
             <img id='tsinghua_logo' src={tsinghua_logo} alt='' />
           </div>
-          <div className='cameras'>
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-            <img className='cam' src={sample_cam} alt='' />
-          </div>
+        <CameraList />
         </div>
         <div className='right_panel'>
           <div className='nav_bar'>
@@ -56,7 +40,7 @@ class App extends React.Component {
             <NameField />
           </div>
           <div className="data_table">
-            <DataTable />
+            <Table data=""/>
           </div>
         </div>
       </div>

@@ -1,0 +1,14 @@
+.table_row {
+  display: grid;
+  grid-template-columns: 45% 25% 30%;
+  border-bottom: #00000010 solid 1px;
+  margin-bottom: 0.8em;
+}
+
+.row_item {
+  font-size: 0.8em;
+  overflow-x: scroll;
+  width: 90%;
+  white-space: nowrap;
+}
+

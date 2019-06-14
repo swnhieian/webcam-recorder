@@ -10,7 +10,7 @@ export default class Table extends Component {
     super(props);
     this.state = {
       curr_page: 1,
-      max_per_page: 8
+      max_per_page: 5
     }
   }
   updatePage = (new_page) => {

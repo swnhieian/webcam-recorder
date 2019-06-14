@@ -5,18 +5,29 @@ import next from '../../assets/svg/collapse-chevron.svg'
 import prev from '../../assets/svg/expand-chevron.svg';
 import PropTypes from 'prop-types';
 import PageInput from './PageInput.js'
-export default class TableFooter extends Component {
 
-  
+export default class TableFooter extends Component {
   updatePage=(page_num) => {
     this.props.updatePage(page_num);
-
   }
 
   render() {
     let curr_page = this.props.curr_page;
-    let nums = [...Array(8).keys()];
-    let nums_list = nums.map((i) => {
+    let max_per_page = this.props.max_per_page;
+    let mid_point = Math.floor(max_per_page / 2)
+    let max_page = Number(((this.props.total_data + 1) / this.props.max_per_page + 1).toFixed(0));
+    let page_nums = Array.from(new Array(max_per_page), (x, i) => { 
+      let min = 0;
+      if (curr_page <= mid_point) {
+        min = i;
+      } else if (curr_page >= max_page - mid_point) {
+        min = i + max_page - max_per_page;
+      } else {
+        min = i + curr_page - mid_point - 1;
+      }
+      return min;
+    });
+    let nums_list = page_nums.map((i) => {
       i = i + 1;
       return <PageNum num={i} selected={curr_page === i} key={i} updatePage={this.props.updatePage}/>
     });
@@ -36,12 +47,12 @@ export default class TableFooter extends Component {
                 onClick={() => this.props.updatePage(curr_page - 1)}
               />
               {nums_list}
-              <p>...</p>
+              {/* <p>...</p>
               <PageNum
-                num={Number(((this.props.total_data + 1) / this.props.max_per_page + 1).toFixed(0))}
-                selected={curr_page === 20}
+                num={max_page}
+                selected={curr_page === max_page}
                 updatePage={this.props.updatePage}
-              />
+              /> */}
               <img
                 src={next}
                 alt=''

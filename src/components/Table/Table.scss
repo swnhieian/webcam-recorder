@@ -1,0 +1,8 @@
+.table {
+  display: flex;
+  flex-flow: row wrap;
+  align-content: flex-start;
+  justify-content: space-evenly;
+  max-height: 52vh;
+  overflow: scroll;
+}

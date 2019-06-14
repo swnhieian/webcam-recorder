@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+// import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
 // scss
 import './App.scss'
@@ -12,14 +12,33 @@ import btn_tester from '../assets/svg/tester-button.svg'
 
 // components
 import NameField from '../Components/NameField';
-import Table from '../Components/DataTable/Table';
+import Table from '../Components/Table/Table';
 import CameraList from '../Components/CameraList/CameraList';
+import sentences from '../assets/data/sentences.txt'
 
 class App extends React.Component {
-  
+  readTextFile(file) {
+    const rawFile = new XMLHttpRequest();
+    rawFile.open("GET", file, false);
+    let allText = "";
+    rawFile.onreadystatechange = function ()
+    {
+      if(rawFile.readyState === 4)
+      {
+        if(rawFile.status === 200 || rawFile.status === 0)
+        {
+          allText = rawFile.responseText;
+        }
+      }
+    }
+    rawFile.send(null);
+    return allText.split('\n');
+  }
 
   render() {
+    const data = this.readTextFile(sentences);
     return (
+      
       <div className='container'>
         <div className='left_panel'>
           <div className='logo'>
@@ -40,7 +59,7 @@ class App extends React.Component {
             <NameField />
           </div>
           <div className="data_table">
-            <Table data=""/>
+            <Table data= { data }/>
           </div>
         </div>
       </div>

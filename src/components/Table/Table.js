@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import Table_Header from './TableHeader.js'
+import TableHeader from './TableHeader.js'
 import './Table.scss'
-import Table_Data from './TableData.js'
+import TableData from './TableData.js'
 import PropTypes from 'prop-types';
 
 export default class Table extends Component {
@@ -9,8 +9,10 @@ export default class Table extends Component {
 
     return (
       <div>
-        <Table_Header />
-        <Table_Data data={ this.props.data }/>
+        <TableHeader />
+        <div className="table">
+          <TableData data={this.props.data} />
+        </div>
       </div>
     );
   }

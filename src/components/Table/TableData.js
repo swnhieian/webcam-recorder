@@ -1,31 +1,22 @@
 import React, { Component } from 'react'
-import Table_Row from './TableRow.js';
+import TableRow from './TableRow.js';
+import PropTypes from 'prop-types';
 
 export default class TableData extends Component {
   render() {
-    return (
-      <div>
-        <Table_Row
-          sentence='this is a example sentence that is very long'
-          time='34:29'
-        />
-        <Table_Row
-          sentence='this is a example sentence that is very long'
-          time='34:29'
-        />
-        <Table_Row
-          sentence='this is a example sentence that is very long'
-          time='34:29'
-        />
-        <Table_Row
-          sentence='this is a example sentence that is very long'
-          time='34:29'
-        />
-        <Table_Row
-          sentence='this is a example sentence that is very long'
-          time='34:29'
-        />
-      </div>
-    );
+    let rows = [];
+    let data = this.props.data;
+    for (let i = 0; i < 40; i++) {
+      // console.log('hello');
+      rows.push(<TableRow sentence={data[i]} time="32:49"/>)
+    }
+    console.log(rows);
+
+    return <div>{rows}</div>;
   }
 }
+
+
+TableData.propTypes = {
+  data: PropTypes.array.isRequired
+};

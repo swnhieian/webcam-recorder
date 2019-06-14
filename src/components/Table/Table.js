@@ -12,8 +12,14 @@ export default class Table extends Component {
       curr_page: 1
     }
   }
-  updatePage = () => {
-    this.setState({ curr_page: 3});
+  updatePage = (new_page) => {
+    if (new_page === 0 ) {
+      // do nothing
+    } 
+    this.setState({
+      curr_page: (new_page >= 1) ? new_page : 1
+    })
+    console.log(this.state.curr_page);
   }
   render() {
 
@@ -21,7 +27,7 @@ export default class Table extends Component {
       <div>
         <TableHeader />
         <TableData data={this.props.data} />
-        <TableFooter updatePage={this.updatePage} someData={3}/>
+        <TableFooter updatePage={this.updatePage} curr_page={this.state.curr_page}/>
       </div>
     );
   }

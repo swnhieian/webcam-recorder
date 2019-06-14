@@ -4,13 +4,18 @@ import PropTypes from 'prop-types';
 export default class PageNum extends Component {
   render() {
     return (
-      <div className="page_num">
+      <div
+        className={
+          this.props.selected ? 'page_num' : 'can_click_num page_num'
+        }
+      >
         {this.props.num}
       </div>
-    )
+    );
   }
 }
 
 PageNum.propTypes = {
-  num: PropTypes.string.isRequired
-}
+  num: PropTypes.number.isRequired,
+  selected: PropTypes.bool.isRequired
+};

@@ -3,12 +3,18 @@ import './TableFooter.scss'
 import PageNum from './PageNum.js'
 import next from '../../assets/svg/collapse-chevron.svg'
 import prev from '../../assets/svg/expand-chevron.svg';
+// import PropTypes from 'prop-types';
 
 export default class TableFooter extends Component {
+  
   render() {
     let nums = []
     for (let i = 1; i < 9; i++) {
-      nums.push(<PageNum num={i}/>);
+      let selected = false;
+      if (i === 1) {
+        selected = true;
+      }
+      nums.push(<PageNum num={i} selected={selected} key={i}/>);
     }
     return (
       <div>
@@ -21,10 +27,10 @@ export default class TableFooter extends Component {
               </form>
             </div>
             <div className='right_footer'>
-              <img src={prev} alt='' className='small_btn' />
+              <img src={prev} alt='' className='small_btn'/>
               {nums}
               <p>...</p>
-              <PageNum num={20} />
+              <PageNum num={20} selected={false}/>
               <img src={next} alt='' className='small_btn' />
             </div>
           </div>
@@ -32,4 +38,7 @@ export default class TableFooter extends Component {
       </div>
     );
   }
+}
+
+TableFooter.propTypes = {
 }

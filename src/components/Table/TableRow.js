@@ -20,6 +20,6 @@ export default class TableRow extends Component {
 
 TableRow.propTypes =  {
   sentence: PropTypes.string.isRequired,
-  time: PropTypes.number.isRequired,
+  time: PropTypes.string.isRequired,
   read: PropTypes.bool.isRequired
 }

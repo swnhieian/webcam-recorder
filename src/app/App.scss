@@ -1,10 +1,14 @@
-
+@import url('https://fonts.googleapis.com/css?family=Nunito:300,400&display=swap');
+body {
+  font-family: 'Nunito', 'Courier New', Courier, monospace;
+  font-weight: 300;
+}
 .container {
   border: red dashed 1px;
   grid-template-columns: 50% 50%;
   display: grid;
-  padding: 32px;
-  height: 91vh;
+  padding: 17px;
+  height: 100%;
 }
 
 .item {
@@ -24,6 +28,24 @@
 .left_panel {
   border: blue dashed 1px;
   display: grid;
-  grid-template-rows: 30% 70%;
+  grid-template-rows: 54px auto;
 }
 
+.cameras {
+  display: flex;
+  flex-flow: row wrap;
+  align-content: flex-start;
+  justify-content: space-evenly;
+  max-height: 82vh;
+  overflow: scroll;
+}
+
+.cam {
+  border: orange dashed 1px;
+  width: 178px;
+  margin: 0.5em;
+}
+
+.data_panel {
+  padding: 0.5em;
+}

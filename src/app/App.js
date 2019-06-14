@@ -11,7 +11,7 @@ import collapse from '../assets/svg/collapse-chevron.svg'
 import btn_tester from '../assets/svg/tester-button.svg'
 
 // components
-import NameField from '../Components/NameField';
+import NameField from '../Components/NameField/NameField';
 import Table from '../Components/Table/Table';
 import CameraList from '../Components/CameraList/CameraList';
 import sentences from '../assets/data/sentences.txt'

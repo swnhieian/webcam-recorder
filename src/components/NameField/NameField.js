@@ -14,8 +14,8 @@ export default class NameField extends Component {
     return (
       <div>
         <form action=''>
-          <div className="name_input">
-            <div className="left">
+          <div className='name_input'>
+            <div className='left'>
               <label htmlFor='fName'>First Name: </label>
               <input
                 type='text'
@@ -23,9 +23,10 @@ export default class NameField extends Component {
                 id='fName_input'
                 placeholder=''
                 value={this.props.first_name}
+                onChange={this.handleChange}
               />
             </div>
-            <div className="right">
+            <div className='right'>
               <label htmlFor='lName'>Last Name: </label>
               <input
                 type='text'

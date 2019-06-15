@@ -1,8 +1,5 @@
 import React from 'react';
 import RecordRTC from 'recordrtc';
-// import FileSaver from 'file-saver';
-import { Card, Button, Form, Col, Row } from 'react-bootstrap';
-// import 'bootstrap/dist/css/bootstrap.min.css';
 import './Webcam.scss';
 
 class Webcam extends React.Component {

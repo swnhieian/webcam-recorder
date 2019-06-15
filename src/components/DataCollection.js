@@ -8,7 +8,7 @@ export default class DataCollection extends Component {
     return (
       <div>
         <div className='name_field'>
-          <NameField />
+          <NameField updateName={this.props.updateName}/>
         </div>
         <div className='data_table'>
           <Table data={this.props.data} />
@@ -19,5 +19,8 @@ export default class DataCollection extends Component {
 }
 
 DataCollection.propTypes = {
-  data: PropTypes.array.isRequired
-}
+  data: PropTypes.array.isRequired,
+  updateName: PropTypes.func.isRequired,
+  first_name: PropTypes.string.isRequired,
+  last_name: PropTypes.string.isRequired
+};

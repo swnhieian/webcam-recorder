@@ -1,7 +1,15 @@
 import React, { Component } from 'react'
 import './NameField.scss'
+import PropTypes from 'prop-types';
 
-export default class InputField extends Component {
+export default class NameField extends Component {
+
+  handleChange = () => {
+    let first_name = document.getElementById('fName_input').value;
+    let last_name = document.getElementById('lName_input').value;
+    this.props.updateName(first_name, last_name);
+
+  }
   render() {
     return (
       <div>
@@ -14,6 +22,7 @@ export default class InputField extends Component {
                 name='fName'
                 id='fName_input'
                 placeholder=''
+                value={this.props.first_name}
               />
             </div>
             <div className="right">
@@ -22,6 +31,8 @@ export default class InputField extends Component {
                 type='text'
                 name='lName'
                 id='lName_input'
+                value={this.props.last_name}
+                onChange={this.handleChange}
                 placeholder=''
               />
             </div>
@@ -30,4 +41,10 @@ export default class InputField extends Component {
       </div>
     );
   }
+}
+
+NameField.propTypes = {
+  updateName: PropTypes.func.isRequired,
+  first_name: PropTypes.string.isRequired,
+  last_name: PropTypes.string.isRequired
 }

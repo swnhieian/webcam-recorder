@@ -20,7 +20,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      curr_sentence: '所谓的三个经济问题是指生产什么怎样生产和为谁生产',
+      curr_sentence: '',
       first_name: '',
       last_name: '',
       date: new Date()
@@ -49,6 +49,12 @@ class App extends React.Component {
     });
   };
 
+  updateSentence = (curr_sentence) => {
+    this.setState({
+      curr_sentence
+    });
+  }
+
   dataCollection = (data) => {
     return (
       <DataCollection
@@ -61,6 +67,12 @@ class App extends React.Component {
     );
   }
 
+  tester = (data) => {
+    return (
+      <Tester updateSentence={this.updateSentence} first_sentence={data[0]}/>
+    );
+  }
+
   render() {
     const data = this.readTextFile(sentences);
     return (
@@ -70,7 +82,7 @@ class App extends React.Component {
           <div className='contents'>
             <div className='left_panel'>
               <Route path='/admin' component={CameraList} />
-              <Route path='/tester' component={Tester} />
+              <Route path='/tester' component={() => this.tester(data)} />
             </div>
             <div className='right_panel'>
               <Route path='/admin' render={() => this.dataCollection(data)} />

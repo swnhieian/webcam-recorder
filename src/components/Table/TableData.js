@@ -13,7 +13,13 @@ export default class TableData extends Component {
     let end = beg + max_per_page;
     let small_data = data.slice(beg, end);
     let rowItems = small_data.map(sentence => (
-      <TableRow sentence={sentence} time='00:00' read={false} key={sentence} />
+      <TableRow
+        sentence={sentence}
+        time='00:00'
+        read={false}
+        key={sentence}
+        curr_sentence={this.props.curr_sentence}
+      />
     ));
 
     return <div className='table'>{rowItems}</div>;
@@ -23,5 +29,6 @@ export default class TableData extends Component {
 TableData.propTypes = {
   data: PropTypes.array.isRequired,
   curr_page: PropTypes.number.isRequired,
-  max_per_page: PropTypes.number.isRequired
+  max_per_page: PropTypes.number.isRequired,
+  curr_sentence: PropTypes.string.isRequired
 };

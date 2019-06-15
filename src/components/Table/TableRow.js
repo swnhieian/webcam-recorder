@@ -1,16 +1,29 @@
-import React, { Component } from 'react'
-import './TableRow.scss'
-import Actions from './Actions'
+import React, { Component } from 'react';
+import './TableRow.scss';
+import Actions from './Actions';
 import PropTypes from 'prop-types';
 
 export default class TableRow extends Component {
-  
+  getClassOfRowItem = () => {
+    let read = this.props.read ? 'read row_item' : 'row_item';
+    let sentence = this.props.sentence.substring(0, this.props.sentence.length - 1);
+    let is_current = sentence === this.props.curr_sentence ? ' curr_sentence' : '';
+    return read + is_current;
+  }
+
   render() {
+    // console.log(String(this.props.curr_sentence) === String(this.props.sentence));
+    // for some reason, sentence has extra character at the end;
+    
     return (
       <div>
         <div className='table_row'>
-          <div className={ (this.props.read) ? "read row_item" : "row_item" }>{ this.props.sentence}</div>
-          <div className='row_item'>00:00 / { this.props.time } </div>
+          <div
+            className={this.getClassOfRowItem()}
+          >
+            {this.props.sentence}
+          </div>
+          <div className='row_item'>00:00 / {this.props.time} </div>
           <Actions />
         </div>
       </div>
@@ -18,8 +31,9 @@ export default class TableRow extends Component {
   }
 }
 
-TableRow.propTypes =  {
+TableRow.propTypes = {
   sentence: PropTypes.string.isRequired,
   time: PropTypes.string.isRequired,
-  read: PropTypes.bool.isRequired
-}
+  read: PropTypes.bool.isRequired,
+  curr_sentence: PropTypes.string.isRequired
+};

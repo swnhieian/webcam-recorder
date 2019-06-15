@@ -15,7 +15,7 @@ export default class DataCollection extends Component {
           />
         </div>
         <div className='data_table'>
-          <Table data={this.props.data} />
+          <Table data={this.props.data} curr_sentence={this.props.curr_sentence}/>
         </div>
       </div>
     );
@@ -26,5 +26,6 @@ DataCollection.propTypes = {
   data: PropTypes.array.isRequired,
   updateName: PropTypes.func.isRequired,
   first_name: PropTypes.string.isRequired,
-  last_name: PropTypes.string.isRequired
+  last_name: PropTypes.string.isRequired,
+  curr_sentence: PropTypes.string.isRequired
 };

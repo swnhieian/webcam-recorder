@@ -20,7 +20,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      curr_sentence: '',
+      curr_sentence: '所谓的三个经济问题是指生产什么怎样生产和为谁生产',
       first_name: '',
       last_name: '',
       date: new Date()
@@ -56,6 +56,7 @@ class App extends React.Component {
         updateName={this.updateName}
         first_name={this.state.first_name}
         last_name={this.state.last_name}
+        curr_sentence={this.state.curr_sentence}
       />
     );
   }

@@ -5,9 +5,16 @@ body {
 }
 .container {
   // border: red dashed 1px;
-  grid-template-columns: 50% 50%;
+  grid-template-rows: 50px auto;
   display: grid;
-  padding: 17px;
+  padding: 0.8em;
+}
+
+
+.contents {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  padding: 0.5em;
   height: 100%;
 }
 
@@ -16,9 +23,26 @@ body {
   grid-template-columns: 50% 50%;
 }
 
+.nav_left {
+  
+}
+.nav_right {
+  display: grid;
+  grid-template-columns: 50% 50%;
+
+}
+
+.nav_buttons {
+  float: right;
+}
+
+.nav_btn{
+  width: 50%;
+}
+
 #btn_tester {
-  display: block;
-  margin-left: auto;
+  display: inline;
+  margin-left: 0;
   margin-right: 0;
 }
 .left_panel {
@@ -26,7 +50,7 @@ body {
   display: grid;
   grid-template-rows: 54px auto;
   border-right: 1px #00000010 solid;
-  padding-right: 1em;
+  padding-right: 0.5em;
 }
 
 .cameras {

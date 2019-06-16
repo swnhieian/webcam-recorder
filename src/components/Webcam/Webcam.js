@@ -17,6 +17,8 @@ class Webcam extends React.Component {
     this.startRecording = this.startRecording.bind(this);
     this.stopRecording = this.stopRecording.bind(this);
   }
+  // todo: this function no longer works, only cameralist one works
+  // todo: need to see if camera list fuction actually starts all
   startRecording() {
     navigator.mediaDevices
       .getUserMedia({

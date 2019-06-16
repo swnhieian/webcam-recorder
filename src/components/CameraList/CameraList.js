@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // import sample_cam from '../../assets/svg/sample-cam.svg';
 import Webcam from '../Webcam/Webcam.js';
+import RecordRTC from 'recordrtc';
 
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
@@ -46,15 +47,65 @@ export default function CameraList(props) {
         return response.json();
       })
       .then(function(myJson) {
-        console.log(myJson);
+        console.log(myJson.recording);
+        return myJson.recording;
       });
   }
 
+  let startAllCams = () => {
+    availableCams.map((cams) => {
+      navigator.mediaDevices
+        .getUserMedia({
+          audio: true,
+          video: {
+            width: 1920,
+            height: 1080,
+            deviceId: cams.id
+          }
+        })
+        .then(camera => {
+          let recorder = RecordRTC(camera, {
+            type: 'video',
+            framerate: 30,
+            desiredSampRate: 16000,
+            numberOfAudioChannels: 2
+          });
+          recorder.camera = camera;
+          this.setState({
+            recorder: recorder,
+            startTime: this.getCurrentTime()
+          });
+          let video = this.state.videoEle;
+          video.current.srcObject = camera;
+          this.setState({
+            videoEle: video
+          });
+          //this.state.videoEle.current.srcObject = camera;
+          this.state.recorder.startRecording();
+          this.setState({
+            isRecording: true
+          });
+          console.log('start');
+        })
+        .catch(error => {
+          console.error(error);
+        });
+
+    })
+  };
+
+  useEffect(() => {
+    setInterval(() => {
+      // checkRecordingStatus();
+      // if (checkRecordingStatus()) {
+      //   startAllCams();
+      // }
+    }, 1000);
+  })
 
   let getCams = () => {
     let num_cams = [...Array(10).keys()];
     let cams_list = availableCams.map(cams => {
-      console.log(cams.id);
       return <Webcam key={cams.id} name={'ID: ' + (cams.id.substring(0,15))} />;
     });
     getAvailableWebCams();

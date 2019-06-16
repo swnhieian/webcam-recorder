@@ -87,6 +87,13 @@ class App extends React.Component {
   }
 
   render() {
+    // fetch('http://192.168.0.102:5000/get_start_state')
+    //   .then(function (response) {
+    //     return response.json();
+    //   })
+    //   .then(function (myJson) {
+    //     console.log(JSON.stringify(myJson));
+    //   });
     return (
       <div className='container'>
         <Router>

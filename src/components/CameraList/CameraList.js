@@ -41,7 +41,7 @@ export default function CameraList(props) {
   };
 
   let checkRecordingStatus = () => {
-    fetch(props.server_ip + '/check_recording_status').then(res => {
+    fetch(props.server_ip + '/run_post').then(res => {
       console.log(res);
     });
   }

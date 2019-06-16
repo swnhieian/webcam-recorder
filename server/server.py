@@ -16,7 +16,7 @@ def createResp(data):
 
 @app.route("/")
 def hello():
-  return "Hello World"
+  return "Flask server running"
 
 @app.route("/get_start_state")
 def getStartState():

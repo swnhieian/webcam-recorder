@@ -233,7 +233,7 @@ class Recorder extends React.Component {
         <Button variant="danger" onClick={this.stopAudio}>Stop Audio</Button>
       </div>
     );
-  };
+  }
 }
 
 export default Recorder;

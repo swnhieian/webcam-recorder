@@ -1,6 +1,7 @@
 import React from 'react';
 import RecordRTC from 'recordrtc';
 import './Webcam.scss';
+import PropTypes from 'prop-types';
 
 class Webcam extends React.Component {
   constructor(props) {
@@ -113,19 +114,24 @@ class Webcam extends React.Component {
   }
   render() {
     return (
-      <div className="vid_card">
-        <video className="cam"
+      <div className='vid_card' onClick={this.startRecording}>
+        <video
+          className='cam'
           controls
           autoPlay
           playsInline
           muted
           ref={this.state.videoEle}
         />
-      
-        <p className="label">{this.props.name}</p>
+
+        <p className='cam_label'>{this.props.name}</p>
       </div>
     );
   }
 }
+
+Webcam.propTypes = {
+  name: PropTypes.string.isRequired
+};
 
 export default Webcam;

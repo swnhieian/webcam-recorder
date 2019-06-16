@@ -1,20 +1,33 @@
 
-.start_screen {
+.testing_screen {
   text-align:center;
   // background-color:blue;
   height:80vh;
   width:100%;
 }
 
-
-
-#btn_start_test {
-  font-size: 1.05em;    
+.btn {
+  font-size: 1.05em;
   border: 1px solid black;
   font-weight: 300;
   background-color: white;
   border-radius: 1em;
-  transform: translateY(35vh);
   height: 3em;
   width: 150px;
+}
+
+
+#btn_start_test {
+  transform: translateY(35vh);
+
+}
+.in_process_container {
+  transform: translateY(20vh);
+  
+}
+
+.sentence_to_be_read {
+  font-size: 2em;
+  line-height: 2;
+  margin-bottom: 0.5em;
 }

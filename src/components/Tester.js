@@ -1,31 +1,40 @@
-import React from 'react'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import './Tester.scss'
+import React from 'react';
+import './Tester.scss';
 import PropTypes from 'prop-types';
+import StartScreen from './StartScreen.js';
+import InProcessScreen from './InProcessScreen.js'
 
 function Tester(props) {
-  function handleClick() {
-    props.updateSentence(props.first_sentence);
-    // console.log(props.first_sentence);
+  function content(props) {
+    if (props.curr_sentence) {
+      return <InProcessScreen curr_sentence={props.curr_sentence}/>;
+    } else {
+      return (
+        <StartScreen
+          updateSentence={props.updateSentence}
+          first_sentence={props.first_sentence}
+        />
+      );
+    }
   }
 
   return (
     <div>
-      <div className="start_screen">
-        <div className="middle">
-          <div className="inner">
-            <button id="btn_start_test" onClick={ handleClick }>Start Testing</button>
+      <div className='testing_screen'>
+        <div className='middle'>
+          <div className='inner'>
+            {content(props)}
           </div>
         </div>
       </div>
-      <div className="testing_screen"></div>
     </div>
-  )
+  );
 }
 
 Tester.propTypes = {
   updateSentence: PropTypes.func.isRequired,
-  first_sentence: PropTypes.string.isRequired
+  first_sentence: PropTypes.string.isRequired,
+  curr_sentence: PropTypes.string.isRequired
 };
 
-export default Tester
+export default Tester;

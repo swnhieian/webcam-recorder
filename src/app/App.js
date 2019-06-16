@@ -69,7 +69,11 @@ class App extends React.Component {
 
   tester = (data) => {
     return (
-      <Tester updateSentence={this.updateSentence} first_sentence={data[0]}/>
+      <Tester
+        updateSentence={this.updateSentence}
+        first_sentence={data[0]}
+        curr_sentence={this.state.curr_sentence}
+      />
     );
   }
 

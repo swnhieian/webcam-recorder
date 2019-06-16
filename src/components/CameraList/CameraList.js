@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 // import sample_cam from '../../assets/svg/sample-cam.svg';
-import Webcam from '../Webcam.js'
+import Webcam from '../Webcam/Webcam.js'
 
 export default class CameraList extends Component {
   render() {

@@ -21,9 +21,9 @@ def hello():
 
 @app.route("/check_recording_status", methods=["GET"])
 def getStartState():
-  with open('state.json') as json_file:
-    data = json.load(json_file)
-  resp = make_response(render_template('this.json'))
+  # with open('state.json') as json_file:
+  #   data = json.load(json_file)
+  resp = make_response(render_template('state.json'))
   resp.headers = {
     'Access-Control-Allow-Origin': '*',
     'Content-Type' : 'application/json'
@@ -34,18 +34,6 @@ def getStartState():
   return resp
   # return createResp(str(state))
 
-@app.route('/run_post')
-def run_post():
-    url = 'http://xxx.pythonanywhere.com/stripetest'
-    data = {'stripeAmount': '199', 'stripeCurrency': 'USD',
-            'stripeToken': '122', 'stripeDescription': 'Test post'}
-    headers = {
-               'Access-Control-Allow-Origin': '*' }
-
-    r = requests.post(url, data=json.dumps(data), headers=headers)
-
-    #return json.dumps(r.json(), indent=4)
-    return r.text
 
 @app.route("/start_recording")
 def startRecording():

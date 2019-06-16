@@ -4,7 +4,7 @@ import './Webcam.scss';
 import PropTypes from 'prop-types';
 
 class Webcam extends React.Component {
-  constructor(props) {
+  constructor() {
     super();
     this.state = {
       isRecording: false,
@@ -12,14 +12,10 @@ class Webcam extends React.Component {
       videoSrc: null,
       videoEle: React.createRef(),
       startTime: 'time',
-      name: props.deviceId
     };
     this.video = React.createRef();
     this.startRecording = this.startRecording.bind(this);
     this.stopRecording = this.stopRecording.bind(this);
-    this.changeName = this.changeName.bind(this);
-    this.removeItself = this.removeItself.bind(this);
-    this.videoEle = React.createRef();
   }
   startRecording() {
     navigator.mediaDevices
@@ -28,7 +24,7 @@ class Webcam extends React.Component {
         video: {
           width: 1920,
           height: 1080,
-          deviceId: this.props.deviceId
+          // deviceId: this.props.deviceId
         }
       })
       .then(camera => {
@@ -100,18 +96,6 @@ class Webcam extends React.Component {
       isRecording: false
     });
   }
-  changeName(event) {
-    this.setState({
-      name: event.target.value
-    });
-  }
-  removeItself() {
-    if (this.state.isRecording) {
-      this.stopRecording();
-    } else {
-      this.props.remove(this.props.deviceId);
-    }
-  }
   render() {
     return (
       <div className='vid_card' onClick={this.startRecording}>
@@ -121,7 +105,7 @@ class Webcam extends React.Component {
           autoPlay
           playsInline
           muted
-          ref={this.state.videoEle}
+          ref={this.props.videoEle}
         />
 
         <p className='cam_label'>{this.props.name}</p>
@@ -131,7 +115,8 @@ class Webcam extends React.Component {
 }
 
 Webcam.propTypes = {
-  name: PropTypes.string.isRequired
+  name: PropTypes.string.isRequired,
+  videoEle: PropTypes.object.isRequired
 };
 
 export default Webcam;

@@ -22,7 +22,8 @@ class App extends React.Component {
       first_name: '',
       last_name: '',
       data: this.readTextFile(sentences),
-      date: new Date()
+      date: new Date(),
+      server_ip: 'http://183.172.79.3:5000' // todo: see if can better way than adding to state
     };
   }
 
@@ -38,7 +39,8 @@ class App extends React.Component {
       }
     };
     rawFile.send(null);
-    return allText.split('\n');
+    const data = allText.split('\n')
+    return data;
   }
 
   updateName = (first_name, last_name) => {
@@ -48,19 +50,31 @@ class App extends React.Component {
     });
   };
 
-  updateSentence = (curr_sentence) => {
-    if (curr_sentence === "$next") {
-      this.setState({
-        curr_sentence_index: this.state.curr_sentence_index + 1
-      }, () => {
-        this.updateSentence(this.state.data[this.state.curr_sentence_index]);
-      });
+  updateSentence = curr_sentence => {
+    if (curr_sentence === '$next') {
+      this.setState(
+        {
+          curr_sentence_index: this.state.curr_sentence_index + 1
+        },
+        () => {
+          this.updateSentence(this.state.data[this.state.curr_sentence_index]);
+        }
+      );
+    } else if (curr_sentence === '$prev') {
+      this.setState(
+        {
+          curr_sentence_index: this.state.curr_sentence_index - 1
+        },
+        () => {
+          this.updateSentence(this.state.data[this.state.curr_sentence_index]);
+        }
+      );
     } else {
       this.setState({
         curr_sentence
       });
     }
-  }
+  };
 
   dataCollection = () => {
     return (
@@ -72,19 +86,22 @@ class App extends React.Component {
         curr_sentence={this.state.curr_sentence}
       />
     );
-  }
+  };
 
   tester = () => {
     return (
       <Tester
         updateSentence={this.updateSentence}
+        curr_sentence_index={this.state.curr_sentence_index}
+        data_length={this.state.data.length}
         first_sentence={this.state.data[this.state.curr_sentence_index]}
         curr_sentence={this.state.curr_sentence}
         first_name={this.state.first_name}
         last_name={this.state.last_name}
+        server_ip={this.state.server_ip}
       />
     );
-  }
+  };
 
   render() {
     return (

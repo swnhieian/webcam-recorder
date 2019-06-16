@@ -5,21 +5,11 @@ export default function StartScreen(props) {
 
   function handleClick() {
     props.updateSentence(props.first_sentence);
-    setStartStateOnServer();
-  }
-
-  function setStartStateOnServer() {
-    // todo: get appropriate response in console from flask server! 
-    fetch(props.server_ip+'/start_testing')
-      .then((res) => {
-        console.log(res);
-      });
   }
 
   function nameFilled() {
     return props.first_name.length === 0 || props.last_name.length === 0;
   }
-
 
   return (
     <div className='test_container'>
@@ -45,5 +35,4 @@ StartScreen.propTypes = {
   first_sentence: PropTypes.string.isRequired,
   first_name: PropTypes.string.isRequired,
   last_name: PropTypes.string.isRequired,
-  server_ip: PropTypes.string.isRequired
 };

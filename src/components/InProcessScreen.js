@@ -5,9 +5,23 @@ export default function InProcessScreen(props) {
   const [record_state, setRecordState] = useState(false);
   const [done_recording, setDoneRecording] = useState(false);
 
+  function sendCmdToServer(cmd) {
+    if (cmd === 'Start Recording'){
+      // todo: get appropriate response in console from flask server!
+      fetch(props.server_ip + '/start_recording').then(res => {
+        console.log(res);
+      });
+    } else if (cmd === 'Stop Recording') {
+      fetch(props.server_ip + '/stop_recording').then(res => {
+        console.log(res);
+      });
+    }
+  }
+
   function updateSentence(data) {
     props.updateSentence(data);
   }
+
   function recordState() {
     if (record_state) {
       return "Done";
@@ -19,8 +33,10 @@ export default function InProcessScreen(props) {
     if (record_state) {
       setDoneRecording(true);
       setRecordState(false);
+      sendCmdToServer('Stop Recording');
     } else {
       setRecordState(true);
+      sendCmdToServer('Start Recording');
     }
   }
 
@@ -59,5 +75,6 @@ InProcessScreen.propTypes = {
   curr_sentence: PropTypes.string.isRequired,
   curr_sentence_index: PropTypes.number.isRequired,
   data_length: PropTypes.number.isRequired,
-  updateSentence: PropTypes.func.isRequired
+  updateSentence: PropTypes.func.isRequired,
+  server_ip: PropTypes.string.isRequired
 };

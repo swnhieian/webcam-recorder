@@ -13,6 +13,7 @@ function Tester(props) {
           updateSentence={props.updateSentence}
           curr_sentence_index={props.curr_sentence_index}
           data_length={props.data_length}
+          server_ip={props.server_ip}
         />
       );
     } else {
@@ -22,7 +23,6 @@ function Tester(props) {
           first_sentence={props.first_sentence}
           first_name={props.first_name}
           last_name={props.last_name}
-          server_ip={props.server_ip}
         />
       );
     }

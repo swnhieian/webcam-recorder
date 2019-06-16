@@ -18,12 +18,12 @@ def createResp(data):
 def hello():
   return "Flask server running"
 
-@app.route("/get_start_state")
+@app.route("/check_recording_status")
 def getStartState():
   state = ''
   with open('state.json') as json_file:
     data = json.load(json_file)
-    state = data['start']
+    state = data['recording']
   return createResp(str(state))
 
 

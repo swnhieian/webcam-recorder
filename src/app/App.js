@@ -103,10 +103,13 @@ class App extends React.Component {
     );
   };
 
-  render() {
-    // if(window.location.pathname==="/") {
+  cameraList = () => {
+    return (
+      <CameraList server_ip={this.state.server_ip} /> 
+    )
+  }
 
-    // }
+  render() {
     
     return (
       <div className='container'>
@@ -115,7 +118,7 @@ class App extends React.Component {
           <NavBar />
           <div className='contents'>
             <div className='left_panel'>
-              <Route path='/admin' component={CameraList} />
+              <Route path='/admin' component={() => this.cameraList()} />
               <Route path='/tester' component={() => this.tester()} />
             </div>
             <div className='right_panel'>

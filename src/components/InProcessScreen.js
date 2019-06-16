@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 
 export default function InProcessScreen(props) {
-  const [record_state, setRecordState] = useState(false);
+  const [recording, setRecordState] = useState(false);
   const [done_recording, setDoneRecording] = useState(false);
 
   function sendCmdToServer(cmd) {
@@ -22,15 +22,17 @@ export default function InProcessScreen(props) {
     props.updateSentence(data);
   }
 
-  function recordState() {
-    if (record_state) {
-      return "Done";
+  function getRecordState() {
+    if (recording) {
+      return 'Done';
+    } else if (done_recording) {
+      return 'Retry';
     } else {
-      return "Record";
+      return 'Record';
     }
   }
   function record() {
-    if (record_state) {
+    if (recording) {
       setDoneRecording(true);
       setRecordState(false);
       sendCmdToServer('Stop Recording');
@@ -45,8 +47,8 @@ export default function InProcessScreen(props) {
       <div className='testing_content sentence_to_be_read'>
         {props.curr_sentence}
       </div>
-      <button className='btn' onClick={record} disabled={done_recording}>
-        {recordState()}
+      <button className='btn' onClick={record}>
+        {getRecordState()}
       </button>
       <br />
       <button
@@ -59,13 +61,12 @@ export default function InProcessScreen(props) {
       <button
         className='btn'
         onClick={() => updateSentence('$next')}
-        disabled={props.curr_sentence_index === (props.data_length - 1) || !done_recording}
+        disabled={
+          props.curr_sentence_index === props.data_length - 1 ||
+          !done_recording
+        }
       >
         Next
-      </button>
-      <br />
-      <button className='btn' disabled={!done_recording}>
-        Retry
       </button>
     </div>
   );

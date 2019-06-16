@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 // import sample_cam from '../../assets/svg/sample-cam.svg';
 import Webcam from '../Webcam/Webcam.js';
 
-export default function CameraList() {
+export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
   const [blobs, saveBlobs] = useState([]);
 
@@ -40,6 +40,13 @@ export default function CameraList() {
     saveBlobs(blobs.push([name, blob]));
   };
 
+  let checkRecordingStatus = () => {
+    fetch(props.server_ip + '/check_recording_status').then(res => {
+      console.log(res);
+    });
+  }
+
+
   let getCams = () => {
     let num_cams = [...Array(10).keys()];
     let cams_list = availableCams.map(cams => {
@@ -51,6 +58,7 @@ export default function CameraList() {
 
     return (
       <div>
+        <button onClick={checkRecordingStatus}>check recording status</button>
         <div>
           <div className='cameras'>{cams_list}</div>
         </div>

@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 export default function StartScreen(props) {
   function handleClick() {
     props.updateSentence(props.first_sentence);
-    // console.log(props.first_sentence);
-
   }
 
   return (

@@ -12,15 +12,10 @@ export default class TableRow extends Component {
   }
 
   render() {
-    // console.log(String(this.props.curr_sentence) === String(this.props.sentence));
-    // for some reason, sentence has extra character at the end;
-    
     return (
       <div>
         <div className='table_row'>
-          <div
-            className={this.getClassOfRowItem()}
-          >
+          <div className={this.getClassOfRowItem()}>
             {this.props.sentence}
           </div>
           <div className='row_item'>00:00 / {this.props.time} </div>

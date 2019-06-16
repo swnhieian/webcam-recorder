@@ -21,8 +21,10 @@ class App extends React.Component {
     super(props);
     this.state = {
       curr_sentence: '',
+      curr_sentence_index: 0,
       first_name: '',
       last_name: '',
+      data: this.readTextFile(sentences),
       date: new Date()
     };
   }
@@ -50,15 +52,23 @@ class App extends React.Component {
   };
 
   updateSentence = (curr_sentence) => {
-    this.setState({
-      curr_sentence
-    });
+    if (curr_sentence === "$next") {
+      this.setState({
+        curr_sentence_index: this.state.curr_sentence_index + 1
+      }, () => {
+        this.updateSentence(this.state.data[this.state.curr_sentence_index]);
+      });
+    } else {
+      this.setState({
+        curr_sentence
+      });
+    }
   }
 
-  dataCollection = (data) => {
+  dataCollection = () => {
     return (
       <DataCollection
-        data={data}
+        data={this.state.data}
         updateName={this.updateName}
         first_name={this.state.first_name}
         last_name={this.state.last_name}
@@ -67,18 +77,17 @@ class App extends React.Component {
     );
   }
 
-  tester = (data) => {
+  tester = () => {
     return (
       <Tester
         updateSentence={this.updateSentence}
-        first_sentence={data[0]}
+        first_sentence={this.state.data[this.state.curr_sentence_index]}
         curr_sentence={this.state.curr_sentence}
       />
     );
   }
 
   render() {
-    const data = this.readTextFile(sentences);
     return (
       <div className='container'>
         <Router>
@@ -86,11 +95,11 @@ class App extends React.Component {
           <div className='contents'>
             <div className='left_panel'>
               <Route path='/admin' component={CameraList} />
-              <Route path='/tester' component={() => this.tester(data)} />
+              <Route path='/tester' component={() => this.tester()} />
             </div>
             <div className='right_panel'>
-              <Route path='/admin' render={() => this.dataCollection(data)} />
-              <Route path='/tester' render={() => this.dataCollection(data)} />
+              <Route path='/admin' render={() => this.dataCollection()} />
+              <Route path='/tester' render={() => this.dataCollection()} />
             </div>
           </div>
         </Router>

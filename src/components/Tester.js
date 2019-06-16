@@ -2,12 +2,17 @@ import React from 'react';
 import './Tester.scss';
 import PropTypes from 'prop-types';
 import StartScreen from './StartScreen.js';
-import InProcessScreen from './InProcessScreen.js'
+import InProcessScreen from './InProcessScreen.js';
 
 function Tester(props) {
   function content(props) {
     if (props.curr_sentence) {
-      return <InProcessScreen curr_sentence={props.curr_sentence}/>;
+      return (
+        <InProcessScreen
+          curr_sentence={props.curr_sentence}
+          updateSentence={props.updateSentence}
+        />
+      );
     } else {
       return (
         <StartScreen
@@ -22,9 +27,7 @@ function Tester(props) {
     <div>
       <div className='testing_screen'>
         <div className='middle'>
-          <div className='inner'>
-            {content(props)}
-          </div>
+          <div className='inner'>{content(props)}</div>
         </div>
       </div>
     </div>

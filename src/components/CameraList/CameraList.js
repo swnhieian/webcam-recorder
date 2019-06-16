@@ -15,9 +15,9 @@ export default function CameraList() {
         .then(devices => {
           let videodevices = [];
           devices.map(function(device) {
-            console.log(
-              device.kind + ': ' + device.label + ' id = ' + device.deviceId
-            );
+            // console.log(
+            //   device.kind + ': ' + device.label + ' id = ' + device.deviceId
+            // );
             if (device.kind === 'videoinput') {
               videodevices.push({
                 id: device.deviceId,
@@ -29,7 +29,7 @@ export default function CameraList() {
           if (availableCams.length === 0) {
             setAvailableCams(videodevices);
           }
-          console.log('getAvailableDevices success!');
+          // console.log('getAvailableDevices success!');
         })
         .catch(function(err) {
           console.log(err.name + ': ' + err.message);

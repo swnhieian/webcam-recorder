@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
 
 // scss
 import './App.scss';
@@ -104,9 +104,14 @@ class App extends React.Component {
   };
 
   render() {
+    // if(window.location.pathname==="/") {
+
+    // }
+    
     return (
       <div className='container'>
         <Router>
+          <Redirect from='/' to='/admin' />
           <NavBar />
           <div className='contents'>
             <div className='left_panel'>

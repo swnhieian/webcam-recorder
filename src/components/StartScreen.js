@@ -8,6 +8,7 @@ export default function StartScreen(props) {
   }
 
   function setStartStateOnServer() {
+    // todo: get appropriate response in console from flask server! 
     fetch('http://192.168.0.102:5000/start_testing')
       .then((res) => {
         console.log(res);

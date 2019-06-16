@@ -6,9 +6,13 @@ export default function InProcessScreen(props) {
     props.updateSentence("$next")
   }
   return (
-    <div className="in_process_container">
-      <div className='testing_content sentence_to_be_read'>{props.curr_sentence}</div>
-      <button className="btn" onClick={updateSentence}>Next</button>
+    <div className='test_container'>
+      <div className='testing_content sentence_to_be_read'>
+        {props.curr_sentence}
+      </div>
+      <button className='btn' onClick={updateSentence}>
+        Next
+      </button>
     </div>
   );
 }

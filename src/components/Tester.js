@@ -18,6 +18,8 @@ function Tester(props) {
         <StartScreen
           updateSentence={props.updateSentence}
           first_sentence={props.first_sentence}
+          first_name={props.first_name}
+          last_name={props.last_name}
         />
       );
     }
@@ -37,7 +39,9 @@ function Tester(props) {
 Tester.propTypes = {
   updateSentence: PropTypes.func.isRequired,
   first_sentence: PropTypes.string.isRequired,
-  curr_sentence: PropTypes.string.isRequired
+  curr_sentence: PropTypes.string.isRequired,
+  first_name: PropTypes.string.isRequired,
+  last_name: PropTypes.string.isRequired
 };
 
 export default Tester;

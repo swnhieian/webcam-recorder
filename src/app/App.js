@@ -4,10 +4,7 @@ import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 // scss
 import './App.scss';
 
-// svgs
-
 // components
-
 import CameraList from '../Components/CameraList/CameraList';
 import Tester from '../Components/Tester.js';
 import DataCollection from '../Components/DataCollection';
@@ -83,6 +80,8 @@ class App extends React.Component {
         updateSentence={this.updateSentence}
         first_sentence={this.state.data[this.state.curr_sentence_index]}
         curr_sentence={this.state.curr_sentence}
+        first_name={this.state.first_name}
+        last_name={this.state.last_name}
       />
     );
   }

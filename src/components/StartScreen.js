@@ -4,6 +4,14 @@ import PropTypes from 'prop-types';
 export default function StartScreen(props) {
   function handleClick() {
     props.updateSentence(props.first_sentence);
+    setStartStateOnServer();
+  }
+
+  function setStartStateOnServer() {
+    fetch('http://192.168.0.102:5000/start_testing')
+      .then((res) => {
+        console.log(res);
+      });
   }
 
   function nameFilled() {

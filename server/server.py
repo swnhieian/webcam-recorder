@@ -1,5 +1,5 @@
 from soco import SoCo
-from flask import Flask, send_from_directory, url_for, render_template, make_response
+from flask import Flask, send_from_directory, url_for, render_template, make_response, render_template_string, request, Response
 from threading import Thread
 from http.server import SimpleHTTPRequestHandler
 from socketserver import TCPServer
@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 
 def createResp(data):
-  resp = make_response(data, 200)
+  resp = Response(data)
   resp.headers['Access-Control-Allow-Origin'] = '*'
   return resp
 
@@ -29,10 +29,11 @@ def getStartState():
 
 @app.route("/start_testing")
 def startingTest():
+
   data = {"start": 'true'}
   with open('state.json', 'w') as outfile:
     json.dump(data, outfile)
-  return "started!"
+  return createResp("started!")
   
 
 

@@ -50,16 +50,12 @@ export default function CameraList(props) {
         return response.json();
       })
       .then(function(myJson) {
-        console.log(myJson.recording);
         return myJson.recording;
       });
   }
 
   let startAllCams = () => {
-    console.log(availableCams)
     availableCams.map((cam) => {
-      console.log(cam)
-      
       navigator.mediaDevices
         .getUserMedia({
           audio: true,

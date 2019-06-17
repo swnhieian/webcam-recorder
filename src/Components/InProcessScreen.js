@@ -45,6 +45,7 @@ export default function InProcessScreen(props) {
   useEffect(() => {
     socket.on('start cams bois!', (res) => {
       console.log('YES SIR!!!');
+      props.startCams();
     });
     socket.on('OK STAHPING', (res) => {
       console.log('OK SIR!!!');
@@ -86,5 +87,6 @@ InProcessScreen.propTypes = {
   curr_sentence_index: PropTypes.number.isRequired,
   data_length: PropTypes.number.isRequired,
   updateSentence: PropTypes.func.isRequired,
-  server_ip: PropTypes.string.isRequired
+  server_ip: PropTypes.string.isRequired,
+  startCams: PropTypes.func.isRequired
 };

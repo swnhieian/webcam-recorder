@@ -45,7 +45,7 @@ export default function InProcessScreen(props) {
   useEffect(() => {
     socket.on('start cams bois!', (res) => {
       console.log('YES SIR!!!');
-      props.startCams();
+      // props.startCams();
     });
     socket.on('OK STAHPING', (res) => {
       console.log('OK SIR!!!');

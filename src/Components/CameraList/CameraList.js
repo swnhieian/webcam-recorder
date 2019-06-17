@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import Webcam from '../Webcam/Webcam.js';
 import RecordRTC from 'recordrtc';
 
+import './CameraList.scss'
+
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
   const [blobs, saveBlobs] = useState([]);
@@ -116,7 +118,7 @@ export default function CameraList(props) {
     });
 
     return (
-      <div>
+      <div className="camera_list">
         <button onClick={startAllCams}>start all cams</button>
         <button onClick={stopAllCams}>stop all cams</button>
 

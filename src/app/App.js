@@ -23,7 +23,8 @@ class App extends React.Component {
       last_name: '',
       data: this.readTextFile(sentences),
       date: new Date(),
-      server_ip: 'http://192.168.0.101:5000' // todo: see if can better way than adding to state
+      // server_ip: 'http://192.168.0.101:5000' // todo: see if can better way than adding to state
+      server_ip: 'http://183.172.75.151:5000'
     };
   }
 
@@ -118,7 +119,8 @@ class App extends React.Component {
           <NavBar />
           <div className='contents'>
             <div className='left_panel'>
-              <Route path='/admin' component={() => this.cameraList()} />
+              {/* <Route path='/admin' component={() => this.cameraList()} /> */}
+              {this.cameraList()}           
               <Route path='/tester' component={() => this.tester()} />
             </div>
             <div className='right_panel'>

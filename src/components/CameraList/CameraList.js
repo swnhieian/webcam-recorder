@@ -8,7 +8,7 @@ import './CameraList.scss'
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
   const [blobs, saveBlobs] = useState([]);
-
+  
   function useAvailableWebCams() {
     useEffect(() => {
       if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -47,6 +47,7 @@ export default function CameraList(props) {
   }
 
   let startAllCams = () => {
+    console.log('starting cams')
     availableCams.map(cam => {
       navigator.mediaDevices
         .getUserMedia({
@@ -74,11 +75,14 @@ export default function CameraList(props) {
         .catch(error => {
           console.error(error);
         });
-      // return availableCams;
+      console.log('start cams worked?');
+
+      return availableCams;
     });
   };
 
   let stopAllCams = () => {
+    console.log('stopping cams')
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       recorder.stopRecording(() => {
@@ -96,6 +100,7 @@ export default function CameraList(props) {
         recorder.destroy();
         cam['recorder'] = null;
       });
+      console.log('stop cams worked?')
       return availableCams;
     });
   };
@@ -105,6 +110,21 @@ export default function CameraList(props) {
   };
 
   useAvailableWebCams();
+
+  
+  useEffect(() => {
+    const socket = props.socket;
+    if (Object.keys(socket).length !== 0) {
+      socket.on('start cams bois!', res => {
+        console.log('YES SIR!!!');
+        // startAllCams();
+      });
+      socket.on('OK STAHPING', res => {
+        console.log('OK SIR!!!');
+        // stopAllCams();
+      });
+    }
+  }, []);
 
   let renderCams = () => {
     let cams_list = availableCams.map(cam => {

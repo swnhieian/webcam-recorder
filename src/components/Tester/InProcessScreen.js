@@ -1,14 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
-import io from 'socket.io-client'
+// import io from 'socket.io-client'
 
 export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
   const [done_recording, setDoneRecording] = useState(false);
-  const namespace = '/tsinghua_606';
-  const socket = io(props.server_ip + namespace);
 
   function sendCmdToServer(cmd) {
+    const socket = props.socket;
+    console.log('socket', socket)
+
     if (cmd === 'Start Recording'){
       console.log('fired')
       socket.emit('FIREEEEE (cams)');
@@ -16,6 +17,9 @@ export default function InProcessScreen(props) {
       console.log('stop recording!')
       socket.emit('STAHPPPPPP (cams)');
     }
+
+
+    
   }
 
   function updateSentence(data) {
@@ -42,15 +46,7 @@ export default function InProcessScreen(props) {
     }
   }
 
-  useEffect(() => {
-    socket.on('start cams bois!', (res) => {
-      console.log('YES SIR!!!');
-      // props.startCams();
-    });
-    socket.on('OK STAHPING', (res) => {
-      console.log('OK SIR!!!');
-    });
-  }, [socket])
+  
 
   return (
     <div className='test_container'>
@@ -88,5 +84,4 @@ InProcessScreen.propTypes = {
   data_length: PropTypes.number.isRequired,
   updateSentence: PropTypes.func.isRequired,
   server_ip: PropTypes.string.isRequired,
-  startCams: PropTypes.func.isRequired
 };

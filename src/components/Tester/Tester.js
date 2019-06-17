@@ -14,7 +14,7 @@ function Tester(props) {
           curr_sentence_index={props.curr_sentence_index}
           data_length={props.data_length}
           server_ip={props.server_ip}
-          startCams={props.startCams}
+          socket={props.socket}
         />
       );
     } else {
@@ -49,7 +49,8 @@ Tester.propTypes = {
   first_name: PropTypes.string.isRequired,
   last_name: PropTypes.string.isRequired,
   server_ip: PropTypes.string.isRequired,
-  startCams: PropTypes.func.isRequired
+  socket: PropTypes.object.isRequired
+
 };
 
 export default Tester;

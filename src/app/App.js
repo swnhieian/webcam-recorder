@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
+import io from 'socket.io-client';
 
 // scss
 import './App.scss';
@@ -24,8 +25,11 @@ class App extends React.Component {
       data: this.readTextFile(sentences),
       date: new Date(),
       // server_ip: 'http://192.168.0.101:5000' // todo: see if can better way than adding to state
-      server_ip: 'http://183.172.75.151:5000'
+      server_ip: 'http://183.172.75.151:5000',
+      namespace: '/tsinghua_606',
+      socket: {}
     };
+   
   }
 
   readTextFile(file) {
@@ -100,18 +104,30 @@ class App extends React.Component {
         first_name={this.state.first_name}
         last_name={this.state.last_name}
         server_ip={this.state.server_ip}
+        socket={this.state.socket}
       />
     );
   };
 
   cameraList = () => {
     return (
-      <CameraList server_ip={this.state.server_ip} /> 
+      <CameraList server_ip={this.state.server_ip} socket={this.state.socket}/> 
     )
   }
 
+  componentDidMount = () => {
+    const socket = io(this.state.server_ip + this.state.namespace);
+    this.setState(
+      {
+        socket: socket
+      },
+      () => {
+        console.log('socket', socket);
+      }
+    );
+  }
+
   render() {
-    
     return (
       <div className='container'>
         <Router>

@@ -6,7 +6,6 @@ import RecordRTC from 'recordrtc';
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
   const [blobs, saveBlobs] = useState([]);
-  const [videoEle, updateVideoEle] = useState(React.createRef());
 
   function getAvailableWebCams() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -22,9 +21,12 @@ export default function CameraList(props) {
             // );
             if (device.kind === 'videoinput') {
               videodevices.push({
-                id: device.deviceId,
-                label: device.label
-              });
+                camera_info: {
+                  id: device.deviceId,
+                  label: device.label
+                },
+                ref: React.createRef()
+              })
             }
             return null;
           });
@@ -54,14 +56,17 @@ export default function CameraList(props) {
   }
 
   let startAllCams = () => {
+    console.log(availableCams)
     availableCams.map((cam) => {
+      console.log(cam)
+      
       navigator.mediaDevices
         .getUserMedia({
           audio: true,
           video: {
             width: 1920,
             height: 1080,
-            // deviceId: cam.id
+            deviceId: cam['camera_info'].id
           }
         })
         .then(camera => {
@@ -72,19 +77,9 @@ export default function CameraList(props) {
             numberOfAudioChannels: 2
           });
           recorder.camera = camera;
-          // this.setState({
-          //   recorder: recorder,
-          //   startTime: this.getCurrentTime()
-          // });
-          console.log("the lame one", videoEle)
-          let video = videoEle;
+          let video = cam['ref'];
           video.current.srcObject = camera;
-          updateVideoEle(video)
           recorder.startRecording();
-          // this.setState({
-          //   isRecording: true
-          // });
-          console.log('start');
         })
         .catch(error => {
           console.error(error);
@@ -93,23 +88,13 @@ export default function CameraList(props) {
     });
   };
 
-  useEffect(() => {
-    setInterval(() => {
-      // checkRecordingStatus();
-      // if (checkRecordingStatus()) {
-      //   startAllCams();
-      // }
-    }, 1000);
-  })
-
   let getCams = () => {
     let num_cams = [...Array(10).keys()];
-    let cams_list = availableCams.map(cams => {
-      return <Webcam key={cams.id} name={'ID: ' + (cams.id.substring(0,15))} videoEle={videoEle} />;
+    let cams_list = availableCams.map((cam) => {
+      return <Webcam key={cam['camera_info'].id} name={'ID: ' + (cam['camera_info'].id.substring(0,15))} videoRef={cam['ref']}/>;
     });
     getAvailableWebCams();
-    // console.log(availableCams);
-
+    
     return (
       <div>
         <button onClick={startAllCams}>start all cams</button>

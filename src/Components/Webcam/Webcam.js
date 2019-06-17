@@ -10,7 +10,7 @@ class Webcam extends React.Component {
       isRecording: false,
       recorder: null,
       videoSrc: null,
-      videoEle: React.createRef(),
+      videoEle: null,
       startTime: 'time',
     };
     this.video = React.createRef();
@@ -51,7 +51,7 @@ class Webcam extends React.Component {
         this.setState({
           isRecording: true
         });
-        console.log('start');
+        // console.log('start');
       })
       .catch(error => {
         console.error(error);
@@ -99,6 +99,7 @@ class Webcam extends React.Component {
     });
   }
   render() {
+    // console.log(this.props.videoRef);
     return (
       <div className='vid_card' onClick={this.startRecording}>
         <video
@@ -107,9 +108,8 @@ class Webcam extends React.Component {
           autoPlay
           playsInline
           muted
-          ref={this.props.videoEle}
+          ref={this.props.videoRef}
         />
-
         <p className='cam_label'>{this.props.name}</p>
       </div>
     );
@@ -118,7 +118,6 @@ class Webcam extends React.Component {
 
 Webcam.propTypes = {
   name: PropTypes.string.isRequired,
-  videoEle: PropTypes.object.isRequired
 };
 
 export default Webcam;

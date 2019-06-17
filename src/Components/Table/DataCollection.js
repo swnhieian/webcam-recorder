@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import NameField from '../Components/NameField/NameField';
-import Table from '../Components/Table/Table';
+import NameField from '../NameField/NameField';
+import Table from './Table';
 import PropTypes from 'prop-types';
 
 export default class DataCollection extends Component {

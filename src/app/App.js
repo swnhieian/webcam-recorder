@@ -5,10 +5,10 @@ import { BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom'
 import './App.scss';
 
 // components
-import CameraList from '../Components/CameraList/CameraList';
-import Tester from '../Components/Tester.js';
-import DataCollection from '../Components/DataCollection';
-import NavBar from '../Components/NavBar';
+import CameraList from '../components/CameraList/CameraList';
+import Tester from '../components/Tester/Tester';
+import DataCollection from '../components/Table/DataCollection';
+import NavBar from '../components/NavBar';
 
 // data
 import sentences from '../assets/data/sentences.txt';

@@ -48,6 +48,7 @@ export default function CameraList(props) {
         return response.json();
       })
       .then(function(myJson) {
+        console.log(myJson)
         return myJson.recording;
       });
   }
@@ -112,11 +113,10 @@ export default function CameraList(props) {
   };
 
   let renderCams = () => {
-    console.log('ello')
+    getAvailableWebCams();
     let cams_list = availableCams.map((cam) => {
       return <Webcam key={cam['camera_info'].id} name={'ID: ' + (cam['camera_info'].id.substring(0,15))} videoRef={cam['ref']}/>;
     });
-    getAvailableWebCams();
     
     return (
       <div>
@@ -132,9 +132,13 @@ export default function CameraList(props) {
 
   useEffect(() => {
     setInterval(() => {
-      // console.log('ello')
-    }, 4000)
-  })
+      if (checkRecordingStatus()) {
+        startAllCams();
+      } else {
+        stopAllCams();
+      }
+    }, 1000)
+  }, [])
 
   return renderCams();
 }

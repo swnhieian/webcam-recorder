@@ -23,7 +23,7 @@ class App extends React.Component {
       last_name: '',
       data: this.readTextFile(sentences),
       date: new Date(),
-      server_ip: 'http://183.172.79.3:5000' // todo: see if can better way than adding to state
+      server_ip: 'http://192.168.0.101:5000' // todo: see if can better way than adding to state
     };
   }
 

@@ -16,7 +16,8 @@
     "react-inlinesvg": "^0.8.4",
     "react-router-dom": "^5.0.0",
     "react-scripts": "3.0.1",
-    "recordrtc": "^5.5.4"
+    "recordrtc": "^5.5.4",
+    "socket.io-client": "^2.2.0"
   },
   "scripts": {
     "start": "react-scripts start",

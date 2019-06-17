@@ -7,60 +7,45 @@ export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
   const [blobs, saveBlobs] = useState([]);
 
-  function getAvailableWebCams() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-      console.log('enumerateDevices() not supported.');
-    } else {
-      navigator.mediaDevices
-        .enumerateDevices()
-        .then(devices => {
-          let videodevices = [];
-          devices.map(function(device) {
-            // console.log(
-            //   device.kind + ': ' + device.label + ' id = ' + device.deviceId
-            // );
-            if (device.kind === 'videoinput') {
-              videodevices.push({
-                camera_info: {
-                  id: device.deviceId,
-                  label: device.label
-                },
-                ref: React.createRef(),
-                recorder: null
-              })
+  function useAvailableWebCams() {
+    useEffect(() => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+        console.log('enumerateDevices() not supported.');
+      } else {
+        navigator.mediaDevices
+          .enumerateDevices()
+          .then(devices => {
+            let videodevices = [];
+            devices.map(function(device) {
+              // console.log(
+              //   device.kind + ': ' + device.label + ' id = ' + device.deviceId
+              // );
+              if (device.kind === 'videoinput') {
+                videodevices.push({
+                  camera_info: {
+                    id: device.deviceId,
+                    label: device.label
+                  },
+                  ref: React.createRef(),
+                  recorder: null
+                });
+              }
+              return null;
+            });
+            if (availableCams.length === 0) {
+              setAvailableCams(videodevices);
             }
-            return null;
+            // console.log('getAvailableDevices success!');
+          })
+          .catch(function(err) {
+            console.log(err.name + ': ' + err.message);
           });
-          if (availableCams.length === 0) {
-            setAvailableCams(videodevices);
-          }
-          // console.log('getAvailableDevices success!');
-        })
-        .catch(function(err) {
-          console.log(err.name + ': ' + err.message);
-        });
-    }
-  }
-  
-  let checkRecordingStatus = () => {
-    // fetch(props.server_ip + '/check_recording_status')
-    //   .then(function(response) {
-    //     return response.json();
-    //   })
-    //   .then(function(myJson) {
-    //     console.log(myJson)
-    //     return myJson.recording;
-    //   });
-    fetch(props.server_ip + '/status')
-      .then(function(response) {
-        return response.json();
-      }).then(function(myJson) {
-        console.log(myJson);
-      })
+      }
+    }, []);
   }
 
   let startAllCams = () => {
-    availableCams.map((cam) => {
+    availableCams.map(cam => {
       navigator.mediaDevices
         .getUserMedia({
           audio: true,
@@ -71,6 +56,7 @@ export default function CameraList(props) {
           }
         })
         .then(camera => {
+          console.log(camera);
           let recorder = RecordRTC(camera, {
             type: 'video',
             framerate: 30,
@@ -86,49 +72,53 @@ export default function CameraList(props) {
         .catch(error => {
           console.error(error);
         });
+      // return availableCams;
     });
   };
 
   let stopAllCams = () => {
-    availableCams.map(cam =>
-      {
-        let recorder = cam['recorder']
-        recorder.stopRecording(() => {
-          let blob = recorder.getBlob();
-          console.log(
-            '%c recorded data',
-            'background: #222; color: #bada55',
-            recordData(
-              blob,
-              new Date().toDateString()
-            )
-          );
-          let video = cam['ref'];
-          video.current.srcObject = null;
-          video.current.src = URL.createObjectURL(blob);
-          cam['ref'] = video;
-          recorder.camera.stop();
-          recorder.destroy();
-          cam['recorder'] = null;
-        })
-      })
-  }
+    availableCams.map(cam => {
+      let recorder = cam['recorder'];
+      recorder.stopRecording(() => {
+        let blob = recorder.getBlob();
+        console.log(
+          '%c recorded data',
+          'background: #222; color: #bada55',
+          recordData(blob, new Date().toDateString())
+        );
+        let video = cam['ref'];
+        video.current.srcObject = null;
+        video.current.src = URL.createObjectURL(blob);
+        cam['ref'] = video;
+        recorder.camera.stop();
+        recorder.destroy();
+        cam['recorder'] = null;
+      });
+      return availableCams;
+    });
+  };
 
   let recordData = (blob, name) => {
     saveBlobs(blobs.push([name, blob]));
   };
 
+  useAvailableWebCams();
+
   let renderCams = () => {
-    getAvailableWebCams();
-    let cams_list = availableCams.map((cam) => {
-      return <Webcam key={cam['camera_info'].id} name={'ID: ' + (cam['camera_info'].id.substring(0,15))} videoRef={cam['ref']}/>;
+    let cams_list = availableCams.map(cam => {
+      return (
+        <Webcam
+          key={cam['camera_info'].id}
+          name={'ID: ' + cam['camera_info'].id.substring(0, 15)}
+          videoRef={cam['ref']}
+        />
+      );
     });
-    
+
     return (
       <div>
         <button onClick={startAllCams}>start all cams</button>
         <button onClick={stopAllCams}>stop all cams</button>
-        <button onClick={checkRecordingStatus}>check recording status</button>
 
         <div>
           <div className='cameras'>{cams_list}</div>
@@ -136,16 +126,6 @@ export default function CameraList(props) {
       </div>
     );
   };
-
-  useEffect(() => {
-    setInterval(() => {
-      // if (checkRecordingStatus()) {
-      //   startAllCams();
-      // } else {
-      //   stopAllCams();
-      // }
-    }, 1000)
-  }, [])
 
   return renderCams();
 }

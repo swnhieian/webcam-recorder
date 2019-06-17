@@ -1,20 +1,20 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
+import io from 'socket.io-client'
 
 export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
   const [done_recording, setDoneRecording] = useState(false);
+  const namespace = '/tsinghua_606';
+  const socket = io(props.server_ip + namespace);
 
   function sendCmdToServer(cmd) {
     if (cmd === 'Start Recording'){
-      // todo: get appropriate response in console from flask server!
-      fetch(props.server_ip + '/start_recording').then(res => {
-        console.log(res);
-      });
+      console.log('fired')
+      socket.emit('FIREEEEE (cams)');
     } else if (cmd === 'Stop Recording') {
-      fetch(props.server_ip + '/stop_recording').then(res => {
-        console.log(res);
-      });
+      console.log('stop recording!')
+      socket.emit('STAHPPPPPP (cams)');
     }
   }
 
@@ -41,6 +41,15 @@ export default function InProcessScreen(props) {
       sendCmdToServer('Start Recording');
     }
   }
+
+  useEffect(() => {
+    socket.on('start cams bois!', (res) => {
+      console.log('YES SIR!!!');
+    });
+    socket.on('OK STAHPING', (res) => {
+      console.log('OK SIR!!!');
+    });
+  }, [socket])
 
   return (
     <div className='test_container'>

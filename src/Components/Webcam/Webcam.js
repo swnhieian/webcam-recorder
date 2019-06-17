@@ -1,5 +1,4 @@
 import React from 'react';
-import RecordRTC from 'recordrtc';
 import './Webcam.scss';
 import PropTypes from 'prop-types';
 

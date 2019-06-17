@@ -41,10 +41,7 @@ export default function CameraList(props) {
         });
     }
   }
-  let recordData = (blob, name) => {
-    saveBlobs(blobs.push([name, blob]));
-  };
-
+  
   let checkRecordingStatus = () => {
     fetch(props.server_ip + '/check_recording_status')
       .then(function(response) {
@@ -84,7 +81,6 @@ export default function CameraList(props) {
         });
     });
   };
-  
 
   let stopAllCams = () => {
     availableCams.map(cam =>
@@ -111,8 +107,12 @@ export default function CameraList(props) {
       })
   }
 
-  let getCams = () => {
-    let num_cams = [...Array(10).keys()];
+  let recordData = (blob, name) => {
+    saveBlobs(blobs.push([name, blob]));
+  };
+
+  let renderCams = () => {
+    console.log('ello')
     let cams_list = availableCams.map((cam) => {
       return <Webcam key={cam['camera_info'].id} name={'ID: ' + (cam['camera_info'].id.substring(0,15))} videoRef={cam['ref']}/>;
     });
@@ -130,5 +130,11 @@ export default function CameraList(props) {
     );
   };
 
-  return getCams();
+  useEffect(() => {
+    setInterval(() => {
+      // console.log('ello')
+    }, 4000)
+  })
+
+  return renderCams();
 }

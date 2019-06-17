@@ -129,7 +129,6 @@ class Recorder extends React.Component {
     });
   }
   _changeRecordBtnLabel = () => {
-    console.log('laskdjfklasdfj');
     const recordBtn = document.getElementById('recordBtn');
     const label = recordBtn.innerHTML;
     recordBtn.innerHTML = (label === 'Start Recording') ? 'Stop Recording' : 'Start Recording'

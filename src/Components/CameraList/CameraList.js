@@ -80,9 +80,39 @@ export default function CameraList(props) {
         .catch(error => {
           console.error(error);
         });
-
     });
   };
+
+  let stopAllCams = () => {
+    this.state.recorder.stopRecording(() => {
+      let blob = this.state.recorder.getBlob();
+      // FileSaver.saveAs(blob, this.state.startTime +'-' + this.state.name);
+      console.log(
+        '%c recorded data',
+        'background: #222; color: #bada55',
+        this.props.recordData(
+          blob,
+          this.state.startTime + '-' + this.state.name
+        )
+      );
+
+      let video = this.state.videoEle;
+      video.current.srcObject = null;
+      video.current.src = URL.createObjectURL(blob);
+      //this.state.videoEle.current.src =
+      this.setState({
+        videoEle: video
+      });
+      this.state.recorder.camera.stop();
+      this.state.recorder.destroy();
+      this.setState({
+        recorder: null
+      });
+    });
+    this.setState({
+      isRecording: false
+    });
+  }
 
   let getCams = () => {
     let num_cams = [...Array(10).keys()];

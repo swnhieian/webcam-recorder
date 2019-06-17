@@ -1,1 +1,5 @@
-{"recording": "false"}
+{
+  "status": {
+    "recording": true
+  }
+}

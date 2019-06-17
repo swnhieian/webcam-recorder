@@ -30,6 +30,8 @@ def getStartState():
   }
   # print(render_template_string)
   # print(jsonify(state))
+  print(render_template('state.json'))
+  print(app.send_static_file('state.json'))
   print(resp)
   return resp
   # return createResp(str(state))

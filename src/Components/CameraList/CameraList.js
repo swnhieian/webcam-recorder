@@ -43,14 +43,20 @@ export default function CameraList(props) {
   }
   
   let checkRecordingStatus = () => {
-    fetch(props.server_ip + '/check_recording_status')
+    // fetch(props.server_ip + '/check_recording_status')
+    //   .then(function(response) {
+    //     return response.json();
+    //   })
+    //   .then(function(myJson) {
+    //     console.log(myJson)
+    //     return myJson.recording;
+    //   });
+    fetch(props.server_ip + '/status')
       .then(function(response) {
         return response.json();
+      }).then(function(myJson) {
+        console.log(myJson);
       })
-      .then(function(myJson) {
-        console.log(myJson)
-        return myJson.recording;
-      });
   }
 
   let startAllCams = () => {
@@ -133,11 +139,11 @@ export default function CameraList(props) {
 
   useEffect(() => {
     setInterval(() => {
-      if (checkRecordingStatus()) {
-        startAllCams();
-      } else {
-        stopAllCams();
-      }
+      // if (checkRecordingStatus()) {
+      //   startAllCams();
+      // } else {
+      //   stopAllCams();
+      // }
     }, 1000)
   }, [])
 

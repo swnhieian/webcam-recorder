@@ -38,14 +38,14 @@ def getStartState():
 @app.route("/start_recording")
 def startRecording():
   data = {"recording": 'true'}
-  with open('state.json', 'w') as outfile:
+  with open('templates/state.json', 'w') as outfile:
     json.dump(data, outfile)
   return createResp("started!")
 
 @app.route("/stop_recording")
 def stopRecording():
   data = {"recording": 'false'}
-  with open('state.json', 'w') as outfile:
+  with open('templates/state.json', 'w') as outfile:
     json.dump(data, outfile)
   return createResp("started!")
 

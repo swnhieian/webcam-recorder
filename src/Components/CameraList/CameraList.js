@@ -25,7 +25,8 @@ export default function CameraList(props) {
                   id: device.deviceId,
                   label: device.label
                 },
-                ref: React.createRef()
+                ref: React.createRef(),
+                recorder: null
               })
             }
             return null;
@@ -73,6 +74,7 @@ export default function CameraList(props) {
             numberOfAudioChannels: 2
           });
           recorder.camera = camera;
+          cam['recorder'] = recorder;
           let video = cam['ref'];
           video.current.srcObject = camera;
           recorder.startRecording();
@@ -82,36 +84,31 @@ export default function CameraList(props) {
         });
     });
   };
+  
 
   let stopAllCams = () => {
-    this.state.recorder.stopRecording(() => {
-      let blob = this.state.recorder.getBlob();
-      // FileSaver.saveAs(blob, this.state.startTime +'-' + this.state.name);
-      console.log(
-        '%c recorded data',
-        'background: #222; color: #bada55',
-        this.props.recordData(
-          blob,
-          this.state.startTime + '-' + this.state.name
-        )
-      );
-
-      let video = this.state.videoEle;
-      video.current.srcObject = null;
-      video.current.src = URL.createObjectURL(blob);
-      //this.state.videoEle.current.src =
-      this.setState({
-        videoEle: video
-      });
-      this.state.recorder.camera.stop();
-      this.state.recorder.destroy();
-      this.setState({
-        recorder: null
-      });
-    });
-    this.setState({
-      isRecording: false
-    });
+    availableCams.map(cam =>
+      {
+        let recorder = cam['recorder']
+        recorder.stopRecording(() => {
+          let blob = recorder.getBlob();
+          console.log(
+            '%c recorded data',
+            'background: #222; color: #bada55',
+            recordData(
+              blob,
+              new Date().toDateString()
+            )
+          );
+          let video = cam['ref'];
+          video.current.srcObject = null;
+          video.current.src = URL.createObjectURL(blob);
+          cam['ref'] = video;
+          recorder.camera.stop();
+          recorder.destroy();
+          cam['recorder'] = null;
+        })
+      })
   }
 
   let getCams = () => {
@@ -124,6 +121,8 @@ export default function CameraList(props) {
     return (
       <div>
         <button onClick={startAllCams}>start all cams</button>
+        <button onClick={stopAllCams}>stop all cams</button>
+
         <div>
           <div className='cameras'>{cams_list}</div>
         </div>

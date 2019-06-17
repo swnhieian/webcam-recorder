@@ -14,8 +14,6 @@ class Webcam extends React.Component {
       startTime: 'time',
     };
     this.video = React.createRef();
-    this.startRecording = this.startRecording.bind(this);
-    this.stopRecording = this.stopRecording.bind(this);
   }
   getCurrentTime() {
     let today = new Date();

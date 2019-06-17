@@ -13,6 +13,7 @@ def index():
 
 @socketio.on('FIREEEEE (cams)', namespace='/tsinghua_606')
 def start_recording():
+  print('lkj;jk')
   emit('start cams bois!', {'data': 'noice noice noice'})
 
 

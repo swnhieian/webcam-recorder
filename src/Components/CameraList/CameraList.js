@@ -122,6 +122,7 @@ export default function CameraList(props) {
       <div>
         <button onClick={startAllCams}>start all cams</button>
         <button onClick={stopAllCams}>stop all cams</button>
+        <button onClick={checkRecordingStatus}>check recording status</button>
 
         <div>
           <div className='cameras'>{cams_list}</div>

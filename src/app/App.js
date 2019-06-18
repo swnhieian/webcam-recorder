@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
-import io from 'socket.io-client';
-
+import PropTypes from 'prop-types';
 // scss
 import './App.scss';
 
@@ -24,10 +23,9 @@ class App extends React.Component {
       last_name: '',
       data: this.readTextFile(sentences),
       date: new Date(),
-      // server_ip: 'http://192.168.0.101:5000' // todo: see if can better way than adding to state
-      server_ip: 'http://183.172.75.151:5000',
+      // server_ip: 'http://192.168.0.100:5000', // todo: see if can better way than adding to state
+      // server_ip: 'http://183.172.75.151:5000',
       namespace: '/tsinghua_606',
-      socket: {}
     };
    
   }
@@ -104,27 +102,14 @@ class App extends React.Component {
         first_name={this.state.first_name}
         last_name={this.state.last_name}
         server_ip={this.state.server_ip}
-        socket={this.state.socket}
       />
     );
   };
 
   cameraList = () => {
     return (
-      <CameraList server_ip={this.state.server_ip} socket={this.state.socket}/> 
+      <CameraList server_ip={this.state.server_ip}/> 
     )
-  }
-
-  componentDidMount = () => {
-    const socket = io(this.state.server_ip + this.state.namespace);
-    this.setState(
-      {
-        socket: socket
-      },
-      () => {
-        console.log('socket', socket);
-      }
-    );
   }
 
   render() {
@@ -135,8 +120,7 @@ class App extends React.Component {
           <NavBar />
           <div className='contents'>
             <div className='left_panel'>
-              {/* <Route path='/admin' component={() => this.cameraList()} /> */}
-              {this.cameraList()}           
+              <Route path='/admin' component={() => this.cameraList()} />
               <Route path='/tester' component={() => this.tester()} />
             </div>
             <div className='right_panel'>

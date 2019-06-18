@@ -107,24 +107,10 @@ export default function CameraList(props) {
 
   let recordData = (blob, name) => {
     saveBlobs(blobs.push([name, blob]));
+    saveBlobs([]);
   };
 
   useAvailableWebCams();
-
-  
-  useEffect(() => {
-    const socket = props.socket;
-    if (Object.keys(socket).length !== 0) {
-      socket.on('start cams bois!', res => {
-        console.log('YES SIR!!!');
-        // startAllCams();
-      });
-      socket.on('OK STAHPING', res => {
-        console.log('OK SIR!!!');
-        // stopAllCams();
-      });
-    }
-  }, []);
 
   let renderCams = () => {
     let cams_list = availableCams.map(cam => {

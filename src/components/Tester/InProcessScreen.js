@@ -1,26 +1,10 @@
 import React, {useState, useEffect} from 'react';
 import PropTypes from 'prop-types';
-// import io from 'socket.io-client'
 
 export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
   const [done_recording, setDoneRecording] = useState(false);
 
-  function sendCmdToServer(cmd) {
-    const socket = props.socket;
-    console.log('socket', socket)
-
-    if (cmd === 'Start Recording'){
-      console.log('fired')
-      socket.emit('FIREEEEE (cams)');
-    } else if (cmd === 'Stop Recording') {
-      console.log('stop recording!')
-      socket.emit('STAHPPPPPP (cams)');
-    }
-
-
-    
-  }
 
   function updateSentence(data) {
     props.updateSentence(data);
@@ -39,14 +23,10 @@ export default function InProcessScreen(props) {
     if (recording) {
       setDoneRecording(true);
       setRecordState(false);
-      sendCmdToServer('Stop Recording');
     } else {
       setRecordState(true);
-      sendCmdToServer('Start Recording');
     }
   }
-
-  
 
   return (
     <div className='test_container'>

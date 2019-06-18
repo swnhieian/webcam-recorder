@@ -8,18 +8,20 @@ socketio = SocketIO(app)
 
 @app.route('/')
 def index():
+  print('index.html loaded')
   return render_template('index.html')
 
 
-@socketio.on('FIREEEEE (cams)', namespace='/tsinghua_606')
+@socketio.on('start_cams', namespace='/tsinghua_606')
 def start_recording():
-  print('lkj;jk')
-  emit('start cams bois!', {'data': 'noice noice noice'})
+  print('received from server', 'start_cams')
+  emit('starting_cams', {'data': 'noice noice noice'})
 
 
-@socketio.on('STAHPPPPPP (cams)', namespace='/tsinghua_606')
+@socketio.on('stop_cams', namespace='/tsinghua_606')
 def stop_recording():
-  emit('OK STAHPING', {'data': 'noice noice noice'})
+  print('received from server', 'stop_cams')
+  emit('stopping_cams', {'data': 'noice noice noice'})
 
 if __name__ == '__main__':
   socketio.run(app, host='0.0.0.0')

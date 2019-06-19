@@ -47,8 +47,6 @@ export default function CameraList(props) {
   }
 
   let startAllCams = () => {
-    console.log('starting cams');
-    console.log(availableCams);
     availableCams.map(cam => {
       navigator.mediaDevices
         .getUserMedia({
@@ -83,8 +81,6 @@ export default function CameraList(props) {
   };
 
   let stopAllCams = () => {
-    console.log('stopping cams');
-    console.log(availableCams);
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       recorder.stopRecording(() => {
@@ -107,14 +103,8 @@ export default function CameraList(props) {
     });
   };
 
-  let recordData = (blob, name) => {
-    saveBlobs(blobs.push([name, blob]));
-    saveBlobs([]);
-  };
-
   useAvailableWebCams();
 
-  console.log('use effect from camera');
   props.socket.on('server: start cams', function() {
     console.log('received from camera list: start cams');
     startAllCams();

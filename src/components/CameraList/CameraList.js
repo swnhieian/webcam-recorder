@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 // import sample_cam from '../../assets/svg/sample-cam.svg';
 import Webcam from '../Webcam/Webcam.js';
 import RecordRTC from 'recordrtc';
+import io from 'socket.io-client' 
 
 import './CameraList.scss'
 
@@ -48,6 +49,7 @@ export default function CameraList(props) {
 
   let startAllCams = () => {
     console.log('starting cams')
+    console.log(availableCams);
     availableCams.map(cam => {
       navigator.mediaDevices
         .getUserMedia({
@@ -83,6 +85,7 @@ export default function CameraList(props) {
 
   let stopAllCams = () => {
     console.log('stopping cams')
+    console.log(availableCams);
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       recorder.stopRecording(() => {
@@ -112,6 +115,20 @@ export default function CameraList(props) {
 
   useAvailableWebCams();
 
+  useEffect(() => {
+    console.log('use effect from camera list')
+    const socket = io('http://192.168.0.100:5000');
+    socket.on('start cams', function() {
+      console.log('received from camera list: start cams');
+      startAllCams();
+    })
+
+    socket.on('stop cams', function() {
+      console.log('received from camera list: stop cams');
+      stopAllCams();
+    });
+  })
+
   let renderCams = () => {
     let cams_list = availableCams.map(cam => {
       return (
@@ -124,7 +141,7 @@ export default function CameraList(props) {
     });
 
     return (
-      <div className="camera_list">
+      <div id="camera_list">
         <button onClick={startAllCams}>start all cams</button>
         <button onClick={stopAllCams}>stop all cams</button>
 

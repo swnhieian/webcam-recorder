@@ -13,7 +13,6 @@ function Tester(props) {
           updateSentence={props.updateSentence}
           curr_sentence_index={props.curr_sentence_index}
           data_length={props.data_length}
-          server_ip={props.server_ip}
         />
       );
     } else {

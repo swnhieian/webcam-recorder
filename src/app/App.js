@@ -8,7 +8,6 @@ import './App.scss';
 import CameraList from '../components/CameraList/CameraList';
 import Tester from '../components/Tester/Tester';
 import DataCollection from '../components/Table/DataCollection';
-import NavBar from '../components/NavBar';
 
 // data
 import sentences from '../assets/data/sentences.txt';
@@ -47,10 +46,10 @@ class App extends React.Component {
   }
 
   updateName = (first_name, last_name) => {
-    this.setState({
-      first_name,
-      last_name
-    });
+    // this.setState({
+    //   first_name,
+    //   last_name
+    // });
   };
 
   updateSentence = curr_sentence => {
@@ -101,34 +100,24 @@ class App extends React.Component {
         curr_sentence={this.state.curr_sentence}
         first_name={this.state.first_name}
         last_name={this.state.last_name}
-        server_ip={this.state.server_ip}
       />
     );
   };
 
   cameraList = () => {
     return (
-      <CameraList server_ip={this.state.server_ip}/> 
+      <CameraList/> 
     )
   }
 
   render() {
     return (
       <div className='container'>
-        <Router>
-          <Redirect from='/' to='/admin' />
-          <NavBar />
-          <div className='contents'>
-            <div className='left_panel'>
-              <Route path='/admin' component={() => this.cameraList()} />
-              <Route path='/tester' component={() => this.tester()} />
-            </div>
-            <div className='right_panel'>
-              <Route path='/admin' render={() => this.dataCollection()} />
-              <Route path='/tester' render={() => this.dataCollection()} />
-            </div>
-          </div>
-        </Router>
+        <div className='contents'>
+          <div className='left_panel'>{this.tester()}</div>
+          <div className='right_panel'>{this.dataCollection()}</div>
+        </div>
+        <div className='cameras_container'>{this.cameraList()}</div>
       </div>
     );
   }

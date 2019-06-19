@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
 import tsinghua_logo from '../assets/svg/tsinghua.svg';
@@ -8,6 +8,15 @@ import btn_tester from '../assets/svg/tester-button.svg';
 import btn_admin from '../assets/svg/admin-button.svg';
 
 export default class NavBar extends Component {
+  adminClick() {
+    console.log('alskdfjasf')
+    const camera_list = document.getElementById('camera_list');
+    if (camera_list.style.display === '') {
+      camera_list.style.display = 'none';
+    } else {
+      camera_list.style.display = '';
+    }
+  }
   render() {
     return (
       <div>
@@ -23,22 +32,7 @@ export default class NavBar extends Component {
             </div>
             <div className='item'>
               <div className='nav_buttons'>
-                <Link to='/admin'>
-                  <img
-                    id='btn_admin'
-                    className='nav_btn'
-                    src={btn_admin}
-                    alt=''
-                  />
-                </Link>
-                <Link to='/tester'>
-                  <img
-                    id='btn_tester'
-                    className='nav_btn'
-                    src={btn_tester}
-                    alt=''
-                  />
-                </Link>
+                
               </div>
             </div>
           </div>

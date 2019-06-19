@@ -7,25 +7,15 @@ export default function StartScreen(props) {
     props.updateSentence(props.first_sentence);
   }
 
-  function nameFilled() {
-    return props.first_name.length === 0 || props.last_name.length === 0;
-  }
-
   return (
     <div className='test_container'>
       <button
         id='btn_start_test'
         className='btn'
         onClick={handleClick}
-        disabled={nameFilled()}
       >
         Start Testing
-      </button>
-      <br/> <br/>
-      
-      <p hidden={!nameFilled()} className='warning_message'>
-        Please enter first name and last name before starting.
-      </p>
+      </button>      
     </div>
   );
 }

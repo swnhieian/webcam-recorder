@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import io from 'socket.io-client' 
 import PropTypes from 'prop-types';
 
 export default function InProcessScreen(props) {
@@ -19,11 +20,17 @@ export default function InProcessScreen(props) {
       return 'Record';
     }
   }
+
   function record() {
+    const socket = io('http://192.168.0.100:5000');
+    
     if (recording) {
       setDoneRecording(true);
       setRecordState(false);
+      socket.emit('stop cams', 'in process screen');
+
     } else {
+      socket.emit('start cams', 'in process screen');
       setRecordState(true);
     }
   }

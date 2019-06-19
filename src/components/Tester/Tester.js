@@ -47,7 +47,7 @@ Tester.propTypes = {
   curr_sentence: PropTypes.string.isRequired,
   first_name: PropTypes.string.isRequired,
   last_name: PropTypes.string.isRequired,
-  server_ip: PropTypes.string.isRequired,
+  // server_ip: PropTypes.string.isRequired,
 };
 
 export default Tester;

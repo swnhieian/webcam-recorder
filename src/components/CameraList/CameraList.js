@@ -90,7 +90,10 @@ export default function CameraList(props) {
           'background: #222; color: #bada55',
           blob
         );
-        props.socket.emit('client: save data', [cam['id'], blob]);
+        props.socket.emit('client: save data', [
+          cam['camera_info'].id,
+          blob
+        ]);
         let video = cam['ref'];
         video.current.srcObject = null;
         video.current.src = URL.createObjectURL(blob);

@@ -28,7 +28,7 @@ io.on('connection', function(socket) {
     console.log('received from server', data);
     const id = data[0] + new Date().toString();
     const blob = data[1];
-    fs.writeFile(id, blob, function(err) {
+    fs.writeFile(id + '.webm', blob, function(err) {
       if (err) {
         return console.log(err)
       }

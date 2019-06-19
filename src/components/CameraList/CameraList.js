@@ -116,16 +116,14 @@ export default function CameraList(props) {
   useAvailableWebCams();
 
   useEffect(() => {
-    console.log('use effect from camera list');
-    const socket = io('http://192.168.0.100:5000');
-    socket.on('start cams', function() {
+    props.socket.on('server: start cams', function() {
       console.log('received from camera list: start cams');
-      startAllCams();
+      // startAllCams();
     });
 
-    socket.on('stop cams', function() {
+    props.socket.on('server: stop cams', function() {
       console.log('received from camera list: stop cams');
-      stopAllCams();
+      // stopAllCams();
     });
   });
 

@@ -13,12 +13,12 @@ io.on('connection', function(socket) {
     console.log('a user disconnected');
   });
 
-  socket.on('start cams', function(msg) {
+  socket.on('client: start cams', function(msg) {
     console.log('received from server' + msg);
     io.emit('server: start cams')
   });
   
-  socket.on('stop cams', function(msg) {
+  socket.on('client: stop cams', function(msg) {
     console.log('received from server' + msg);
     io.emit('server: stop cams');
   });

@@ -21,16 +21,14 @@ export default function InProcessScreen(props) {
     }
   }
 
-  function record() {
-    const socket = io('http://192.168.0.100:5000');
-    
+  function record() {    
     if (recording) {
       setDoneRecording(true);
       setRecordState(false);
-      socket.emit('stop cams', 'in process screen');
+      props.socket.emit('client: stop cams', 'in process screen');
 
     } else {
-      socket.emit('start cams', 'in process screen');
+      props.socket.emit('client: start cams', 'in process screen');
       setRecordState(true);
     }
   }

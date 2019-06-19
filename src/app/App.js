@@ -1,6 +1,8 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
 import PropTypes from 'prop-types';
+import io from 'socket.io-client'; 
+
 // scss
 import './App.scss';
 
@@ -22,9 +24,7 @@ class App extends React.Component {
       last_name: '',
       data: this.readTextFile(sentences),
       date: new Date(),
-      // server_ip: 'http://192.168.0.100:5000', // todo: see if can better way than adding to state
-      // server_ip: 'http://183.172.75.151:5000',
-      namespace: '/tsinghua_606',
+      socket: io('http://192.168.0.100:5000')
     };
    
   }
@@ -93,14 +93,13 @@ class App extends React.Component {
         curr_sentence={this.state.curr_sentence}
         first_name={this.state.first_name}
         last_name={this.state.last_name}
+        socket={this.state.socket}
       />
     );
   };
 
   cameraList = () => {
-    return (
-      <CameraList/> 
-    )
+    return <CameraList socket={this.state.socket} />;
   }
 
   render() {

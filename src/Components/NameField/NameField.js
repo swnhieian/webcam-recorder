@@ -7,6 +7,7 @@ export default class NameField extends Component {
   handleChange = () => {
     console.log('')
   }
+
   render() {
     return (
       <div>
@@ -26,10 +27,4 @@ export default class NameField extends Component {
       </div>
     );
   }
-}
-
-NameField.propTypes = {
-  updateName: PropTypes.func.isRequired,
-  first_name: PropTypes.string.isRequired,
-  last_name: PropTypes.string.isRequired
 }

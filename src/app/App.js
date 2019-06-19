@@ -45,13 +45,6 @@ class App extends React.Component {
     return data;
   }
 
-  updateName = (first_name, last_name) => {
-    // this.setState({
-    //   first_name,
-    //   last_name
-    // });
-  };
-
   updateSentence = curr_sentence => {
     if (curr_sentence === '$next') {
       this.setState(

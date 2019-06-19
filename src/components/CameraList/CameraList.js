@@ -7,44 +7,43 @@ import io from 'socket.io-client'
 import './CameraList.scss'
 
 export default function CameraList(props) {
-  const [availableCams, setAvailableCams] = useState([]);
   const [blobs, saveBlobs] = useState([]);
-  
-  function useAvailableWebCams() {
-    useEffect(() => {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-        console.log('enumerateDevices() not supported.');
-      } else {
-        navigator.mediaDevices
-          .enumerateDevices()
-          .then(devices => {
-            let videodevices = [];
-            devices.map(function(device) {
-              // console.log(
-              //   device.kind + ': ' + device.label + ' id = ' + device.deviceId
-              // );
-              if (device.kind === 'videoinput') {
-                videodevices.push({
-                  camera_info: {
-                    id: device.deviceId,
-                    label: device.label
-                  },
-                  ref: React.createRef(),
-                  recorder: null
-                });
-              }
-              return null;
-            });
-            if (availableCams.length === 0) {
-              setAvailableCams(videodevices);
+  let availableCams = getAvailableCams();
+
+  function getAvailableCams() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+      console.log('enumerateDevices() not supported.');
+    } else {
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then(devices => {
+          let videodevices = [];
+          devices.map(function(device) {
+            // console.log(
+            //   device.kind + ': ' + device.label + ' id = ' + device.deviceId
+            // );
+            if (device.kind === 'videoinput') {
+              videodevices.push({
+                camera_info: {
+                  id: device.deviceId,
+                  label: device.label
+                },
+                ref: React.createRef(),
+                recorder: null
+              });
             }
-            // console.log('getAvailableDevices success!');
-          })
-          .catch(function(err) {
-            console.log(err.name + ': ' + err.message);
+            return null;
           });
-      }
-    }, []);
+          // if (availableCams.length === 0) {
+          availableCams = videodevices;
+          return availableCams;
+          // }
+          // console.log('getAvailableDevices success!');
+        })
+        .catch(function(err) {
+          console.log(err.name + ': ' + err.message);
+        });
+    }
   }
 
   let startAllCams = () => {
@@ -113,43 +112,49 @@ export default function CameraList(props) {
     saveBlobs([]);
   };
 
-  useAvailableWebCams();
+
 
   useEffect(() => {
     console.log('use effect from camera list')
     const socket = io('http://192.168.0.100:5000');
-    socket.on('start cams', function() {
+    socket.on('server: start cams', function() {
       console.log('received from camera list: start cams');
-      startAllCams();
-    })
-
-    socket.on('stop cams', function() {
-      console.log('received from camera list: stop cams');
-      stopAllCams();
+      // startAllCams();
     });
+
+    socket.on('server: stop cams', function() {
+      console.log('received from camera list: stop cams');
+      // stopAllCams();
+    });
+    
   })
 
   let renderCams = () => {
-    let cams_list = availableCams.map(cam => {
+    const availableCams = getAvailableCams();
+    if (availableCams !== null && availableCams !== undefined) {
+      let cams_list = availableCams.map(cam => {
+        return (
+          <Webcam
+            key={cam['camera_info'].id}
+            name={'ID: ' + cam['camera_info'].id.substring(0, 15)}
+            videoRef={cam['ref']}
+          />
+        );
+      });
+
       return (
-        <Webcam
-          key={cam['camera_info'].id}
-          name={'ID: ' + cam['camera_info'].id.substring(0, 15)}
-          videoRef={cam['ref']}
-        />
-      );
-    });
+        <div id='camera_list'>
+          <button onClick={startAllCams}>start all cams</button>
+          <button onClick={stopAllCams}>stop all cams</button>
 
-    return (
-      <div id="camera_list">
-        <button onClick={startAllCams}>start all cams</button>
-        <button onClick={stopAllCams}>stop all cams</button>
-
-        <div>
-          <div className='cameras'>{cams_list}</div>
+          <div>
+            <div className='cameras'>{cams_list}</div>
+          </div>
         </div>
-      </div>
-    );
+      );
+    } else {
+      return null;
+    }
   };
 
   return renderCams();

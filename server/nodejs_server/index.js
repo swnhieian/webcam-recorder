@@ -15,12 +15,12 @@ io.on('connection', function(socket) {
 
   socket.on('start cams', function(msg) {
     console.log('received from server' + msg);
-    io.emit('start cams')
+    io.emit('server: start cams')
   });
   
   socket.on('stop cams', function(msg) {
     console.log('received from server' + msg);
-    io.emit('stop cams');
+    io.emit('server: stop cams');
   });
 });
 

@@ -35,9 +35,14 @@ export default function CameraList(props) {
               }
               return null;
             });
-            if (availableCams.length === 0) {
-              setAvailableCams(videodevices);
-            }
+            // if (availableCams.length === 0) {
+            console.log(videodevices);
+            setAvailableCams(videodevices);
+            // setState({
+            //   availableCams: videodevices
+            // })
+            console.log(availableCams);
+
             // console.log('getAvailableDevices success!');
           })
           .catch(function(err) {
@@ -116,16 +121,20 @@ export default function CameraList(props) {
   useAvailableWebCams();
 
   useEffect(() => {
+    console.log("use effect from camera");
     props.socket.on('server: start cams', function() {
       console.log('received from camera list: start cams');
-      // startAllCams();
+      startAllCams();
     });
 
     props.socket.on('server: stop cams', function() {
       console.log('received from camera list: stop cams');
-      // stopAllCams();
+      stopAllCams();
     });
-  });
+    return () => {
+      return null
+    };
+  }, [])
 
   let renderCams = () => {
     let cams_list = availableCams.map(cam => {

@@ -33,15 +33,9 @@ export default function CameraList(props) {
                   recorder: null
                 });
               }
-              return null;
+              // return null;
             });
-            // if (availableCams.length === 0) {
-            console.log(videodevices);
             setAvailableCams(videodevices);
-            // setState({
-            //   availableCams: videodevices
-            // })
-            console.log(availableCams);
 
             // console.log('getAvailableDevices success!');
           })
@@ -98,7 +92,7 @@ export default function CameraList(props) {
         console.log(
           '%c recorded data',
           'background: #222; color: #bada55',
-          recordData(blob, new Date().toDateString())
+          blob
         );
         let video = cam['ref'];
         video.current.srcObject = null;
@@ -120,21 +114,16 @@ export default function CameraList(props) {
 
   useAvailableWebCams();
 
-  useEffect(() => {
-    console.log("use effect from camera");
-    props.socket.on('server: start cams', function() {
-      console.log('received from camera list: start cams');
-      startAllCams();
-    });
+  console.log('use effect from camera');
+  props.socket.on('server: start cams', function() {
+    console.log('received from camera list: start cams');
+    startAllCams();
+  });
 
-    props.socket.on('server: stop cams', function() {
-      console.log('received from camera list: stop cams');
-      stopAllCams();
-    });
-    return () => {
-      return null
-    };
-  }, [])
+  props.socket.on('server: stop cams', function() {
+    console.log('received from camera list: stop cams');
+    stopAllCams();
+  });
 
   let renderCams = () => {
     let cams_list = availableCams.map(cam => {
@@ -146,6 +135,7 @@ export default function CameraList(props) {
         />
       );
     });
+    
 
     return (
       <div id='camera_list'>
@@ -158,6 +148,8 @@ export default function CameraList(props) {
       </div>
     );
   };
+
+
 
   return renderCams();
 }

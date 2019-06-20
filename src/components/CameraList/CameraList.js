@@ -52,8 +52,9 @@ export default function CameraList(props) {
         .getUserMedia({
           audio: true,
           video: {
-            width: 1920,
-            height: 1080,
+            minWidth:1920,minHeight:1080,minFrameRate:30,
+            // width: 1920,
+            // height: 1080,
             deviceId: cam['camera_info'].id
           }
         })

@@ -32,8 +32,14 @@ io.on('connection', function(socket) {
     const blob = data.blob;
     // const date = new Date().toString();
 
-    const fileName = __dirname + name + "/" + sentence_index + "/" + camera_id + ".webm"
-    fs.writeFile(fileName, blob, function(err) {
+    // const fileDir = __dirname + "/" + name + "/" + sentence_index + "/"
+    // const fileName = camera_id + ".webm"
+    // if (!fs.existsSync(fileDir)) {
+    //   fs.mkdirSync(fileDir)
+    // }
+
+    const tmp = camera_id;
+    fs.writeFile(camera_id, blob, function(err) {
       if (err) {
         return console.log(err)
       }

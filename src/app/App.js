@@ -24,7 +24,7 @@ class App extends React.Component {
       last_name: '',
       data: this.readTextFile(sentences),
       date: new Date(),
-      socket: io('http://192.168.0.105:5000')
+      socket: io('http://192.168.0.100:5000')
     };
    
   }

@@ -5,16 +5,17 @@ import PropTypes from 'prop-types';
 export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
   const [done_recording, setDoneRecording] = useState(false);
-
+  const [reset_state, reset] = useState(false)
 
   function updateSentence(data) {
+    reset(true);
     props.updateSentence(data);
   }
 
   function getRecordState() {
     if (recording) {
       return 'Done';
-    } else if (done_recording) {
+    } else if (done_recording && !reset_state) {
       return 'Retry';
     } else {
       return 'Record';
@@ -26,7 +27,7 @@ export default function InProcessScreen(props) {
       setDoneRecording(true);
       setRecordState(false);
       props.socket.emit('client: stop cams', 'in process screen');
-
+      reset(false);
     } else {
       props.socket.emit('client: start cams', 'in process screen');
       setRecordState(true);
@@ -45,7 +46,7 @@ export default function InProcessScreen(props) {
       <button
         className='btn'
         onClick={() => updateSentence('$prev')}
-        disabled={props.curr_sentence_index === 0}
+        disabled={props.curr_sentence_index === 0 || reset_state}
       >
         Prev
       </button>
@@ -54,7 +55,7 @@ export default function InProcessScreen(props) {
         onClick={() => updateSentence('$next')}
         disabled={
           props.curr_sentence_index === props.data_length - 1 ||
-          !done_recording
+          !done_recording || reset_state
         }
       >
         Next

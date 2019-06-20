@@ -1,5 +1,4 @@
-import React, {useState, useEffect} from 'react';
-import io from 'socket.io-client' 
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 
 export default function InProcessScreen(props) {
@@ -69,5 +68,5 @@ InProcessScreen.propTypes = {
   curr_sentence_index: PropTypes.number.isRequired,
   data_length: PropTypes.number.isRequired,
   updateSentence: PropTypes.func.isRequired,
-  // server_ip: PropTypes.string.isRequired,
+  socket: PropTypes.object.isRequired
 };

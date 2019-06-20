@@ -8,7 +8,6 @@ import './CameraList.scss';
 
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
-  const [blobs, saveBlobs] = useState([]);
 
   function useAvailableWebCams() {
     useEffect(() => {
@@ -33,7 +32,7 @@ export default function CameraList(props) {
                   recorder: null
                 });
               }
-              // return null;
+              return null;
             });
             setAvailableCams(videodevices);
 

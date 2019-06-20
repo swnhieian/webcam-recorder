@@ -1,6 +1,5 @@
 import React from 'react';
 import io from 'socket.io-client'; 
-import { BrowserRouter, Redirect } from 'react-router-dom'
 
 import qs from '../utils/qs'
 // scss

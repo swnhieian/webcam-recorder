@@ -19,31 +19,26 @@ class App extends React.Component {
     this.state = {
       curr_sentence: '',
       curr_sentence_index: Number(qs["sentence_index"]),
-      data: this.readTextFile(sentences),
+      data: [],
       date: new Date(),
       socket: io('http://192.168.0.100:5000')
     };
    
   }
 
+
   readTextFile(file) {
-    const rawFile = new XMLHttpRequest();
-    rawFile.open('GET', file, false);
-    let allText = '';
-    rawFile.onreadystatechange = function() {
-      if (rawFile.readyState === 4) {
-        if (rawFile.status === 200 || rawFile.status === 0) {
-          allText = rawFile.responseText;
-        }
-      }
-    };
-    rawFile.send(null);
-    const data = allText.split('\n')
-    return data;
+    return fetch(file)
+      .then(response => response.text())
+      .then(text => {
+        this.setState({data: text.split('\n')});
+    })
   }
 
+  
   componentDidMount() {
     this.setState({ curr_sentence: this.state.data[Number(qs["sentence_index"])] })
+    this.readTextFile(sentences);
   }
 
   updateSentence = curr_sentence => {

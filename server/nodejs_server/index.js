@@ -26,9 +26,14 @@ io.on('connection', function(socket) {
 
   socket.on('client: save data', function(data) {
     console.log('received from server', data);
-    const id = data[0] + new Date().toString();
-    const blob = data[1];
-    fs.writeFile(id + '.webm', blob, function(err) {
+    const name = data.name;
+    const sentence_index = data.sentence_index;
+    const camera_id = data.camera_id.substring(0, 15);
+    const blob = data.blob;
+    // const date = new Date().toString();
+
+    const fileName = __dirname + name + "/" + sentence_index + "/" + camera_id + ".webm"
+    fs.writeFile(fileName, blob, function(err) {
       if (err) {
         return console.log(err)
       }

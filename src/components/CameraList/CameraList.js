@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 // import sample_cam from '../../assets/svg/sample-cam.svg';
 import Webcam from '../Webcam/Webcam.js';
 import RecordRTC from 'recordrtc';
-import io from 'socket.io-client';
+import qs from '../../utils/qs'
 
 import './CameraList.scss';
 
@@ -61,7 +61,7 @@ export default function CameraList(props) {
           console.log(camera);
           let recorder = RecordRTC(camera, {
             type: 'video',
-            framerate: 30,
+            frameRate: 30,
             desiredSampRate: 16000,
             numberOfAudioChannels: 2
           });
@@ -90,10 +90,12 @@ export default function CameraList(props) {
           'background: #222; color: #bada55',
           blob
         );
-        props.socket.emit('client: save data', [
-          cam['camera_info'].id,
-          blob
-        ]);
+        props.socket.emit('client: save data', {
+          name: qs["name"],
+          sentence_index: qs["sentence_index"],
+          camera_id: cam['camera_info'].id,
+          blob: blob
+        });
         let video = cam['ref'];
         video.current.srcObject = null;
         video.current.src = URL.createObjectURL(blob);

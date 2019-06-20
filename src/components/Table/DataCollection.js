@@ -20,7 +20,5 @@ export default class DataCollection extends Component {
 
 DataCollection.propTypes = {
   data: PropTypes.array.isRequired,
-  first_name: PropTypes.string.isRequired,
-  last_name: PropTypes.string.isRequired,
   curr_sentence: PropTypes.string.isRequired
 };

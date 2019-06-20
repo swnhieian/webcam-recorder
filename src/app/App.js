@@ -18,8 +18,6 @@ class App extends React.Component {
     this.state = {
       curr_sentence: '',
       curr_sentence_index: 0,
-      first_name: '',
-      last_name: '',
       data: this.readTextFile(sentences),
       date: new Date(),
       socket: io('http://192.168.0.100:5000')
@@ -74,8 +72,6 @@ class App extends React.Component {
       <DataCollection
         data={this.state.data}
         updateName={this.updateName}
-        first_name={this.state.first_name}
-        last_name={this.state.last_name}
         curr_sentence={this.state.curr_sentence}
       />
     );
@@ -89,8 +85,6 @@ class App extends React.Component {
         data_length={this.state.data.length}
         first_sentence={this.state.data[this.state.curr_sentence_index]}
         curr_sentence={this.state.curr_sentence}
-        first_name={this.state.first_name}
-        last_name={this.state.last_name}
         socket={this.state.socket}
       />
     );

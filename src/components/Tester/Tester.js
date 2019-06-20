@@ -21,8 +21,6 @@ function Tester(props) {
         <StartScreen
           updateSentence={props.updateSentence}
           first_sentence={props.first_sentence}
-          first_name={props.first_name}
-          last_name={props.last_name}
         />
       );
     }
@@ -45,9 +43,7 @@ Tester.propTypes = {
   data_length: PropTypes.number.isRequired,
   first_sentence: PropTypes.string.isRequired,
   curr_sentence: PropTypes.string.isRequired,
-  first_name: PropTypes.string.isRequired,
-  last_name: PropTypes.string.isRequired,
-  // server_ip: PropTypes.string.isRequired,
+  socket: PropTypes.object.isRequired
 };
 
 export default Tester;

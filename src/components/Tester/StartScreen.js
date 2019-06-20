@@ -23,6 +23,4 @@ export default function StartScreen(props) {
 StartScreen.propTypes = {
   updateSentence: PropTypes.func.isRequired,
   first_sentence: PropTypes.string.isRequired,
-  first_name: PropTypes.string.isRequired,
-  last_name: PropTypes.string.isRequired,
 };

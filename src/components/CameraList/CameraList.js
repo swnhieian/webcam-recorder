@@ -18,15 +18,18 @@ export default function CameraList(props) {
           .enumerateDevices()
           .then(devices => {
             let videodevices = [];
-            devices.map(function(device) {
+            devices.map(function (device) {
               console.log(
-                device.kind + ': ' + device.label + ' id = ' + device.deviceId
+                device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
               );
+              // console.log(device);
+
               if (device.kind === 'videoinput') {
                 videodevices.push({
                   camera_info: {
                     id: device.deviceId,
-                    label: device.label
+                    label: device.label,
+                    groupId: device.groupId
                   },
                   ref: React.createRef(),
                   recorder: null
@@ -38,22 +41,26 @@ export default function CameraList(props) {
 
             // console.log('getAvailableDevices success!');
           })
-          .catch(function(err) {
+          .catch(function (err) {
             console.log(err.name + ': ' + err.message);
           });
       }
     }, []);
   }
 
+
+
   let startAllCams = () => {
     availableCams.map(cam => {
       navigator.mediaDevices
         .getUserMedia({
-          audio: true,
+          audio: {
+            deviceId: (cam.mic_info) ? cam.mic_info.id : 'default'
+          },
           video: {
-            minWidth:1920,minHeight:1080,minFrameRate:30,
-            // width: 1920,
-            // height: 1080,
+            frameRate: 30,
+            width: 1920,
+            height: 1080,
             deviceId: cam['camera_info'].id
           }
         })
@@ -112,17 +119,33 @@ export default function CameraList(props) {
 
   useAvailableWebCams();
 
-  props.socket.on('server: start cams', function() {
+  props.socket.on('server: start cams', function () {
     console.log('received from camera list: start cams');
     startAllCams();
   });
 
-  props.socket.on('server: stop cams', function() {
+  props.socket.on('server: stop cams', function () {
     console.log('received from camera list: stop cams');
     stopAllCams();
   });
 
+  let findMatchingAudio = () => {
+    availableCams.map(cam => {
+      navigator.mediaDevices.enumerateDevices().then(devices => {
+        devices.map(device => {
+          if (device.kind === 'audioinput' && 
+              device.groupId === cam.camera_info.groupId) {
+            cam.mic_info = {id: device.deviceId, label: device.label}
+          }
+        });
+      });
+    });
+  }
+
   let renderCams = () => {
+    findMatchingAudio();
+    console.log(availableCams);
+
     let cams_list = availableCams.map(cam => {
       return (
         <Webcam
@@ -132,7 +155,7 @@ export default function CameraList(props) {
         />
       );
     });
-    
+
 
     return (
       <div id='camera_list'>

@@ -19,9 +19,9 @@ export default function CameraList(props) {
           .then(devices => {
             let videodevices = [];
             devices.map(function (device) {
-              console.log(
-                device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
-              );
+              // console.log(
+              //   device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
+              // );
               // console.log(device);
 
               if (device.kind === 'videoinput') {
@@ -65,14 +65,12 @@ export default function CameraList(props) {
           }
         })
         .then(camera => {
-          console.log(camera);
           let recorder = RecordRTC(camera, {
             type: 'video',
             frameRate: 30,
             desiredSampRate: 16000,
             numberOfAudioChannels: 2
           });
-          console.log(recorder);
           recorder.camera = camera;
           cam['recorder'] = recorder;
           let video = cam['ref'];
@@ -82,8 +80,6 @@ export default function CameraList(props) {
         .catch(error => {
           console.error(error);
         });
-      console.log('start cams worked?');
-
       return availableCams;
     });
   };
@@ -112,7 +108,6 @@ export default function CameraList(props) {
         recorder.destroy();
         cam['recorder'] = null;
       });
-      console.log('stop cams worked?');
       return availableCams;
     });
   };
@@ -120,12 +115,10 @@ export default function CameraList(props) {
   useAvailableWebCams();
 
   props.socket.on('server: start cams', function () {
-    console.log('received from camera list: start cams');
     startAllCams();
   });
 
   props.socket.on('server: stop cams', function () {
-    console.log('received from camera list: stop cams');
     stopAllCams();
   });
 
@@ -137,14 +130,15 @@ export default function CameraList(props) {
               device.groupId === cam.camera_info.groupId) {
             cam.mic_info = {id: device.deviceId, label: device.label}
           }
+          return device;
         });
       });
+      return cam;
     });
   }
 
   let renderCams = () => {
     findMatchingAudio();
-    console.log(availableCams);
 
     let cams_list = availableCams.map(cam => {
       return (

@@ -20,9 +20,9 @@ export default function CameraList(props) {
           .then(devices => {
             let videodevices = [];
             devices.map(function(device) {
-              // console.log(
-              //   device.kind + ': ' + device.label + ' id = ' + device.deviceId
-              // );
+              console.log(
+                device.kind + ': ' + device.label + ' id = ' + device.deviceId
+              );
               if (device.kind === 'videoinput') {
                 videodevices.push({
                   camera_info: {
@@ -66,6 +66,7 @@ export default function CameraList(props) {
             desiredSampRate: 16000,
             numberOfAudioChannels: 2
           });
+          console.log(recorder);
           recorder.camera = camera;
           cam['recorder'] = recorder;
           let video = cam['ref'];

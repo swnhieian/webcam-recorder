@@ -1,6 +1,8 @@
 import React from 'react';
 import io from 'socket.io-client'; 
+import { BrowserRouter, Redirect } from 'react-router-dom'
 
+import qs from '../utils/qs'
 // scss
 import './App.scss';
 
@@ -17,7 +19,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       curr_sentence: '',
-      curr_sentence_index: 0,
+      curr_sentence_index: Number(qs["sentence_index"]),
       data: this.readTextFile(sentences),
       date: new Date(),
       socket: io('http://192.168.0.100:5000')
@@ -41,11 +43,15 @@ class App extends React.Component {
     return data;
   }
 
+  componentDidMount() {
+    this.setState({ curr_sentence: this.state.data[Number(qs["sentence_index"])] })
+  }
+
   updateSentence = curr_sentence => {
     if (curr_sentence === '$next') {
       this.setState(
         {
-          curr_sentence_index: this.state.curr_sentence_index + 1
+          curr_sentence_index: Number(qs["sentence_index"]) + 1
         },
         () => {
           this.updateSentence(this.state.data[this.state.curr_sentence_index]);
@@ -54,13 +60,16 @@ class App extends React.Component {
     } else if (curr_sentence === '$prev') {
       this.setState(
         {
-          curr_sentence_index: this.state.curr_sentence_index - 1
+          curr_sentence_index: Number(qs["sentence_index"]) - 1
         },
         () => {
           this.updateSentence(this.state.data[this.state.curr_sentence_index]);
         }
       );
     } else {
+      // let name = document.getElementById("name").value;
+      document.location.search = "?name=" + qs["name"] + "&sentence_index=" + this.state.curr_sentence_index;
+      // console.log(curr_sentence);
       this.setState({
         curr_sentence
       });
@@ -81,6 +90,7 @@ class App extends React.Component {
     return (
       <Tester
         updateSentence={this.updateSentence}
+        data={this.state.data}
         curr_sentence_index={this.state.curr_sentence_index}
         data_length={this.state.data.length}
         first_sentence={this.state.data[this.state.curr_sentence_index]}

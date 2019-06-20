@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 export default class NameField extends Component {
 
   saveName = (e) => {
-    let name = document.getElementById("name").value
-    document.location.search = name
+    let name = document.getElementById("name").value;
+    document.location.search = name + "&sentence_index=0";
   }
 
   qs = (function (a) {

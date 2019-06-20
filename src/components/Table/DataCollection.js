@@ -11,7 +11,7 @@ export default class DataCollection extends Component {
           <NameField />
         </div>
         <div className='data_table'>
-          <Table data={this.props.data} curr_sentence={this.props.curr_sentence}/>
+          <Table data={this.props.data}/>
         </div>
       </div>
     );
@@ -20,5 +20,4 @@ export default class DataCollection extends Component {
 
 DataCollection.propTypes = {
   data: PropTypes.array.isRequired,
-  curr_sentence: PropTypes.string.isRequired
 };

@@ -31,7 +31,6 @@ export default class Table extends Component {
           data={this.props.data}
           curr_page={this.state.curr_page}
           max_per_page={this.state.max_per_page}
-          curr_sentence={this.props.curr_sentence}
         />
         <TableFooter
           total_data={this.props.data.length}
@@ -46,5 +45,4 @@ export default class Table extends Component {
 
 Table.propTypes = {
   data: PropTypes.array.isRequired,
-  curr_sentence: PropTypes.string.isRequired
 };

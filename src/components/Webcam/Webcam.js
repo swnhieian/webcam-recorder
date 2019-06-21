@@ -46,6 +46,7 @@ class Webcam extends React.Component {
 
 Webcam.propTypes = {
   name: PropTypes.string.isRequired,
+  videoRef: PropTypes.object.isRequired
 };
 
 export default Webcam;

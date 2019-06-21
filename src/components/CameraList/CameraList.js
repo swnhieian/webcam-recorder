@@ -58,7 +58,7 @@ export default function CameraList(props) {
             deviceId: (cam.mic_info) ? cam.mic_info.id : 'default'
           },
           video: {
-            frameRate: 30,
+            frameRate: {ideal: 30, max: 60},
             width: 1920,
             height: 1080,
             deviceId: cam['camera_info'].id
@@ -74,6 +74,7 @@ export default function CameraList(props) {
           recorder.camera = camera;
           cam['recorder'] = recorder;
           let video = cam['ref'];
+          console.log(video);
           video.current.srcObject = camera;
           recorder.startRecording();
         })

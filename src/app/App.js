@@ -49,6 +49,7 @@ class App extends React.Component {
         },
         () => {
           this.updateSentence(this.state.data[this.state.curr_sentence_index]);
+          this.state.socket.emit('client: update sentence_index', this.state.curr_sentence_index)
         }
       );
     } else if (curr_sentence === '$prev') {
@@ -58,6 +59,7 @@ class App extends React.Component {
         },
         () => {
           this.updateSentence(this.state.data[this.state.curr_sentence_index]);
+          this.state.socket.emit('client: update sentence_index', this.state.curr_sentence_index)
         }
       );
     } else {
@@ -76,6 +78,7 @@ class App extends React.Component {
         data={this.state.data}
         updateName={this.updateName}
         curr_sentence={this.state.curr_sentence}
+        socket={this.state.socket}
       />
     );
   };

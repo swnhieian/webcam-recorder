@@ -8,7 +8,7 @@ export default class DataCollection extends Component {
     return (
       <div>
         <div className='name_field'>
-          <NameField />
+          <NameField socket={this.props.socket}/>
         </div>
         <div className='data_table'>
           <Table data={this.props.data}/>
@@ -20,4 +20,5 @@ export default class DataCollection extends Component {
 
 DataCollection.propTypes = {
   data: PropTypes.array.isRequired,
+  socket: PropTypes.object.isRequired
 };

@@ -9,6 +9,25 @@ app.get('/', function(req, res) {
   res.send('<h1>Server Started</h1>');
 });
 
+const storeData = (data, path) => {
+  try {
+    fs.writeFileSync(path, JSON.stringify(data))
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const loadData = (path) => {
+  try {
+    return fs.readFileSync(path, 'utf8')
+  } catch (err) {
+    console.error(err)
+    return false
+  }
+}
+
+const STATUS_PATH = './status.json'
+
 io.on('connection', function(socket) {
   console.log('a user connected', socket.id);
 
@@ -26,30 +45,32 @@ io.on('connection', function(socket) {
     io.emit('server: stop cams');
   });
 
+  socket.on('client: start testing', function(data) {
+    console.log('received from server' + data.name, data.sentence_index);
+    storeData(data, STATUS_PATH);
+  });
+
+  socket.on('client: update sentence_index', function(data) {
+    let status = JSON.parse(loadData(STATUS_PATH));
+    let newStatus = {
+      name: status.name,
+      sentence_index: data
+    }
+    storeData(newStatus, STATUS_PATH);
+  })
+
+
+
   socket.on('client: save data', function(data) {
-    console.log('received from server', data);
-    // const name = data.name;
-    const name = "Sean Ker"
-    const sentence_index = data.sentence_index;
+    let status = JSON.parse(loadData(STATUS_PATH));
+    let name = status.name;
+    let sentence_index = status.sentence_index;
+
     const camera_id = data.camera_id.substring(0, 15);
     const blob = data.blob;
-    let nameDir = "./" + name
-    console.log(sentence_index);
+
+    let nameDir = "./" + name;
     let sentenceDir = "/" + sentence_index
-    
-    // if (name === 'undefined') {
-    //   const isDirectory = source => lstatSync(source).isDirectory()
-    //   const getDirectories = source =>
-    //     readdirSync(source).map(name => join(source, name)).filter(isDirectory);
-
-    //   let nameDirs = getDirectories('./'); 
-    //   console.log(nameDirs);
-    //   nameDir = "./" + nameDirs[nameDirs.length - 1]; 
-    //   console.log(nameDir);
-    //   let nameDirDirs = getDirectories(nameDir);
-    //   sentenceDir = "/" + nameDirDirs[nameDirDirs.length - 1];
-    // }
-
     const fileName = "/" + camera_id + ".webm"
 
     if (!fs.existsSync(nameDir)) {

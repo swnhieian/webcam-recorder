@@ -9,7 +9,6 @@ import btn_admin from '../assets/svg/admin-button.svg';
 
 export default class NavBar extends Component {
   adminClick() {
-    console.log('alskdfjasf')
     const camera_list = document.getElementById('camera_list');
     if (camera_list.style.display === '') {
       camera_list.style.display = 'none';

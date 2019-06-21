@@ -42,9 +42,15 @@ export default function InProcessScreen(props) {
   function getContents() {
     if (qs["sentence_index"] === undefined) {
       return (
-        <button className='btn' onClick={startTesting}>
-          Start
-      </button>
+        <div>
+          <button className='btn' 
+                  onClick={startTesting} 
+                  disabled={qs["name"] === undefined || qs["sentence_index"] === undefined}>
+            Start
+          </button>
+          <p className="warning_message">Enter Name Before Starting</p>
+
+        </div>
       )
     } else {
       return (

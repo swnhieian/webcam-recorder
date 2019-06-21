@@ -18,7 +18,7 @@ export default class TableData extends Component {
         time='00:00'
         read={false}
         key={sentence}
-        index={i}
+        index={i + beg}
       />
     ));
 

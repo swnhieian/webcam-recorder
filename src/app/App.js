@@ -35,7 +35,6 @@ class App extends React.Component {
     })
   }
 
-  
   componentDidMount() {
     this.setState({ curr_sentence: this.state.data[Number(qs["sentence_index"])] })
     this.readTextFile(sentences);

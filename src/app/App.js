@@ -20,7 +20,6 @@ class App extends React.Component {
       curr_sentence: '',
       curr_sentence_index: Number(qs["sentence_index"]),
       data: [],
-      date: new Date(),
       socket: io('http://192.168.0.105:5000')
     };
    

@@ -28,24 +28,27 @@ io.on('connection', function(socket) {
 
   socket.on('client: save data', function(data) {
     console.log('received from server', data);
-    const name = data.name;
+    // const name = data.name;
+    const name = "Sean Ker"
     const sentence_index = data.sentence_index;
     const camera_id = data.camera_id.substring(0, 15);
     const blob = data.blob;
     let nameDir = "./" + name
+    console.log(sentence_index);
     let sentenceDir = "/" + sentence_index
     
-    if (name === 'undefined') {
-      const isDirectory = source => lstatSync(source).isDirectory()
-      const getDirectories = source =>
-        readdirSync(source).map(name => join(source, name)).filter(isDirectory);
-        
-      let nameDirs = getDirectories('./'); 
-      nameDir = "./" + nameDirs[nameDirs.length - 1]; 
+    // if (name === 'undefined') {
+    //   const isDirectory = source => lstatSync(source).isDirectory()
+    //   const getDirectories = source =>
+    //     readdirSync(source).map(name => join(source, name)).filter(isDirectory);
 
-      let nameDirDirs = getDirectories(nameDir);
-      sentenceDir = "/" + nameDirDirs[nameDirDirs.length - 1];
-    }
+    //   let nameDirs = getDirectories('./'); 
+    //   console.log(nameDirs);
+    //   nameDir = "./" + nameDirs[nameDirs.length - 1]; 
+    //   console.log(nameDir);
+    //   let nameDirDirs = getDirectories(nameDir);
+    //   sentenceDir = "/" + nameDirDirs[nameDirDirs.length - 1];
+    // }
 
     const fileName = "/" + camera_id + ".webm"
 

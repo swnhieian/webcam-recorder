@@ -7,7 +7,6 @@ function Tester(props) {
   function content(props) {
     return (
       <InProcessScreen
-        curr_sentence={props.curr_sentence}
         updateSentence={props.updateSentence}
         curr_sentence_index={props.curr_sentence_index}
         data_length={props.data_length}
@@ -32,7 +31,8 @@ Tester.propTypes = {
   updateSentence: PropTypes.func.isRequired,
   curr_sentence_index: PropTypes.number.isRequired,
   data_length: PropTypes.number.isRequired,
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object.isRequired,
+  data: PropTypes.array.isRequired,
 };
 
 export default Tester;

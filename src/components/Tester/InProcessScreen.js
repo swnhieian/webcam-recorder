@@ -50,7 +50,7 @@ export default function InProcessScreen(props) {
       return (
         <div>
           <div className='testing_content sentence_to_be_read'>
-            {props.curr_sentence}
+            {props.data[qs["sentence_index"]]}
           </div>
           <button className='btn' onClick={record}>
             {getRecordState()}
@@ -90,5 +90,6 @@ InProcessScreen.propTypes = {
   curr_sentence_index: PropTypes.number.isRequired,
   data_length: PropTypes.number.isRequired,
   updateSentence: PropTypes.func.isRequired,
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object.isRequired,
+  data: PropTypes.array.isRequired
 };

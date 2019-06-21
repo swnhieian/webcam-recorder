@@ -19,7 +19,8 @@ body {
 }
 
 .cameras_container {
-  margin-top: 100vh;
+  margin-top: 60vh;
+  text-align: center;
   width: 100%;
 }
 
@@ -69,7 +70,8 @@ body {
 
 .cam {
   // border: orange dashed 1px;
-  width: 168px;
+  width: 240px;
+  height: 180px;
   margin: 0.5em;
 }
 

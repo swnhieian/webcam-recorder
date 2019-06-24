@@ -72,6 +72,8 @@ export default function CameraList(props) {
             type: 'video',
             frameRate: 30,
             desiredSampRate: 16000,
+            width: 1920,
+            height: 1080,
             numberOfAudioChannels: 2
           });
           recorder.camera = camera;

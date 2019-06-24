@@ -20,7 +20,7 @@ class App extends React.Component {
       curr_sentence: '',
       curr_sentence_index: Number(qs['sentence_index']),
       data: [],
-      socket: io('http://192.168.1.216:5000')
+      socket: io('http://192.168.0.102:5000')
     };
    
   }

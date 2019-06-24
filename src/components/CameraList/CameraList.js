@@ -61,8 +61,8 @@ export default function CameraList(props) {
           },
           video: {
             frameRate: {ideal: 30, max: 60},
-            width: 1920,
-            height: 1080,
+            width: {exact: 1920, ideal: 1920},
+            height: {exact: 1080, ideal: 1080},
             deviceId: cam['camera_info'].id
           }
         })

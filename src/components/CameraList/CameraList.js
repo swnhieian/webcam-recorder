@@ -60,7 +60,7 @@ export default function CameraList(props) {
             deviceId: (cam.mic_info) ? cam.mic_info.id : 'default'
           },
           video: {
-            frameRate: {ideal: 30, max: 60},
+            frameRate: {exact: 30, ideal: 30},
             width: {exact: 1920, ideal: 1920},
             height: {exact: 1080, ideal: 1080},
             deviceId: cam['camera_info'].id

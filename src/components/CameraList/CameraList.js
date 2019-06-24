@@ -61,8 +61,8 @@ export default function CameraList(props) {
           },
           video: {
             frameRate: {exact: 30, ideal: 30},
-            width: {exact: 1920, ideal: 1920},
-            height: {exact: 1080, ideal: 1080},
+            width: {ideal: 1920},
+            height: {ideal: 1080},
             deviceId: cam['camera_info'].id
           }
         })
@@ -76,11 +76,14 @@ export default function CameraList(props) {
             height: 1080,
             numberOfAudioChannels: 2
           });
-          recorder.camera = camera;
-          cam['recorder'] = recorder;
-          let video = cam['ref'];
-          video.current.srcObject = camera;
-          recorder.startRecording();
+          if (recorder.getState() !== 'recording') {
+            recorder.camera = camera;
+            cam['recorder'] = recorder;
+            let video = cam['ref'];
+            video.current.srcObject = camera;
+            recorder.startRecording();
+          }
+
         })
         .catch(error => {
           console.error(error);

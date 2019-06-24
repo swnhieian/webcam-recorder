@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import sample_cam from '../../assets/svg/sample-cam.svg';
 import Webcam from '../Webcam/Webcam.js';
-import RecordRTC from 'recordrtc';
+import RecordRTC, { WebAssemblyRecorder } from 'recordrtc';
 import qs from '../../utils/qs'
 
 import './CameraList.scss';
@@ -11,6 +11,8 @@ export default function CameraList(props) {
 
   function useAvailableWebCams() {
     useEffect(() => {
+      
+      // console.log(navigator);
       if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
         console.log('enumerateDevices() not supported.');
       } else {
@@ -66,6 +68,7 @@ export default function CameraList(props) {
         })
         .then(camera => {
           let recorder = RecordRTC(camera, {
+            recorderType: WebAssemblyRecorder,
             type: 'video',
             frameRate: 30,
             desiredSampRate: 16000,
@@ -74,7 +77,6 @@ export default function CameraList(props) {
           recorder.camera = camera;
           cam['recorder'] = recorder;
           let video = cam['ref'];
-          console.log(video);
           video.current.srcObject = camera;
           recorder.startRecording();
         })
@@ -88,27 +90,29 @@ export default function CameraList(props) {
   let stopAllCams = () => {
     availableCams.map(cam => {
       let recorder = cam['recorder'];
-      recorder.stopRecording(() => {
-        let blob = recorder.getBlob();
-        console.log(
-          '%c recorded data',
-          'background: #222; color: #bada55',
-          blob
-        );
-        props.socket.emit('client: save data', {
-          name: qs["name"],
-          sentence_index: qs["sentence_index"],
-          camera_id: cam['camera_info'].id,
-          blob: blob
+      if (recorder !== null) {
+        recorder.stopRecording(() => {
+          let blob = recorder.getBlob();
+          console.log(
+            '%c recorded data',
+            'background: #222; color: #bada55',
+            blob
+          );
+          props.socket.emit('client: save data', {
+            name: qs["name"],
+            sentence_index: qs["sentence_index"],
+            camera_id: cam['camera_info'].id,
+            blob: blob
+          });
+          let video = cam['ref'];
+          video.current.srcObject = null;
+          video.current.src = URL.createObjectURL(blob);
+          cam['ref'] = video;
+          recorder.camera.stop();
+          recorder.destroy();
+          cam['recorder'] = null;
         });
-        let video = cam['ref'];
-        video.current.srcObject = null;
-        video.current.src = URL.createObjectURL(blob);
-        cam['ref'] = video;
-        recorder.camera.stop();
-        recorder.destroy();
-        cam['recorder'] = null;
-      });
+      }
       return availableCams;
     });
   };

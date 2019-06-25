@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import sample_cam from '../../assets/svg/sample-cam.svg';
 import Webcam from '../Webcam/Webcam.js';
-import RecordRTC, { WebAssemblyRecorder } from 'recordrtc';
+import RecordRTC, { WebAssemblyRecorder, MediaStreamRecorder } from 'recordrtc';
 import qs from '../../utils/qs'
 
 import './CameraList.scss';
@@ -68,7 +68,7 @@ export default function CameraList(props) {
         })
         .then(camera => {
           let recorder = RecordRTC(camera, {
-            recorderType: WebAssemblyRecorder,
+            recorderType: MediaStreamRecorder, //WebAssemblyRecorder,
             type: 'video',
             frameRate: 30,
             desiredSampRate: 16000,

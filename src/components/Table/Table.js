@@ -4,12 +4,12 @@ import './Table.scss'
 import TableData from './TableData.js'
 import PropTypes from 'prop-types';
 import TableFooter from './TableFooter';
-
+import qs from '../../utils/qs'
 export default class Table extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      curr_page: 1,
+      curr_page: Math.floor(Number(qs["sentence_index"])/8) + 1,
       max_per_page: 8
     }
   }
@@ -17,6 +17,7 @@ export default class Table extends Component {
     if (new_page === 0 ) {
       // do nothing
     } 
+    console.log('update page', new_page)
     this.setState({
       curr_page: (new_page >= 1) ? new_page : 1
     })
@@ -44,5 +45,5 @@ export default class Table extends Component {
 }
 
 Table.propTypes = {
-  data: PropTypes.array.isRequired
-}
+  data: PropTypes.array.isRequired,
+};

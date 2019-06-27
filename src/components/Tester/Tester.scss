@@ -1,0 +1,33 @@
+
+.testing_screen {
+  text-align:center;
+  // background-color:blue;
+  height:80vh;
+  width:100%;
+}
+
+.btn {
+  font-size: 1.05em;
+  border: 1px solid black;
+  font-weight: 300;
+  background-color: white;
+  border-radius: 1em;
+  height: 3em;
+  width: 150px;
+  margin: 0.5em;
+}
+
+
+.test_container {
+  transform: translateY(12vh);
+}
+
+.sentence_to_be_read {
+  font-size: 2em;
+  line-height: 2;
+  margin-bottom: 0.5em;
+}
+
+.warning_message {
+  color: red;
+}

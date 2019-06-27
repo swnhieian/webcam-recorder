@@ -8,12 +8,12 @@ export default class Actions extends Component {
       <div>
         <div className='actions'>
           <div id='play'>
-            <img src={Play} alt='' className='btn' />
+            <img src={Play} alt='' className='action_btn' />
           </div>
-          <div id='retry' className='btn'>
+          <div id='retry' className='action_btn'>
             Retry
           </div>
-          <div id='delete' className='btn'>
+          <div id='delete' className='action_btn'>
             Delete
           </div>
         </div>

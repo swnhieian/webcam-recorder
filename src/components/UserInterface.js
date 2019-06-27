@@ -1,5 +1,5 @@
 import React from 'react';
-import commandData from  './commandSet.json'
+import commandData from  './commandSet.json.js'
 
 const SPACE_CODE = 32;
 const STATUS = {
@@ -82,7 +82,7 @@ class UserInterface extends React.Component {
           <h1>{(this.state.status != 'idle')?(this.commandList[this.state.currentIndex]):''}</h1>
       </div>
     );
-  };
+  }
 }
 
 export default UserInterface;

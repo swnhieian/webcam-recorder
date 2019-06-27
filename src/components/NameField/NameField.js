@@ -1,32 +1,31 @@
 import React, { Component } from 'react'
 import './NameField.scss'
+import qs from '../../utils/qs'
 
-export default class InputField extends Component {
+export default class NameField extends Component {
+
+  saveName = (e) => {
+    let name = document.getElementById("name").value;
+    document.location.search = "name=" + name + "&sentence_index=0";
+    this.props.socket.emit('client: start testing', {
+      name,
+      sentence_index: 0
+    })
+  }
+
+
   render() {
     return (
       <div>
-        <form action=''>
-          <div className="name_input">
-            <div className="left">
-              <label htmlFor='fName'>First Name: </label>
-              <input
-                type='text'
-                name='fName'
-                id='fName_input'
-                placeholder=''
-              />
-            </div>
-            <div className="right">
-              <label htmlFor='lName'>Last Name: </label>
-              <input
-                type='text'
-                name='lName'
-                id='lName_input'
-                placeholder=''
-              />
-            </div>
-          </div>
-        </form>
+        <div className='name_input'>
+          <input
+            type='text'
+            name='name'
+            id='name'
+            placeholder={qs['name']}
+          />
+          <button onClick={this.saveName}>Save Name</button>
+        </div>
       </div>
     );
   }

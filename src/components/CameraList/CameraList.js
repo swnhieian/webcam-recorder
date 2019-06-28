@@ -125,6 +125,7 @@ export default function CameraList(props) {
   useAvailableWebCams();
 
   props.socket.on('server: start cams', function () {
+    console.log('this happened')
     startAllCams();
   });
 

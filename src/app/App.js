@@ -1,6 +1,5 @@
 import React from 'react';
-import io from 'socket.io-client'; 
-
+import PropTypes from 'prop-types';
 import qs from '../utils/qs'
 // scss
 import './App.scss';
@@ -20,9 +19,7 @@ class App extends React.Component {
       curr_sentence: '',
       curr_sentence_index: Number(qs['sentence_index']),
       data: [],
-      socket: io('http://192.168.0.101:5000')
     };
-   
   }
 
 
@@ -47,7 +44,7 @@ class App extends React.Component {
         },
         () => {
           this.updateSentence(this.state.data[this.state.curr_sentence_index]);
-          this.state.socket.emit('client: update sentence_index', this.state.curr_sentence_index)
+          this.props.socket.emit('client: update sentence_index', this.state.curr_sentence_index)
         }
       );
     } else if (curr_sentence === '$prev') {
@@ -57,7 +54,7 @@ class App extends React.Component {
         },
         () => {
           this.updateSentence(this.state.data[this.state.curr_sentence_index]);
-          this.state.socket.emit('client: update sentence_index', this.state.curr_sentence_index)
+          this.props.socket.emit('client: update sentence_index', this.state.curr_sentence_index)
         }
       );
     } else {
@@ -76,7 +73,7 @@ class App extends React.Component {
         data={this.state.data}
         updateName={this.updateName}
         curr_sentence={this.state.curr_sentence}
-        socket={this.state.socket}
+        socket={this.props.socket}
       />
     );
   };
@@ -90,13 +87,13 @@ class App extends React.Component {
         data_length={this.state.data.length}
         first_sentence={this.state.data[this.state.curr_sentence_index]}
         curr_sentence={this.state.curr_sentence}
-        socket={this.state.socket}
+        socket={this.props.socket}
       />
     );
   };
 
   cameraList = () => {
-    return <CameraList socket={this.state.socket} />;
+    return <CameraList socket={this.props.socket} />;
   }
 
   render() {
@@ -110,6 +107,10 @@ class App extends React.Component {
       </div>
     );
   }
+}
+
+App.propTypes = {
+  socket: PropTypes.object.isRequired
 }
 
 export default App;

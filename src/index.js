@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './app/App.js';
+import io from 'socket.io-client'; 
 
+const socket =  io('http://192.168.15.21:5000')
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App socket={socket} />, document.getElementById('root'));

@@ -50,10 +50,10 @@ class App extends React.Component {
         },
         () => {
           this.updateSentence(this.state.data[this.state.curr_sentence_index]);
-          this.props.socket.emit(
-            'client: update sentence_index',
-            this.state.curr_sentence_index
-          );
+          this.props.socket.emit('client: update sentence_index', {
+            name: qs['name'],
+            curr_sentence_index: this.state.curr_sentence_index
+          });
         }
       );
     } else if (curr_sentence === '$prev') {

@@ -15,12 +15,16 @@ const storeData = (data, path) => {
   }
 }
 
-const loadData = (path) => {
+const loadData = (data, path) => {
   try {
-    return fs.readFileSync(path, 'utf8')
+    return JSON.parse(fs.readFileSync(path, 'utf8'))
   } catch (err) {
-    console.error(err)
-    return false
+    data = {
+      name: data.name, 
+      sentence_index: data.sentence_index
+    }
+    storeData(data, path);
+    return data;
   }
 }
 
@@ -49,16 +53,18 @@ io.on('connection', function(socket) {
   });
 
   socket.on('client: update sentence_index', function(data) {
-    let status = JSON.parse(loadData(STATUS_PATH));
     let newStatus = {
-      name: status.name,
-      sentence_index: data
+      name: data.name,
+      sentence_index: data.curr_sentence_index
     }
     storeData(newStatus, STATUS_PATH);
   })
 
   socket.on('client: save data', function(data) {
-    let status = JSON.parse(loadData(STATUS_PATH));
+
+    let status = loadData(data, STATUS_PATH);
+    console.log(status);
+
     let name = status.name;
     let sentence_index = status.sentence_index;
 

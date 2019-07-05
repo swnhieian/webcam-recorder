@@ -2,8 +2,6 @@ const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {origins: '*:*'});
 const fs = require('fs');
-const { lstatSync, readdirSync } = require ('fs');
-const { join } = require('path')
 
 app.get('/', function(req, res) {
   res.send('<h1>Server Started</h1>');
@@ -58,8 +56,6 @@ io.on('connection', function(socket) {
     }
     storeData(newStatus, STATUS_PATH);
   })
-
-
 
   socket.on('client: save data', function(data) {
     let status = JSON.parse(loadData(STATUS_PATH));

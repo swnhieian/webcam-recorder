@@ -191,8 +191,8 @@ export default function CameraList(props) {
     return (
       <div id='camera_list'>
         <button onClick={startAllCams}>start all cams and pause</button>
-        <button onClick={resume}>resume</button>
-        <button onClick={pause}>pause and get blob</button>
+        {/* <button onClick={resume}>resume</button> */}
+        {/* <button onClick={pause}>pause and get blob</button> */}
         <button onClick={stopAllCams}>stop all cams</button>
 
         <div>

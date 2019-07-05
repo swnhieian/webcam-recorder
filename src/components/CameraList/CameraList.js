@@ -165,10 +165,23 @@ export default function CameraList(props) {
     });
   }
 
+  const DebugControls = (debug) => {
+    if (debug) {
+      return (
+        <div>
+          <p>Don't click these while actual testing</p>
+          <button id="startBtn" onClick={startAllCams}>start and pause all cams</button>
+          <button id="resumeBtn" onClick={resumeAllCams}>resume all cams</button>
+          <button id="stopBtn" onClick={stopAllCams}>stop all cams</button>
+        </div>
+      )
+    }
+  }
+
   let renderCams = () => {
     findMatchingAudio();
     
-
+    let debug = true;
     let cams_list = availableCams.map(cam => {
       return (
         <Webcam
@@ -181,11 +194,7 @@ export default function CameraList(props) {
 
     return (
       <div id='camera_list'>
-        <p>Don't click these while actual testing</p>
-        <button id="startBtn" onClick={startAllCams}>start and pause all cams</button>
-        <button id="resumeBtn" onClick={resumeAllCams}>resume all cams</button>
-        <button id="stopBtn" onClick={stopAllCams}>stop all cams</button>
-
+        {DebugControls(debug)}
         <div>
           <div className='cameras'>{cams_list}</div>
         </div>

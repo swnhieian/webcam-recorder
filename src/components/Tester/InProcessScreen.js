@@ -10,7 +10,6 @@ export default function InProcessScreen(props) {
   function updateSentence(data) {
     reset(true);
     props.updateSentence(data);
-
   }
 
   function getRecordState() {

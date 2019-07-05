@@ -10,18 +10,9 @@ export default class Table extends Component {
     super(props);
     let per_page = 8;
     this.state = {
-      curr_page: Math.floor(this.props.curr_sentence_index / per_page) + 1,
+      // curr_page: Math.floor(this.props.curr_sentence_index / per_page) + 1,
       max_per_page: per_page
     }
-  }
-  updatePage = (new_page) => {
-    if (new_page === 0 ) {
-      // do nothing
-    } 
-    console.log('update page', new_page)
-    this.setState({
-      curr_page: (new_page >= 1) ? new_page : 1
-    })
   }
 
   render() {
@@ -30,14 +21,14 @@ export default class Table extends Component {
         <TableHeader />
         <TableData
           data={this.props.data}
-          curr_page={this.state.curr_page}
+          curr_page={this.props.curr_page}
           max_per_page={this.state.max_per_page}
           curr_sentence_index={this.props.curr_sentence_index}
         />
         <TableFooter
           total_data={this.props.data.length}
-          updatePage={this.updatePage}
-          curr_page={this.state.curr_page}
+          updatePage={this.props.updatePage}
+          curr_page={this.props.curr_page}
           max_per_page={this.state.max_per_page}
         />
       </div>

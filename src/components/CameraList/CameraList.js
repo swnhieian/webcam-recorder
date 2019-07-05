@@ -21,9 +21,9 @@ export default function CameraList(props) {
           .then(devices => {
             let videodevices = [];
             devices.map(function (device) {
-              // console.log(
-              //   device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
-              // );
+              console.log(
+                device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
+              );
               // console.log(device);
 
               if (device.kind === 'videoinput') {
@@ -54,6 +54,7 @@ export default function CameraList(props) {
 
   let startAllCams = () => {
     availableCams.map(cam => {
+      console.log(cam);
       navigator.mediaDevices
         .getUserMedia({
           audio: {
@@ -76,16 +77,16 @@ export default function CameraList(props) {
             height: 1080,
             numberOfAudioChannels: 2
           });
-          if (recorder.getState() !== 'recording') {
+          console.log(camera);
+          // if (recorder.getState() !== 'recording') {
             recorder.camera = camera;
             cam['recorder'] = recorder;
             let video = cam['ref'];
             video.current.srcObject = camera;
-            console.log(recorder);
             recorder.startRecording();
             // recorder.reset();
             // recorder.pauseRecording();
-          }
+          // }
 
         })
         .catch(error => {
@@ -125,38 +126,18 @@ export default function CameraList(props) {
     });
   };
 
-  let resume = () => {
-    availableCams.map(cam => {
-      let recorder = cam['recorder'];
-      recorder.resumeRecording();
-    });
-  }
-
-  let pause = () => {
-    availableCams.map(cam => {
-      let recorder = cam['recorder'];
-      recorder.stopRecording(() => {
-        let blob = recorder.getBlob();
-        console.log(blob);
-        props.socket.emit('client: save data', {
-          name: qs["name"],
-          sentence_index: qs["sentence_index"],
-          camera_id: cam['camera_info'].id,
-          blob: blob
-        });
-      });
-    });
-  }
-
   useAvailableWebCams();
 
   props.socket.on('server: start cams', function () {
     console.log('this happened')
-    startAllCams();
+    // startAllCams();
+    document.getElementById("startBtn").click();
+    document.getElementById("startBtn").disabled = true;
   });
 
   props.socket.on('server: stop cams', function () {
     stopAllCams();
+    document.getElementById("startBtn").disabled = false;
   });
 
   let findMatchingAudio = () => {
@@ -190,10 +171,8 @@ export default function CameraList(props) {
 
     return (
       <div id='camera_list'>
-        <button onClick={startAllCams}>start all cams and pause</button>
-        {/* <button onClick={resume}>resume</button> */}
-        {/* <button onClick={pause}>pause and get blob</button> */}
-        <button onClick={stopAllCams}>stop all cams</button>
+        <button id="startBtn" onClick={startAllCams}>start all cams</button>
+        <button id="stopBtn" onClick={stopAllCams}>stop all cams</button>
 
         <div>
           <div className='cameras'>{cams_list}</div>

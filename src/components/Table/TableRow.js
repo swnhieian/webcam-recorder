@@ -19,8 +19,8 @@ export default class TableRow extends Component {
           <div className={this.getClassOfRowItem()}>
             {this.props.sentence}
           </div>
-          <div className='row_item'>00:00 / {this.props.time} </div>
-          <Actions />
+          {/* <div className='row_item'>00:00 / {this.props.time} </div> */}
+          {/* <Actions /> */}
         </div>
       </div>
     );

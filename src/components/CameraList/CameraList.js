@@ -81,7 +81,10 @@ export default function CameraList(props) {
             cam['recorder'] = recorder;
             let video = cam['ref'];
             video.current.srcObject = camera;
+            console.log(recorder);
             recorder.startRecording();
+            // recorder.reset();
+            // recorder.pauseRecording();
           }
 
         })
@@ -109,18 +112,41 @@ export default function CameraList(props) {
             camera_id: cam['camera_info'].id,
             blob: blob
           });
-          let video = cam['ref'];
-          video.current.srcObject = null;
-          video.current.src = URL.createObjectURL(blob);
-          cam['ref'] = video;
-          recorder.camera.stop();
-          recorder.destroy();
-          cam['recorder'] = null;
+          // let video = cam['ref'];
+          // video.current.srcObject = null;
+          // video.current.src = URL.createObjectURL(blob);
+          // cam['ref'] = video;
+          // recorder.camera.stop();
+          // recorder.destroy();
+          // cam['recorder'] = null;
         });
       }
       return availableCams;
     });
   };
+
+  let resume = () => {
+    availableCams.map(cam => {
+      let recorder = cam['recorder'];
+      recorder.resumeRecording();
+    });
+  }
+
+  let pause = () => {
+    availableCams.map(cam => {
+      let recorder = cam['recorder'];
+      recorder.stopRecording(() => {
+        let blob = recorder.getBlob();
+        console.log(blob);
+        props.socket.emit('client: save data', {
+          name: qs["name"],
+          sentence_index: qs["sentence_index"],
+          camera_id: cam['camera_info'].id,
+          blob: blob
+        });
+      });
+    });
+  }
 
   useAvailableWebCams();
 
@@ -164,7 +190,9 @@ export default function CameraList(props) {
 
     return (
       <div id='camera_list'>
-        <button onClick={startAllCams}>start all cams</button>
+        <button onClick={startAllCams}>start all cams and pause</button>
+        <button onClick={resume}>resume</button>
+        <button onClick={pause}>pause and get blob</button>
         <button onClick={stopAllCams}>stop all cams</button>
 
         <div>

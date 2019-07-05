@@ -11,7 +11,6 @@ export default function CameraList(props) {
 
   function useAvailableWebCams() {
     useEffect(() => {
-      
       // console.log(navigator);
       if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
         console.log('enumerateDevices() not supported.');
@@ -21,11 +20,10 @@ export default function CameraList(props) {
           .then(devices => {
             let videodevices = [];
             devices.map(function (device) {
-              console.log(
-                device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
-              );
+              // console.log(
+              //   device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
+              // );
               // console.log(device);
-
               if (device.kind === 'videoinput') {
                 videodevices.push({
                   camera_info: {
@@ -40,19 +38,23 @@ export default function CameraList(props) {
               return null;
             });
             setAvailableCams(videodevices);
-
+            document.getElementById("startBtn").click();
+            document.getElementById("startBtn").disabled = true;
             // console.log('getAvailableDevices success!');
           })
           .catch(function (err) {
             console.log(err.name + ': ' + err.message);
           });
+
       }
+
     }, []);
   }
 
 
 
   let startAllCams = () => {
+    console.log('clicked');
     availableCams.map(cam => {
       console.log(cam);
       navigator.mediaDevices
@@ -85,7 +87,7 @@ export default function CameraList(props) {
             video.current.srcObject = camera;
             recorder.startRecording();
             // recorder.reset();
-            // recorder.pauseRecording();
+            recorder.pauseRecording();
           // }
 
         })
@@ -126,18 +128,31 @@ export default function CameraList(props) {
     });
   };
 
+  let resumeAllCams = () => {
+    availableCams.map(cam => {
+      let recorder = cam['recorder'];
+      let state = recorder.getState();
+      console.log(state);
+      if (state === "paused") {
+        recorder.resumeRecording();
+      } else if (state === "stopped"){
+        recorder.startRecording();
+      }
+    })
+  }
+
   useAvailableWebCams();
 
   props.socket.on('server: start cams', function () {
     console.log('this happened')
     // startAllCams();
-    document.getElementById("startBtn").click();
-    document.getElementById("startBtn").disabled = true;
+    document.getElementById("resumeBtn").click();
+    document.getElementById("resumeBtn").disabled = true;
   });
 
   props.socket.on('server: stop cams', function () {
     stopAllCams();
-    document.getElementById("startBtn").disabled = false;
+    document.getElementById("resumeBtn").disabled = false;
   });
 
   let findMatchingAudio = () => {
@@ -157,6 +172,7 @@ export default function CameraList(props) {
 
   let renderCams = () => {
     findMatchingAudio();
+    
 
     let cams_list = availableCams.map(cam => {
       return (
@@ -168,10 +184,11 @@ export default function CameraList(props) {
       );
     });
 
-
     return (
       <div id='camera_list'>
-        <button id="startBtn" onClick={startAllCams}>start all cams</button>
+        <p>Don't click these while actual testing</p>
+        <button id="startBtn" onClick={startAllCams}>start and pause all cams</button>
+        <button id="resumeBtn" onClick={resumeAllCams}>resume all cams</button>
         <button id="stopBtn" onClick={stopAllCams}>stop all cams</button>
 
         <div>
@@ -180,8 +197,6 @@ export default function CameraList(props) {
       </div>
     );
   };
-
-
-
+  
   return renderCams();
 }

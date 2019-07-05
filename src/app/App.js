@@ -22,25 +22,26 @@ class App extends React.Component {
     };
   }
 
-
   readTextFile(file) {
     return fetch(file)
       .then(response => response.text())
       .then(text => {
-        this.setState({data: text.split('\n')});
+        this.setState({data: text.split('\n')}, () => {
+          this.setState({ curr_sentence: this.state.data[Number(qs["sentence_index"])] }, () => {
+          });
+        });
     })
   }
 
   componentDidMount() {
-    this.setState({ curr_sentence: this.state.data[Number(qs["sentence_index"])] })
-    this.readTextFile(sentences);
+    this.readTextFile(sentences);    
   }
 
   updateSentence = curr_sentence => {
     if (curr_sentence === '$next') {
       this.setState(
         {
-          curr_sentence_index: Number(qs["sentence_index"]) + 1
+          curr_sentence_index: this.state.curr_sentence_index + 1
         },
         () => {
           this.updateSentence(this.state.data[this.state.curr_sentence_index]);
@@ -50,7 +51,7 @@ class App extends React.Component {
     } else if (curr_sentence === '$prev') {
       this.setState(
         {
-          curr_sentence_index: Number(qs["sentence_index"]) - 1
+          curr_sentence_index: this.state.curr_sentence_index - 1
         },
         () => {
           this.updateSentence(this.state.data[this.state.curr_sentence_index]);
@@ -59,11 +60,13 @@ class App extends React.Component {
       );
     } else {
       // let name = document.getElementById("name").value;
-      document.location.search = "?name=" + qs["name"] + "&sentence_index=" + this.state.curr_sentence_index;
+      // document.location.search = "?name=" + qs["name"] + "&sentence_index=" + this.state.curr_sentence_index;
+      window.history.pushState(null, null, "?name=" + qs["name"] + "&sentence_index=" + this.state.curr_sentence_index);
       // console.log(curr_sentence);
       this.setState({
         curr_sentence
       });
+      console.log(curr_sentence);
     }
   };
 
@@ -74,6 +77,7 @@ class App extends React.Component {
         updateName={this.updateName}
         curr_sentence={this.state.curr_sentence}
         socket={this.props.socket}
+        curr_sentence_index={this.state.curr_sentence_index}
       />
     );
   };

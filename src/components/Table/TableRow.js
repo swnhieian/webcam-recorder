@@ -8,7 +8,7 @@ export default class TableRow extends Component {
   getClassOfRowItem = () => {
     let read = this.props.read ? 'read row_item' : 'row_item';
     // let sentence = this.props.sentence;
-    let is_current = Number(qs["sentence_index"]) === this.props.index ? ' curr_sentence' : '';
+    let is_current = this.props.curr_sentence_index === this.props.index ? ' curr_sentence' : '';
     return read + is_current;
   }
 
@@ -30,6 +30,8 @@ export default class TableRow extends Component {
 
 TableRow.propTypes = {
   sentence: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
+  curr_sentence_index: PropTypes.number.isRequired,
   time: PropTypes.string.isRequired,
   read: PropTypes.bool.isRequired,
 };

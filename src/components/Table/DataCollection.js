@@ -5,13 +5,14 @@ import PropTypes from 'prop-types';
 
 export default class DataCollection extends Component {
   render() {
+    
     return (
       <div>
         <div className='name_field'>
           <NameField socket={this.props.socket}/>
         </div>
         <div className='data_table'>
-          <Table data={this.props.data}/>
+          <Table data={this.props.data} curr_sentence_index={this.props.curr_sentence_index}/>
         </div>
       </div>
     );
@@ -20,5 +21,7 @@ export default class DataCollection extends Component {
 
 DataCollection.propTypes = {
   data: PropTypes.array.isRequired,
+  curr_sentence_index: PropTypes.number.isRequired,
   socket: PropTypes.object.isRequired
+
 };

@@ -8,9 +8,10 @@ import qs from '../../utils/qs'
 export default class Table extends Component {
   constructor(props) {
     super(props);
+    let per_page = 8;
     this.state = {
-      curr_page: Math.floor(Number(qs["sentence_index"])/8) + 1,
-      max_per_page: 8
+      curr_page: Math.floor(this.props.curr_sentence_index / per_page) + 1,
+      max_per_page: per_page
     }
   }
   updatePage = (new_page) => {
@@ -24,7 +25,6 @@ export default class Table extends Component {
   }
 
   render() {
-
     return (
       <div>
         <TableHeader />
@@ -32,6 +32,7 @@ export default class Table extends Component {
           data={this.props.data}
           curr_page={this.state.curr_page}
           max_per_page={this.state.max_per_page}
+          curr_sentence_index={this.props.curr_sentence_index}
         />
         <TableFooter
           total_data={this.props.data.length}
@@ -45,5 +46,6 @@ export default class Table extends Component {
 }
 
 Table.propTypes = {
+  curr_sentence_index: PropTypes.number.isRequired,
   data: PropTypes.array.isRequired,
 };

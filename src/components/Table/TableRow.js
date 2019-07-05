@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import './TableRow.scss';
 import Actions from './Actions';
 import PropTypes from 'prop-types';
-import qs from '../../utils/qs'
 
 export default class TableRow extends Component {
   getClassOfRowItem = () => {

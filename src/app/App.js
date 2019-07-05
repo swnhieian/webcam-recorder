@@ -40,7 +40,6 @@ class App extends React.Component {
 
   componentDidMount() {
     this.readTextFile(sentences);
-    console.log(this.state.curr_page);
   }
 
   updateSentence = curr_sentence => {

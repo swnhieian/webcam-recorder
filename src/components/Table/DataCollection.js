@@ -31,6 +31,6 @@ DataCollection.propTypes = {
   data: PropTypes.array.isRequired,
   curr_sentence_index: PropTypes.number.isRequired,
   socket: PropTypes.object.isRequired,
-  curr_page: PropTypes.number.isRequired,
-
+  updatePage: PropTypes.func.isRequired,
+  curr_page: PropTypes.number.isRequired
 };

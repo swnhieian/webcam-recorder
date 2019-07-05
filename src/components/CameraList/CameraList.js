@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import sample_cam from '../../assets/svg/sample-cam.svg';
 import Webcam from '../Webcam/Webcam.js';
-import RecordRTC, { WebAssemblyRecorder, MediaStreamRecorder } from 'recordrtc';
+import RecordRTC, { MediaStreamRecorder } from 'recordrtc';
 import qs from '../../utils/qs'
 
 import './CameraList.scss';
@@ -45,18 +45,14 @@ export default function CameraList(props) {
           .catch(function (err) {
             console.log(err.name + ': ' + err.message);
           });
-
       }
-
     }, []);
   }
 
 
 
   let startAllCams = () => {
-    console.log('clicked');
     availableCams.map(cam => {
-      console.log(cam);
       navigator.mediaDevices
         .getUserMedia({
           audio: {
@@ -79,8 +75,7 @@ export default function CameraList(props) {
             height: 1080,
             numberOfAudioChannels: 2
           });
-          console.log(camera);
-          // if (recorder.getState() !== 'recording') {
+          if (recorder.getState() !== 'recording') {
             recorder.camera = camera;
             cam['recorder'] = recorder;
             let video = cam['ref'];
@@ -88,8 +83,7 @@ export default function CameraList(props) {
             recorder.startRecording();
             // recorder.reset();
             recorder.pauseRecording();
-          // }
-
+          }
         })
         .catch(error => {
           console.error(error);
@@ -138,7 +132,8 @@ export default function CameraList(props) {
       } else if (state === "stopped"){
         recorder.startRecording();
       }
-    })
+      return availableCams;
+    });
   }
 
   useAvailableWebCams();

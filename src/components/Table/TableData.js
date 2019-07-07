@@ -14,6 +14,7 @@ export default class TableData extends Component {
     let small_data = data.slice(beg, end);
     let rowItems = small_data.map((sentence, i) => (
       <TableRow
+        curr_sentence_index={this.props.curr_sentence_index}
         sentence={sentence}
         time='00:00'
         read={false}
@@ -28,6 +29,7 @@ export default class TableData extends Component {
 
 TableData.propTypes = {
   data: PropTypes.array.isRequired,
+  curr_sentence_index: PropTypes.number.isRequired,
   curr_page: PropTypes.number.isRequired,
   max_per_page: PropTypes.number.isRequired,
 };

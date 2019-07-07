@@ -1,6 +1,6 @@
 .table_row {
   display: grid;
-  grid-template-columns: 45% 25% 30%;
+  // grid-template-columns: 45% 25% 30%;
   border: #00000010 solid 1px;
   border-right: none;
   padding-bottom: 0.5em;
@@ -10,9 +10,11 @@
 .row_item {
   font-size: 0.8em;
   overflow-x: scroll;
-  width: 90%;
+  // width: 90%;
   white-space: nowrap;
   padding-left: 0.5em;
+  margin: auto;
+  text-align: left;
 }
 
 .read {

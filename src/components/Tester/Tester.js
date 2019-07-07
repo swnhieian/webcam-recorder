@@ -12,6 +12,7 @@ function Tester(props) {
         data_length={props.data_length}
         socket={props.socket}
         data={props.data}
+        curr_sentence={props.curr_sentence}
       />
     );
   }
@@ -30,6 +31,7 @@ function Tester(props) {
 Tester.propTypes = {
   updateSentence: PropTypes.func.isRequired,
   curr_sentence_index: PropTypes.number.isRequired,
+  curr_sentence: PropTypes.string.isRequired,
   data_length: PropTypes.number.isRequired,
   socket: PropTypes.object.isRequired,
   data: PropTypes.array.isRequired,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import sample_cam from '../../assets/svg/sample-cam.svg';
 import Webcam from '../Webcam/Webcam.js';
-import RecordRTC, { WebAssemblyRecorder, MediaStreamRecorder } from 'recordrtc';
+import RecordRTC, { MediaStreamRecorder } from 'recordrtc';
 import qs from '../../utils/qs'
 
 import './CameraList.scss';
@@ -11,7 +11,6 @@ export default function CameraList(props) {
 
   function useAvailableWebCams() {
     useEffect(() => {
-      
       // console.log(navigator);
       if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
         console.log('enumerateDevices() not supported.');
@@ -25,7 +24,6 @@ export default function CameraList(props) {
               //   device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
               // );
               // console.log(device);
-
               if (device.kind === 'videoinput') {
                 videodevices.push({
                   camera_info: {
@@ -40,7 +38,8 @@ export default function CameraList(props) {
               return null;
             });
             setAvailableCams(videodevices);
-
+            document.getElementById("startBtn").click();
+            document.getElementById("startBtn").disabled = true;
             // console.log('getAvailableDevices success!');
           })
           .catch(function (err) {
@@ -82,8 +81,9 @@ export default function CameraList(props) {
             let video = cam['ref'];
             video.current.srcObject = camera;
             recorder.startRecording();
+            // recorder.reset();
+            recorder.pauseRecording();
           }
-
         })
         .catch(error => {
           console.error(error);
@@ -109,27 +109,45 @@ export default function CameraList(props) {
             camera_id: cam['camera_info'].id,
             blob: blob
           });
-          let video = cam['ref'];
-          video.current.srcObject = null;
-          video.current.src = URL.createObjectURL(blob);
-          cam['ref'] = video;
-          recorder.camera.stop();
-          recorder.destroy();
-          cam['recorder'] = null;
+          // let video = cam['ref'];
+          // video.current.srcObject = null;
+          // video.current.src = URL.createObjectURL(blob);
+          // cam['ref'] = video;
+          // recorder.camera.stop();
+          // recorder.destroy();
+          // cam['recorder'] = null;
         });
       }
       return availableCams;
     });
   };
 
+  let resumeAllCams = () => {
+    availableCams.map(cam => {
+      let recorder = cam['recorder'];
+      let state = recorder.getState();
+      console.log(state);
+      if (state === "paused") {
+        recorder.resumeRecording();
+      } else if (state === "stopped"){
+        recorder.startRecording();
+      }
+      return availableCams;
+    });
+  }
+
   useAvailableWebCams();
 
   props.socket.on('server: start cams', function () {
-    startAllCams();
+    console.log('this happened')
+    // startAllCams();
+    document.getElementById("resumeBtn").click();
+    document.getElementById("resumeBtn").disabled = true;
   });
 
   props.socket.on('server: stop cams', function () {
     stopAllCams();
+    document.getElementById("resumeBtn").disabled = false;
   });
 
   let findMatchingAudio = () => {
@@ -147,9 +165,23 @@ export default function CameraList(props) {
     });
   }
 
+  const DebugControls = (debug) => {
+    if (debug) {
+      return (
+        <div>
+          <p>Don't click these while actual testing</p>
+          <button id="startBtn" onClick={startAllCams}>start and pause all cams</button>
+          <button id="resumeBtn" onClick={resumeAllCams}>resume all cams</button>
+          <button id="stopBtn" onClick={stopAllCams}>stop all cams</button>
+        </div>
+      )
+    }
+  }
+
   let renderCams = () => {
     findMatchingAudio();
-
+    
+    let debug = true;
     let cams_list = availableCams.map(cam => {
       return (
         <Webcam
@@ -160,20 +192,15 @@ export default function CameraList(props) {
       );
     });
 
-
     return (
       <div id='camera_list'>
-        <button onClick={startAllCams}>start all cams</button>
-        <button onClick={stopAllCams}>stop all cams</button>
-
+        {DebugControls(debug)}
         <div>
           <div className='cameras'>{cams_list}</div>
         </div>
       </div>
     );
   };
-
-
-
+  
   return renderCams();
 }

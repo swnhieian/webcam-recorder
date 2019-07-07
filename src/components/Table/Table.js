@@ -4,39 +4,29 @@ import './Table.scss'
 import TableData from './TableData.js'
 import PropTypes from 'prop-types';
 import TableFooter from './TableFooter';
-import qs from '../../utils/qs'
 export default class Table extends Component {
   constructor(props) {
     super(props);
+    let per_page = 8;
     this.state = {
-      curr_page: Math.floor(Number(qs["sentence_index"])/8) + 1,
-      max_per_page: 8
+      max_per_page: per_page
     }
-  }
-  updatePage = (new_page) => {
-    if (new_page === 0 ) {
-      // do nothing
-    } 
-    console.log('update page', new_page)
-    this.setState({
-      curr_page: (new_page >= 1) ? new_page : 1
-    })
   }
 
   render() {
-
     return (
       <div>
         <TableHeader />
         <TableData
           data={this.props.data}
-          curr_page={this.state.curr_page}
+          curr_page={this.props.curr_page}
           max_per_page={this.state.max_per_page}
+          curr_sentence_index={this.props.curr_sentence_index}
         />
         <TableFooter
           total_data={this.props.data.length}
-          updatePage={this.updatePage}
-          curr_page={this.state.curr_page}
+          updatePage={this.props.updatePage}
+          curr_page={this.props.curr_page}
           max_per_page={this.state.max_per_page}
         />
       </div>
@@ -45,5 +35,8 @@ export default class Table extends Component {
 }
 
 Table.propTypes = {
+  curr_sentence_index: PropTypes.number.isRequired,
+  curr_page: PropTypes.number.isRequired,
+  updatePage: PropTypes.func.isRequired,
   data: PropTypes.array.isRequired,
 };

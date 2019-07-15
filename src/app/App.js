@@ -133,11 +133,13 @@ class App extends React.Component {
   render() {
     return (
       <div className='container'>
+        {this.tester()}
         <div className='contents'>
-          <div className='left_panel'>{this.tester()}</div>
-          <div className='right_panel'>{this.dataCollection()}</div>
+          <div className='left_panel'>{this.dataCollection()}</div>
+          <div className='right_panel cameras_container'>{this.cameraList()}</div>
+          <div className=''></div>
         </div>
-        <div className='cameras_container'>{this.cameraList()}</div>
+        
       </div>
     );
   }

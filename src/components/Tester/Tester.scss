@@ -2,7 +2,8 @@
 .testing_screen {
   text-align:center;
   // background-color:blue;
-  height:80vh;
+  padding: 20vh 0vh;
+  height:30vh;
   width:100%;
 }
 
@@ -17,17 +18,26 @@
   margin: 0.5em;
 }
 
+.btn-danger {
+  background-color: red;
+  color: white;
+}
+
 
 .test_container {
-  transform: translateY(12vh);
+  //transform: translateY(12vh);
 }
 
 .sentence_to_be_read {
-  font-size: 2em;
+  font-size: 3em;
   line-height: 2;
   margin-bottom: 0.5em;
 }
-
+.recording_hint {
+  color: red;
+  font-size: 2em;
+  height: 5vh;
+}
 .warning_message {
   color: red;
 }

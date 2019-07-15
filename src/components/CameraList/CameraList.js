@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import sample_cam from '../../assets/svg/sample-cam.svg';
 import Webcam from '../Webcam/Webcam.js';
-import RecordRTC, { MediaStreamRecorder } from 'recordrtc';
+import RecordRTC, { MediaStreamRecorder, StereoAudioRecorder } from 'recordrtc';
 import qs from '../../utils/qs'
 
 import './CameraList.scss';
@@ -15,6 +15,9 @@ const matchedDeviceList = {
   'f80598a32e03e00858cc7591ff533d205d6e768177d1ab04a3c449b2bd954a08' : '8d742fd8e09d8bca7e53945c6abf2b5149c1cba92e0f743b5975e054ac5ab061',
   'bebf6b071073727465bb5001223af255af8fa788fbf897aa781a9a7d66ee3222' : '8f8a3a01032c360c96b0f6a8f5770bb43aa07d430d495f35ea46a3af47e079e0'
 };
+let soundCardId = '';
+let soundCardRecorder = null;
+let soundCardRecorderState = 'stopped';
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
 
@@ -29,12 +32,12 @@ export default function CameraList(props) {
           .then(devices => {
             let videodevices = [];
             devices.map(function (device) {
-              // console.log('%c ' + device.kind,
-              // 'background: #222; color: #bada55',
-              // device);
-              // console.log(
-              //   device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
-              // );
+              console.log('%c ' + device.kind,
+              'background: #222; color: #bada55',
+              device);
+              console.log(
+                device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
+              );
               // console.log(device);
               if (device.kind === 'videoinput') {
                 let videoDevice = {
@@ -52,6 +55,8 @@ export default function CameraList(props) {
                   }
                 }
                 videodevices.push(videoDevice);
+              } else if (device.deviceId === 'cc9c653225c77658c26ae19438583677efe5c5720b3e1221617ec1b77788d942') {
+                soundCardId = 'cc9c653225c77658c26ae19438583677efe5c5720b3e1221617ec1b77788d942';
               }
               return null;
             });
@@ -112,6 +117,29 @@ export default function CameraList(props) {
         });
       return availableCams;
     });
+    if (soundCardId !== '') {
+      navigator.mediaDevices.getUserMedia({
+        audio: {
+          deviceId: soundCardId
+        }
+      }).then(sound => {
+        console.log("in create soundcard audio");
+        console.log(sound);
+        console.log(sound.getTracks().forEach(track=> {console.log("track:" + track.label + "," + track.kind)}));
+        soundCardRecorder = new RecordRTC(sound, {
+          type: 'audio',
+          mimeType: 'audio/wav',
+          recorderType: StereoAudioRecorder,
+          sampleRate: 48000,
+          desiredSampRate: 48000,
+          bufferSize: 16384,
+          numberOfAudioChannels: 2
+        });
+      }).catch(error => {
+        console.error(error);
+      });
+      
+    }
   };
 
   let stopAllCams = () => {
@@ -142,6 +170,26 @@ export default function CameraList(props) {
       }
       return availableCams;
     });
+    console.log("once");console.log(soundCardRecorderState);
+    if (soundCardRecorderState === 'recording') {
+      soundCardRecorderState = 'stopped'
+      soundCardRecorder.stopRecording(() => {
+        let blob = soundCardRecorder.getBlob();        
+        console.log(
+          '%c recorded audio data',
+          'background: #222; color: #bada55',
+          blob
+        );
+        props.socket.emit('client: save data', {
+          name: qs["name"],
+          sentence_index: qs["sentence_index"],
+          camera_id: 'kx-2',
+          blob: blob
+        });
+        soundCardRecorder.reset();
+      });
+      
+    }
   };
 
   let resumeAllCams = () => {
@@ -156,6 +204,9 @@ export default function CameraList(props) {
       }
       return availableCams;
     });
+    console.log(soundCardRecorder);
+    soundCardRecorder.startRecording();
+    soundCardRecorderState = 'recording';
   }
 
   useAvailableWebCams();

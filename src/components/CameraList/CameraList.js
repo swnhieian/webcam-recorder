@@ -67,7 +67,10 @@ export default function CameraList(props) {
     }, []);
   }
 
-
+  let resetInitialCams = (recorder) => {
+    recorder.startRecording();
+    recorder.stopRecording();
+  }
 
   let startAllCams = () => {
     availableCams.map(cam => {
@@ -102,8 +105,8 @@ export default function CameraList(props) {
             cam['recorder'] = recorder;
             let video = cam['ref'];
             video.current.srcObject = camera;
+            resetInitialCams(recorder);
             recorder.startRecording();
-            // recorder.reset();
             recorder.pauseRecording();
           }
         })
@@ -131,13 +134,6 @@ export default function CameraList(props) {
             camera_id: cam['camera_info'].id,
             blob: blob
           });
-          // let video = cam['ref'];
-          // video.current.srcObject = null;
-          // video.current.src = URL.createObjectURL(blob);
-          // cam['ref'] = video;
-          // recorder.camera.stop();
-          // recorder.destroy();
-          // cam['recorder'] = null;
         });
       }
       return availableCams;
@@ -148,7 +144,6 @@ export default function CameraList(props) {
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       let state = recorder.getState();
-      console.log(state);
       if (state === "paused") {
         recorder.resumeRecording();
       } else if (state === "stopped"){
@@ -161,8 +156,6 @@ export default function CameraList(props) {
   useAvailableWebCams();
 
   props.socket.on('server: start cams', function () {
-    console.log('this happened')
-    // startAllCams();
     document.getElementById("resumeBtn").click();
     document.getElementById("resumeBtn").disabled = true;
   });

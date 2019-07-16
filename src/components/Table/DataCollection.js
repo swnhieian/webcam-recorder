@@ -10,7 +10,6 @@ export default class DataCollection extends Component {
     return (
       <div>
         <div className='name_field'>
-          <NameField socket={this.props.socket} />
         </div>
         <div className='data_table'>
           <Table

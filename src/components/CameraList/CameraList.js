@@ -191,7 +191,7 @@ export default function CameraList(props) {
     if (debug) {
       return (
         <div>
-          <p>Don't click these while actual testing</p>
+          {/* <p>Don't click these while actual testing</p> */}
           <button id="startBtn" onClick={startAllCams}>start and pause all cams</button>
           <button id="resumeBtn" onClick={resumeAllCams}>resume all cams</button>
           <button id="stopBtn" onClick={stopAllCams}>stop all cams</button>

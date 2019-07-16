@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import './NameField.scss'
-import qs from '../../utils/qs'
 
 export default class NameField extends Component {
 
@@ -13,6 +12,12 @@ export default class NameField extends Component {
     })
   }
 
+  detectEnter = (e) => {
+    if (e.which == 13) {
+      this.saveName(e);
+    }
+  }
+
 
   render() {
     return (
@@ -22,9 +27,11 @@ export default class NameField extends Component {
             type='text'
             name='name'
             id='name'
-            placeholder={qs['name']}
+            placeholder='Enter Name'
+            onKeyPress={this.detectEnter}
           />
-          <button onClick={this.saveName}>Save Name</button>
+          <br/>
+          <button className="btn btn-center" onClick={this.saveName}>Save Name</button>
         </div>
       </div>
     );

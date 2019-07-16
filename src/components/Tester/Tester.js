@@ -18,11 +18,9 @@ function Tester(props) {
   }
 
   return (
-    <div>
-      <div className='testing_screen'>
-        <div className='middle'>
-          <div className='inner'>{content(props)}</div>
-        </div>
+    <div className='testing_screen'>
+      <div className='middle'>
+        <div className='inner'>{content(props)}</div>
       </div>
     </div>
   );

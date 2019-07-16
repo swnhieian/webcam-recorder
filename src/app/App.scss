@@ -1,20 +1,32 @@
 //@import url('https://fonts.googleapis.com/css?family=Nunito:300,400&display=swap');
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
 body {
   font-family: 'Nunito', 'Courier New', Courier, monospace;
   font-weight: 300;
 }
 .container {
   // border: red dashed 1px;
-  grid-template-rows: 50px auto;
-  //display: grid;
-  padding: 0.8em;
+  // grid-template-rows: 100%;
+  // display: grid;
+  padding: 2em;
+  text-align: center;
 }
+.middle {
+  margin-top: 5vh;
+  display: block;
 
+}
 
 .contents {
   display: grid;
   grid-template-columns: 50% 50%;
   padding: 0.5em;
+  width: 90vw;
+  margin: auto auto;
   //height: 100%;
 }
 
@@ -31,12 +43,7 @@ body {
   margin-right: 0;
 }
 .left_panel {
-  // border: blue dashed 1px;
   display: grid;
-  //grid-template-rows: 54px auto;
-  border-right: 1px #00000010 solid;
-  //padding-right: 0.5em;
-  //padding: 20vh 5vh;
 }
 
 .cameras {
@@ -62,6 +69,7 @@ body {
 
 .right_panel {
   padding-left: 1em;
+  margin-top: auto;
 }
 
 ::-webkit-scrollbar {

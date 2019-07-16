@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import qs from '../../utils/qs'
+import NameField from '../NameField/NameField';
 
 export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
@@ -75,11 +76,7 @@ export default function InProcessScreen(props) {
     if (qs["sentence_index"] === undefined) {
       return (
         <div>
-          <button className='btn' 
-                  onClick={startTesting} 
-                  disabled={qs["name"] === undefined || qs["sentence_index"] === undefined}>
-            Start
-          </button>
+          <NameField socket={props.socket} />
           <p className="warning_message">Enter Name Before Starting</p>
 
         </div>

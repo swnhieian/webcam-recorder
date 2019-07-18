@@ -6,14 +6,20 @@ export default class NameField extends Component {
 
   saveName = (e) => {
     let name = document.getElementById("name").value;
-    document.location.search = "name=" + name + "&sentence_index=0";
+    // document.location.search = "name=" + name + "&sentence_index=0";
+    let url_state = '?name=' + name + '&sentence_index=0'
+    window.history.pushState(
+      null,
+      null,
+      url_state
+    );
+    
     this.props.socket.emit('client: start testing', {
       name,
       sentence_index: 0
     })
-    this.props.socket.emit('client: init cams to remove first vid', {
-
-    })
+    this.props.socket.emit('client: init cams to remove first vid')
+    this.props.updateTesterContents();
   }
 
   detectEnter = (e) => {
@@ -43,5 +49,6 @@ export default class NameField extends Component {
 }
 
 NameField.propTypes = {
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object.isRequired,
+  updateTesterContents: PropTypes.func.isRequired
 }

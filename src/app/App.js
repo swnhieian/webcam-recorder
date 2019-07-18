@@ -18,21 +18,26 @@ class App extends React.Component {
     let per_page = 8;
     this.state = {
       curr_sentence: '',
-      curr_sentence_index: Number(qs['sentence_index']),
+      curr_sentence_index: qs['sentence_index'] ? Number(qs['sentence_index']) : 0,
       data: [],
       per_page: per_page,
-      curr_page: Math.floor(Number(qs['sentence_index']) / per_page) + 1
+      curr_page: qs['sentence_index'] ? Math.floor(Number(qs['sentence_index']) / per_page) + 1 : 1
     };
   }
 
   readTextFile(file) {
+    console.log('this fired')
+    
     return fetch(file)
       .then(response => response.text())
       .then(text => {
         this.setState({ data: text.split('\n') }, () => {
+          let curr_sentence = qs['sentence_index']
+            ? this.state.data[Number(qs['sentence_index'])]
+            : this.state.data[0];
           this.setState(
-            { curr_sentence: this.state.data[Number(qs['sentence_index'])] },
-            () => {}
+            { curr_sentence},
+            () => {console.log(this.state.curr_sentence)}
           );
         });
       });

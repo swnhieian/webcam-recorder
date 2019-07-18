@@ -67,10 +67,6 @@ export default function CameraList(props) {
     }, []);
   }
 
-  let resetInitialCams = (recorder) => {
-    recorder.startRecording();
-  }
-
   let initCams = () => {
     stopAllCams("dummy");
   }
@@ -108,9 +104,9 @@ export default function CameraList(props) {
             cam['recorder'] = recorder;
             let video = cam['ref'];
             video.current.srcObject = camera;
-            resetInitialCams(recorder);
-            // recorder.startRecording();
-            recorder.pauseRecording();
+            // resetInitialCams(recorder);
+            recorder.startRecording();
+            // recorder.pauseRecording();
           }
         })
         .catch(error => {

@@ -7,6 +7,7 @@ export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
   const [done_recording, setDoneRecording] = useState(false);
   const [reset_state, reset] = useState(false)
+  const [nameSet, setName] = useState(false)
 
   function updateSentence(data) {
     reset(true);
@@ -68,14 +69,21 @@ export default function InProcessScreen(props) {
     }
   }
 
+  function updateTesterContents() {
+    setName(true);
+  }
+
   function getContents() {
-    if (qs["sentence_index"] === undefined) {
+    if (!nameSet) {
       return (
         <div>
-          <NameField socket={props.socket} />
-          <p className="warning_message">Enter Name Before Starting</p>
+          <NameField
+            socket={props.socket}
+            updateTesterContents={updateTesterContents}
+          />
+          <p className='warning_message'>Enter Name Before Starting</p>
         </div>
-      )
+      );
     } else {
       return (
         <div>

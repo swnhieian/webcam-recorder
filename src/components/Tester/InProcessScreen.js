@@ -35,10 +35,6 @@ export default function InProcessScreen(props) {
     }
   }
 
-  function startTesting() {
-    document.location.search = "?name=" + qs["name"] + "&sentence_index=0";
-  }
-
   function downHandler(event) {
     let key = event.key;
     //console.log(e);
@@ -78,7 +74,6 @@ export default function InProcessScreen(props) {
         <div>
           <NameField socket={props.socket} />
           <p className="warning_message">Enter Name Before Starting</p>
-
         </div>
       )
     } else {

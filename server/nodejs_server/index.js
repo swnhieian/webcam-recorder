@@ -37,18 +37,23 @@ io.on('connection', function(socket) {
     console.log('a user disconnected');
   });
 
+  socket.on('client: init cams to remove first vid', function() {
+    console.log('removed first vid');
+    io.emit('server: init cams to remove first vid')
+  })
+
   socket.on('client: start cams', function(msg) {
-    console.log('received from server' + msg);
+    console.log('received from server: ' + msg);
     io.emit('server: start cams')
   });
   
   socket.on('client: stop cams', function(msg) {
-    console.log('received from server' + msg);
+    console.log('received from server: ' + msg);
     io.emit('server: stop cams');
   });
 
   socket.on('client: start testing', function(data) {
-    console.log('received from server' + data.name, data.sentence_index);
+    console.log('received from server: ' + data.name, data.sentence_index);
     storeData(data, STATUS_PATH);
   });
 

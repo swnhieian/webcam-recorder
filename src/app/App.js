@@ -126,6 +126,16 @@ class App extends React.Component {
     );
   };
 
+  user_research_header = () => {
+    return (
+      <div>
+        <br />
+        <h1>For User Researcher Purpose Only</h1>
+        <hr />
+      </div>
+    )
+  }
+
   cameraList = () => {
     return <CameraList socket={this.props.socket} />;
   };
@@ -134,9 +144,7 @@ class App extends React.Component {
     return (
       <div className='container'>
         {this.tester()}
-        <br/>
-        <h1>For User Researcher Purpose Only</h1>
-        <hr/>
+        {this.user_research_header()}
         <div className='contents'>
           <div className='left_panel'>{this.dataCollection()}</div>
           <div className='right_panel cameras_container'>{this.cameraList()}</div>

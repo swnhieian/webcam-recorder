@@ -69,7 +69,10 @@ export default function CameraList(props) {
 
   let resetInitialCams = (recorder) => {
     recorder.startRecording();
-    recorder.stopRecording();
+  }
+
+  let initCams = () => {
+    stopAllCams("dummy");
   }
 
   let startAllCams = () => {
@@ -106,7 +109,7 @@ export default function CameraList(props) {
             let video = cam['ref'];
             video.current.srcObject = camera;
             resetInitialCams(recorder);
-            recorder.startRecording();
+            // recorder.startRecording();
             recorder.pauseRecording();
           }
         })
@@ -117,7 +120,7 @@ export default function CameraList(props) {
     });
   };
 
-  let stopAllCams = () => {
+  let stopAllCams = (dummy) => {
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       if (recorder !== null) {
@@ -128,12 +131,17 @@ export default function CameraList(props) {
             'background: #222; color: #bada55',
             blob
           );
-          props.socket.emit('client: save data', {
-            name: qs["name"],
-            sentence_index: qs["sentence_index"],
-            camera_id: cam['camera_info'].id,
-            blob: blob
-          });
+          if (dummy) {
+            // do nothing
+            console.log("got dummy blob");
+          } else {
+            props.socket.emit('client: save data', {
+              name: qs["name"],
+              sentence_index: qs["sentence_index"],
+              camera_id: cam['camera_info'].id,
+              blob: blob
+            });
+          }
         });
       }
       return availableCams;
@@ -155,6 +163,12 @@ export default function CameraList(props) {
 
   useAvailableWebCams();
 
+  props.socket.on('server: init cams to remove first vid', function() {
+    document.getElementById("initCams").click();
+    document.getElementById("initCams").disabled = true;
+
+  })
+
   props.socket.on('server: start cams', function () {
     document.getElementById("resumeBtn").click();
     document.getElementById("resumeBtn").disabled = true;
@@ -164,6 +178,7 @@ export default function CameraList(props) {
     stopAllCams();
     document.getElementById("resumeBtn").disabled = false;
   });
+
 
   let findMatchingAudio = () => {
     console.log("INNNNNNNN find matching audio");
@@ -192,6 +207,7 @@ export default function CameraList(props) {
       return (
         <div>
           {/* <p>Don't click these while actual testing</p> */}
+          <button id="initCams" onClick={initCams}>Init Cams</button>
           <button id="startBtn" onClick={startAllCams}>start and pause all cams</button>
           <button id="resumeBtn" onClick={resumeAllCams}>resume all cams</button>
           <button id="stopBtn" onClick={stopAllCams}>stop all cams</button>

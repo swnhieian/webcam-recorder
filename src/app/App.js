@@ -25,9 +25,7 @@ class App extends React.Component {
     };
   }
 
-  readTextFile(file) {
-    console.log('this fired')
-    
+  readTextFile(file) {    
     return fetch(file)
       .then(response => response.text())
       .then(text => {
@@ -37,7 +35,9 @@ class App extends React.Component {
             : this.state.data[0];
           this.setState(
             { curr_sentence},
-            () => {console.log(this.state.curr_sentence)}
+            () => {
+              // console.log(this.state.curr_sentence)
+            }
           );
         });
       });

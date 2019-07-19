@@ -23,7 +23,7 @@ export default class NameField extends Component {
   }
 
   detectEnter = (e) => {
-    if (e.which == 13) {
+    if (e.which === 13) {
       this.saveName(e);
     }
   }

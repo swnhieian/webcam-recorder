@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './TableRow.scss';
-import Actions from './Actions';
+// import Actions from './Actions';
 import PropTypes from 'prop-types';
 
 export default class TableRow extends Component {

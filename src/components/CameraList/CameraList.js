@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // import sample_cam from '../../assets/svg/sample-cam.svg';
 import Webcam from '../Webcam/Webcam.js';
-import RecordRTC, { MediaStreamRecorder, StereoAudioRecorder } from 'recordrtc';
+import RecordRTC, { MediaStreamRecorder } from 'recordrtc';
 import qs from '../../utils/qs'
 
 import './CameraList.scss';
@@ -29,12 +29,12 @@ export default function CameraList(props) {
           .then(devices => {
             let videodevices = [];
             devices.map(function (device) {
-              console.log('%c ' + device.kind,
-              'background: #222; color: #bada55',
-              device);
-              console.log(
-                device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
-              );
+              // console.log('%c ' + device.kind,
+              // 'background: #222; color: #bada55',
+              // device);
+              // console.log(
+              //   device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
+              // );
               // console.log(device);
               if (device.kind === 'videoinput') {
                 let videoDevice = {
@@ -86,10 +86,8 @@ export default function CameraList(props) {
           }
         })
         .then(camera => {
-          console.log("in get user media:");
-          console.log(camera);
-          console.log(camera.getTracks().forEach(track=> {console.log("track:" + track.label + "," + track.kind)}));
-          console.log("////////////////////////");
+          // console.log(camera.getTracks().forEach(track=> {console.log("track:" + track.label + "," + track.kind)}));
+          // console.log("////////////////////////");
           let recorder = RecordRTC(camera, {
             recorderType: MediaStreamRecorder, //WebAssemblyRecorder,
             type: 'video',
@@ -176,27 +174,26 @@ export default function CameraList(props) {
   });
 
 
-  let findMatchingAudio = () => {
-    console.log("INNNNNNNN find matching audio");
-    availableCams.map(cam => {
-      if (!(cam.camera_info.id in matchedDeviceList)) {
-        console.log('%c error when find matching audio device',
-        'background: #222; color: #f00');
-        alert("error when find matching audio device");
-        return cam;
-      }
-      navigator.mediaDevices.enumerateDevices().then(devices => {
-        devices.map(device => {
-          if (device.kind === 'audioinput' && device.deviceId === matchedDeviceList[cam.camera_info.id]) {
-              //device.groupId === cam.camera_info.groupId) {
-            cam.mic_info = {id: device.deviceId, label: device.label}
-          }
-          return device;
-        });
-      });
-      return cam;
-    });
-  }
+  // let findMatchingAudio = () => {
+  //   availableCams.map(cam => {
+  //     if (!(cam.camera_info.id in matchedDeviceList)) {
+  //       console.log('%c error when find matching audio device',
+  //       'background: #222; color: #f00');
+  //       alert("error when find matching audio device");
+  //       return cam;
+  //     }
+  //     navigator.mediaDevices.enumerateDevices().then(devices => {
+  //       devices.map(device => {
+  //         if (device.kind === 'audioinput' && device.deviceId === matchedDeviceList[cam.camera_info.id]) {
+  //             //device.groupId === cam.camera_info.groupId) {
+  //           cam.mic_info = {id: device.deviceId, label: device.label}
+  //         }
+  //         return device;
+  //       });
+  //     });
+  //     return cam;
+  //   });
+  // }
 
   const DebugControls = (debug) => {
     if (debug) {

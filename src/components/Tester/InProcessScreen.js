@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import qs from '../../utils/qs'
 import NameField from '../NameField/NameField';
 
 export default function InProcessScreen(props) {

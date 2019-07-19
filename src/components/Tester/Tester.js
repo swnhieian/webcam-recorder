@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import InProcessScreen from './InProcessScreen.js';
 
 function Tester(props) {
+  
   function content(props) {
     return (
       <InProcessScreen
@@ -18,11 +19,9 @@ function Tester(props) {
   }
 
   return (
-    <div>
-      <div className='testing_screen'>
-        <div className='middle'>
-          <div className='inner'>{content(props)}</div>
-        </div>
+    <div className='testing_screen'>
+      <div className='middle'>
+        <div className='inner'>{content(props)}</div>
       </div>
     </div>
   );

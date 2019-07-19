@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import qs from '../../utils/qs'
+import NameField from '../NameField/NameField';
 
 export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
   const [done_recording, setDoneRecording] = useState(false);
   const [reset_state, reset] = useState(false)
+  const [nameSet, setName] = useState(false)
 
   function updateSentence(data) {
     reset(true);
@@ -32,10 +34,6 @@ export default function InProcessScreen(props) {
       props.socket.emit('client: start cams', 'in process screen');
       setRecordState(true);
     }
-  }
-
-  function startTesting() {
-    document.location.search = "?name=" + qs["name"] + "&sentence_index=0";
   }
 
   function downHandler(event) {
@@ -71,19 +69,21 @@ export default function InProcessScreen(props) {
     }
   }
 
+  function updateTesterContents() {
+    setName(true);
+  }
+
   function getContents() {
-    if (qs["sentence_index"] === undefined) {
+    if (!nameSet) {
       return (
         <div>
-          <button className='btn' 
-                  onClick={startTesting} 
-                  disabled={qs["name"] === undefined || qs["sentence_index"] === undefined}>
-            Start
-          </button>
-          <p className="warning_message">Enter Name Before Starting</p>
-
+          <NameField
+            socket={props.socket}
+            updateTesterContents={updateTesterContents}
+          />
+          <p className='warning_message'>Enter Name Before Starting</p>
         </div>
-      )
+      );
     } else {
       return (
         <div>

@@ -1,16 +1,31 @@
 import React, { Component } from 'react'
 import './NameField.scss'
-import qs from '../../utils/qs'
+import PropTypes from 'prop-types';
 
 export default class NameField extends Component {
 
   saveName = (e) => {
     let name = document.getElementById("name").value;
-    document.location.search = "name=" + name + "&sentence_index=0";
+    // document.location.search = "name=" + name + "&sentence_index=0";
+    let url_state = '?name=' + name + '&sentence_index=0'
+    window.history.pushState(
+      null,
+      null,
+      url_state
+    );
+    
     this.props.socket.emit('client: start testing', {
       name,
       sentence_index: 0
     })
+    this.props.socket.emit('client: init cams to remove first vid')
+    this.props.updateTesterContents();
+  }
+
+  detectEnter = (e) => {
+    if (e.which == 13) {
+      this.saveName(e);
+    }
   }
 
 
@@ -22,11 +37,18 @@ export default class NameField extends Component {
             type='text'
             name='name'
             id='name'
-            placeholder={qs['name']}
+            placeholder='Enter Name'
+            onKeyPress={this.detectEnter}
           />
-          <button onClick={this.saveName}>Save Name</button>
+          <br/>
+          <button className="btn btn-center" onClick={this.saveName}>Save Name</button>
         </div>
       </div>
     );
   }
+}
+
+NameField.propTypes = {
+  socket: PropTypes.object.isRequired,
+  updateTesterContents: PropTypes.func.isRequired
 }

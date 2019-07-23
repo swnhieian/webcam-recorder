@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import NameField from '../NameField/NameField';
+import qs from '../../utils/qs';
 
 export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
   const [done_recording, setDoneRecording] = useState(false);
   const [reset_state, reset] = useState(false)
-  const [nameSet, setName] = useState(false)
+  const [nameSet, setName] = useState(qs('name') !== undefined)
 
   function updateSentence(data) {
     reset(true);
@@ -101,7 +102,7 @@ export default function InProcessScreen(props) {
             onClick={() => updateSentence('$prev')}
             disabled={props.curr_sentence_index === 0 || reset_state}
           >
-            上一句⬅
+            ⬅上一句
         </button>
           <button
             className='btn'

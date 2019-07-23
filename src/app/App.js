@@ -16,12 +16,13 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     let per_page = 8;
+    let curr_index = qs('sentence_index');
     this.state = {
       curr_sentence: '',
-      curr_sentence_index: qs['sentence_index'] ? Number(qs['sentence_index']) : 0,
+      curr_sentence_index: curr_index ? Number(curr_index) : 0,
       data: [],
       per_page: per_page,
-      curr_page: qs['sentence_index'] ? Math.floor(Number(qs['sentence_index']) / per_page) + 1 : 1
+      curr_page: curr_index ? Math.floor(Number(curr_index) / per_page) + 1 : 1
     };
   }
 
@@ -30,8 +31,8 @@ class App extends React.Component {
       .then(response => response.text())
       .then(text => {
         this.setState({ data: text.split('\n') }, () => {
-          let curr_sentence = qs['sentence_index']
-            ? this.state.data[Number(qs['sentence_index'])]
+          let curr_sentence = qs('sentence_index')
+            ? this.state.data[Number(qs('sentence_index'))]
             : this.state.data[0];
           this.setState(
             { curr_sentence},
@@ -48,23 +49,28 @@ class App extends React.Component {
   }
 
   updateSentence = curr_sentence => {
+    //console.log("in updateSentence(" + curr_sentence + "):" + qs('name'));
     if (curr_sentence === '$next') {
-      this.setState(
-        {
-          curr_sentence_index: this.state.curr_sentence_index + 1
-        },
-        () => {
-          this.updateSentence(this.state.data[this.state.curr_sentence_index]);
-          this.props.socket.emit('client: update sentence_index', {
-            name: qs['name'],
-            curr_sentence_index: this.state.curr_sentence_index
-          });
-        }
-      );
+      if (this.state.curr_sentence_index+1 === this.state.data.length) {
+        alert("实验结束！谢谢您的参与");
+      } else {
+        this.setState(
+          {
+            curr_sentence_index: this.state.curr_sentence_index + 1
+          },
+          () => {
+            this.updateSentence(this.state.data[this.state.curr_sentence_index]);
+            this.props.socket.emit('client: update sentence_index', {
+              name: qs('name'), //qs['name'],
+              curr_sentence_index: this.state.curr_sentence_index
+            });
+          }
+        );
+      }
     } else if (curr_sentence === '$prev') {
       this.setState(
         {
-          curr_sentence_index: this.state.curr_sentence_index - 1
+          curr_sentence_index: Math.max(this.state.curr_sentence_index - 1, 0)
         },
         () => {
           this.updateSentence(this.state.data[this.state.curr_sentence_index]);
@@ -77,11 +83,12 @@ class App extends React.Component {
     } else {
       // let name = document.getElementById("name").value;
       // document.location.search = "?name=" + qs["name"] + "&sentence_index=" + this.state.curr_sentence_index;
+      //console.log(qs['name'] + "?????");
       window.history.pushState(
         null,
         null,
         '?name=' +
-          qs['name'] +
+          qs('name') +
           '&sentence_index=' +
           this.state.curr_sentence_index
       );

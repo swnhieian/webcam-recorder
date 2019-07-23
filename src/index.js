@@ -4,6 +4,6 @@ import './index.css';
 import App from './app/App.js';
 import io from 'socket.io-client'; 
 
-const socket = io('http://192.168.0.7:5000')
+const socket = io('http://192.168.0.1:5000')
 
 ReactDOM.render(<App socket={socket} />, document.getElementById('root'));

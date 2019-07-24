@@ -7,7 +7,7 @@ export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
   const [done_recording, setDoneRecording] = useState(false);
   const [reset_state, reset] = useState(false)
-  const [nameSet, setName] = useState(qs('name') !== undefined)
+  const [nameSet, setName] = useState(!!qs('name'))
 
   function updateSentence(data) {
     reset(true);

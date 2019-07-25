@@ -14,6 +14,10 @@
 
 let qs = function(id) {
   let parsedUrl = new URL(window.location.href);
-  return parsedUrl.searchParams.get(id);
+  if (parsedUrl.searchParams.has(id)) {
+    return parsedUrl.searchParams.get(id);
+  } else {
+    return false;
+  }
 }
 export default qs;

@@ -26,5 +26,11 @@ if __name__ == '__main__':
                 for webcam in webcamIds:
                     if webcam not in fileNames:
                         print(f"\t: {webcam} not saved!")
+            else:
+                for webcam in webcamIds:
+                    f = subdir / webcam
+                    if (f.stat().st_size == 0):
+                        print(f"{i} sentence not complete")
+                        print(f"\t: {webcam} file empty!")
         else:
             print(f"{i} sentence not exists")

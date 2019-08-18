@@ -73,6 +73,7 @@ io.on('connection', function(socket) {
     let name = status.name;
     let sentence_index = status.sentence_index;
 
+
     const camera_id = data.camera_id.substring(0, 15);
     const blob = data.blob;
 

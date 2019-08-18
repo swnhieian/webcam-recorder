@@ -129,6 +129,7 @@ export default function CameraList(props) {
             // do nothing
             console.log("got dummy blob");
           } else {
+            console.log("fjkldajfk;lajfdkslajf;; " + qs('name')+ ",,," + qs("sentence_index"));
             props.socket.emit('client: save data', {
               name: qs("name"),
               sentence_index: qs("sentence_index"),

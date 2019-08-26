@@ -15,6 +15,11 @@ const matchedDeviceList = {
   'f80598a32e03e00858cc7591ff533d205d6e768177d1ab04a3c449b2bd954a08' : '8d742fd8e09d8bca7e53945c6abf2b5149c1cba92e0f743b5975e054ac5ab061',
   'bebf6b071073727465bb5001223af255af8fa788fbf897aa781a9a7d66ee3222' : '8f8a3a01032c360c96b0f6a8f5770bb43aa07d430d495f35ea46a3af47e079e0'
 };
+
+//'bcb109e5b537b4b8519fc10797c86d313a22480d194f6b44477aaa45a27c7876' : '1db7be4b7c5815530412e44f8fd7f5f81cddb1ce6f26b8ac2b3e514716247ba6'
+//'f80598a32e03e00858cc7591ff533d205d6e768177d1ab04a3c449b2bd954a08' : '8d742fd8e09d8bca7e53945c6abf2b5149c1cba92e0f743b5975e054ac5ab061'
+//'bebf6b071073727465bb5001223af255af8fa788fbf897aa781a9a7d66ee3222' : '8f8a3a01032c360c96b0f6a8f5770bb43aa07d430d495f35ea46a3af47e079e0'
+
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
 
@@ -29,13 +34,13 @@ export default function CameraList(props) {
           .then(devices => {
             let videodevices = [];
             devices.map(function (device) {
-              // console.log('%c ' + device.kind,
-              // 'background: #222; color: #bada55',
-              // device);
-              // console.log(
-              //   device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
-              // );
-              // console.log(device);
+              console.log('%c ' + device.kind,
+              'background: #222; color: #bada55',
+              device);
+              console.log(
+                device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
+              );
+              console.log(device);
               if (device.kind === 'videoinput') {
                 let videoDevice = {
                   camera_info: {

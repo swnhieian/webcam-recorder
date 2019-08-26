@@ -15,6 +15,12 @@ const matchedDeviceList = {
   'f80598a32e03e00858cc7591ff533d205d6e768177d1ab04a3c449b2bd954a08' : '8d742fd8e09d8bca7e53945c6abf2b5149c1cba92e0f743b5975e054ac5ab061',
   'bebf6b071073727465bb5001223af255af8fa788fbf897aa781a9a7d66ee3222' : '8f8a3a01032c360c96b0f6a8f5770bb43aa07d430d495f35ea46a3af47e079e0'
 };
+// const matchedDeviceList = {
+//   'a37d9289204bc3893f687e01228f2be6021809752a116d8c3ab0a6f76dc2f844' : '785cb91e7331d5d0dddaa04300c767415e0eef26b39ba735aaaccec1e18f9280',
+//   'bef0b109c5c3c0bc4bc2d2ed22cfe768c9a11b7b7e29d540ede820c0a6472355' : '81c60d7dcdae0c9b5aec2e716f2d8fc37751ba2d7c7decb44070524c65b7f583',
+//   'fe81f26ea9b062d5fe9573c26a13469b6e7c05b6d7293b144e2d11e1020c0444' : 'abdb69a376084814b2927346a721848146b473d16c469f4b164f7777a772fcd2',
+
+// };
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
 
@@ -29,13 +35,13 @@ export default function CameraList(props) {
           .then(devices => {
             let videodevices = [];
             devices.map(function (device) {
-              // console.log('%c ' + device.kind,
-              // 'background: #222; color: #bada55',
-              // device);
-              // console.log(
-              //   device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
-              // );
-              // console.log(device);
+              console.log('%c ' + device.kind,
+              'background: #222; color: #bada55',
+              device);
+              console.log(
+                device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
+              );
+              console.log(device);
               if (device.kind === 'videoinput') {
                 let videoDevice = {
                   camera_info: {
@@ -50,6 +56,8 @@ export default function CameraList(props) {
                   videoDevice.mic_info = {
                     id: matchedDeviceList[device.deviceId]
                   }
+                } else {
+                  console.error("device not match!!!");
                 }
                 videodevices.push(videoDevice);
               }

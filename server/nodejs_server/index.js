@@ -31,10 +31,11 @@ const loadData = (data, path) => {
 const STATUS_PATH = './status.json'
 
 io.on('connection', function(socket) {
-  console.log('a user connected', socket.id);
+  console.log('computer connected at', socket.id);
+  io.emit('computer connected', socket.id);
 
-  socket.on('disconnect', function() {
-    console.log('a user disconnected');
+  socket.on('disconnect', function(socket) {
+    console.log('computer disconnected at ', socket.id);
   });
 
   socket.on('client: init cams to remove first vid', function() {

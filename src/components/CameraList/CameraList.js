@@ -60,7 +60,7 @@ export default function CameraList(props) {
                     id: matchedDeviceList[device.deviceId]
                   }
                 } else {
-                  alert("device not match!!!");
+                  // alert("device not match!!!");
                   console.error("device not match!!!");
                 }
                 videodevices.push(videoDevice);

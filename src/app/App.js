@@ -167,6 +167,14 @@ class App extends React.Component {
   render() {
     return (
       <div className='container'>
+        <div className="camera_status">
+          <h1>Camera Status</h1>
+          {
+            this.props.socket.on('computer connected', function(arg) {
+              console.log(arg);
+            })
+          }
+        </div>
         {this.tester()}
         {this.user_research_header()}
         <div className='contents'>

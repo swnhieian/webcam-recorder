@@ -13,7 +13,5 @@ parserOptions:
   sourceType: module
 plugins:
   - react
-rules: {
-  'no-console': { allow: ["log", "warn", "error"] }
-}
+rules: {}
 parser: "babel-eslint"

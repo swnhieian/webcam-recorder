@@ -89,13 +89,6 @@ class App extends React.Component {
         }
       );
     } else {
-      // let name = document.getElementById("name").value;
-      // document.location.search = "?name=" + qs["name"] + "&sentence_index=" + this.state.curr_sentence_index;
-      //console.log(qs['name'] + "?????");
-        
-
-        
-      
       window.history.pushState(
         null,
         null,
@@ -122,7 +115,7 @@ class App extends React.Component {
     });
   };
 
-  dataCollection = () => {
+  comp_dataCollection = () => {
     return (
       <DataCollection
         data={this.state.data}
@@ -136,7 +129,7 @@ class App extends React.Component {
     );
   };
 
-  tester = () => {
+  comp_tester = () => {
     return (
       <Tester
         updateSentence={this.updateSentence}
@@ -150,7 +143,7 @@ class App extends React.Component {
     );
   };
 
-  user_research_header = () => {
+  comp_userResearchHeader = () => {
     return (
       <div>
         <br />
@@ -160,26 +153,28 @@ class App extends React.Component {
     )
   }
 
-  cameraList = () => {
+
+  comp_cameraStatus = () => {
+    return (
+      <div className='camera_status'>
+        <h1>Camera Status</h1>
+      </div> 
+    )
+  }
+
+  comp_cameraList = () => {
     return <CameraList socket={this.props.socket} />;
   };
 
   render() {
     return (
       <div className='container'>
-        <div className="camera_status">
-          <h1>Camera Status</h1>
-          {
-            this.props.socket.on('computer connected', function(arg) {
-              console.log(arg);
-            })
-          }
-        </div>
-        {this.tester()}
-        {this.user_research_header()}
+        {this.comp_cameraStatus()}
+        {this.comp_tester()}
+        {this.comp_userResearchHeader()}
         <div className='contents'>
-          <div className='left_panel'>{this.dataCollection()}</div>
-          <div className='right_panel cameras_container'>{this.cameraList()}</div>
+          <div className='left_panel'>{this.comp_dataCollection()}</div>
+          <div className='right_panel cameras_container'>{this.comp_cameraList()}</div>
           <div className=''></div>
         </div>
         

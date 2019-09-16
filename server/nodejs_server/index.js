@@ -66,6 +66,7 @@ io.on('connection', function(socket) {
   })
 
   socket.on('client: save data', function(data) {
+    console.log(data);
 
     let status = loadData(data, STATUS_PATH);
     console.log(status);

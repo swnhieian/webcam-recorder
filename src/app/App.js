@@ -10,7 +10,9 @@ import Tester from '../components/Tester/Tester';
 import DataCollection from '../components/Table/DataCollection';
 
 // data
-import sentences from '../assets/data/sentences.txt';
+// import sentences from '../assets/data/sentences.txt';
+import sentences from '../assets/data/sentences-english-test.txt';
+
 
 class App extends React.Component {
   constructor(props) {

@@ -33,11 +33,10 @@ const CONNECTION_STATUS_PATH = './connection_status.json'
 
 io.on('connection', function(socket) {
   console.log('computer connected at', socket.id);
-  io.emit('computer connected', socket.id);
 
 
-  socket.on('disconnect', function(socket) {
-    console.log('computer disconnected at ', socket.id);
+  socket.on('disconnect', function() {
+    console.log('computer disconnected');
   });
 
   socket.on('client: init cams to remove first vid', function() {

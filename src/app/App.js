@@ -52,6 +52,9 @@ class App extends React.Component {
 
   componentDidMount() {
     this.readTextFile(sentences);
+    this.props.socket.on('computer connected', function(arg) {
+      console.log('got it!', arg)
+    });
   }
 
   updateSentence = curr_sentence => {
@@ -153,7 +156,6 @@ class App extends React.Component {
     )
   }
 
-
   comp_cameraStatus = () => {
     return (
       <div className='camera_status'>
@@ -177,7 +179,6 @@ class App extends React.Component {
           <div className='right_panel cameras_container'>{this.comp_cameraList()}</div>
           <div className=''></div>
         </div>
-        
       </div>
     );
   }

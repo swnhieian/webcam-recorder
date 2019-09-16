@@ -28,11 +28,13 @@ const loadData = (data, path) => {
   }
 }
 
-const STATUS_PATH = './status.json'
+const RECORDING_STATUS_PATH = './recording_status.json'
+const CONNECTION_STATUS_PATH = './connection_status.json'
 
 io.on('connection', function(socket) {
   console.log('computer connected at', socket.id);
   io.emit('computer connected', socket.id);
+
 
   socket.on('disconnect', function(socket) {
     console.log('computer disconnected at ', socket.id);
@@ -55,7 +57,7 @@ io.on('connection', function(socket) {
 
   socket.on('client: start testing', function(data) {
     console.log('received from server: ' + data.name, data.sentence_index);
-    storeData(data, STATUS_PATH);
+    storeData(data, RECORDING_STATUS_PATH);
   });
 
   socket.on('client: update sentence_index', function(data) {
@@ -63,13 +65,13 @@ io.on('connection', function(socket) {
       name: data.name,
       sentence_index: data.curr_sentence_index
     }
-    storeData(newStatus, STATUS_PATH);
+    storeData(newStatus, RECORDING_STATUS_PATH);
   })
 
   socket.on('client: save data', function(data) {
     console.log(data);
 
-    let status = loadData(data, STATUS_PATH);
+    let status = loadData(data, RECORDING_STATUS_PATH);
     console.log(status);
 
     let name = status.name;

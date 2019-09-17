@@ -7,7 +7,7 @@ app.get('/', function(req, res) {
   res.send('<h1>Server Started</h1>');
 });
 
-const storeData = (data, path) => {
+const saveData = (data, path) => {
   try {
     fs.writeFileSync(path, JSON.stringify(data))
   } catch (err) {
@@ -15,7 +15,15 @@ const storeData = (data, path) => {
   }
 }
 
-const loadData = (data, path) => {
+function readContent(path, callback) {
+  fs.readFile(path, function(err, content) {
+    if (err) return callback(err);
+    callback(null, content);
+  });
+}
+
+
+const updateRecordingStatus = (data, path) => {
   try {
     return JSON.parse(fs.readFileSync(path, 'utf8'))
   } catch (err) {
@@ -23,7 +31,7 @@ const loadData = (data, path) => {
       name: data.name, 
       sentence_index: data.sentence_index
     }
-    storeData(data, path);
+    saveData(data, path);
     return data;
   }
 }
@@ -31,12 +39,19 @@ const loadData = (data, path) => {
 const RECORDING_STATUS_PATH = './recording_status.json'
 const CONNECTION_STATUS_PATH = './connection_status.json'
 
+
 io.on('connection', function(socket) {
   console.log('computer connected at', socket.id);
 
-
   socket.on('disconnect', function() {
     console.log('computer disconnected');
+  });
+
+  socket.on('client: ping for connection status', function() {
+    console.log('received from server: ping for connection status');
+    readContent(CONNECTION_STATUS_PATH, function(err, content) {
+      io.emit('server: response for connection status', JSON.parse(content));
+    });
   });
 
   socket.on('client: init cams to remove first vid', function() {
@@ -56,7 +71,7 @@ io.on('connection', function(socket) {
 
   socket.on('client: start testing', function(data) {
     console.log('received from server: ' + data.name, data.sentence_index);
-    storeData(data, RECORDING_STATUS_PATH);
+    saveData(data, RECORDING_STATUS_PATH);
   });
 
   socket.on('client: update sentence_index', function(data) {
@@ -64,13 +79,13 @@ io.on('connection', function(socket) {
       name: data.name,
       sentence_index: data.curr_sentence_index
     }
-    storeData(newStatus, RECORDING_STATUS_PATH);
+    saveData(newStatus, RECORDING_STATUS_PATH);
   })
 
   socket.on('client: save data', function(data) {
     console.log(data);
 
-    let status = loadData(data, RECORDING_STATUS_PATH);
+    let status = updateRecordingStatus(data, RECORDING_STATUS_PATH);
     console.log(status);
 
     let name = status.name;

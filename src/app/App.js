@@ -54,9 +54,16 @@ class App extends React.Component {
 
   componentDidMount() {
     this.readTextFile(sentences);
-    this.props.socket.on('computer connected', function(arg) {
-      console.log('got it!', arg)
+    console.log('component did mount')
+    this.props.socket.on('server: response for connection status', function(status) {
+      updateConnectionStatusDisplay(status);
     });
+    
+  }
+
+  updateConnectionStatusDisplay = (status) => {
+    
+
   }
 
   updateSentence = curr_sentence => {
@@ -158,10 +165,16 @@ class App extends React.Component {
     )
   }
 
+  getConnectionStatus = () => {
+    console.log('clicked!!')
+    this.props.socket.emit('client: ping for connection status');
+  }
+
   comp_cameraStatus = () => {
     return (
       <div className='camera_status'>
         <h1>Camera Status</h1>
+        <button onClick={this.getConnectionStatus}>get status</button>
       </div> 
     )
   }

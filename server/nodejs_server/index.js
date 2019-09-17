@@ -42,6 +42,7 @@ var connection_status = {};
 
 io.on('connection', function(socket) {
   console.log('computer connected at ' + socket.id);
+  io.emit('connected sync id', socket.id);
   connection_status.temp = socket.id; // using computer id as variable for object name
   connection_status[connection_status.temp] = []; // cameras
   delete connection_status.temp;
@@ -90,8 +91,6 @@ io.on('connection', function(socket) {
   })
 
   socket.on('client: save data', function(data) {
-    console.log(data);
-
     let status = updateRecordingStatus(data, RECORDING_STATUS_PATH);
     console.log(status);
 

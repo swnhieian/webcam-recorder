@@ -29,6 +29,10 @@ export default function CameraList(props) {
 
   function useAvailableWebCams() {
     useEffect(() => {
+      props.socket.on('connected sync id', (id) => {
+        console.log('ey check it out, i got the id, ', id);
+      })
+
       // console.log(navigator);
       if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
         console.log('enumerateDevices() not supported.');

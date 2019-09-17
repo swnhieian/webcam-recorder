@@ -26,12 +26,25 @@ const matchedDeviceList = {
 
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
-  const [computerId, setComputerId] = useState(null);
+  let computerStatus = {};
+  let computerID = -1;
 
   props.socket.emit('client: ask for sync id');
   props.socket.on('server: connected sync id', id => {
-    setComputerId(id);
+    console.log(id);
+    computerID = id;
+    console.log(computerID);
+    document.getElementById("setCompID").click();
+    document.getElementById("setCompID").disabled = true;
   });
+
+  const getSetCompID = () => {
+    const status = {};
+    console.log(computerID);
+    status[computerID] = [];
+    computerStatus = status;
+    console.log(computerStatus);
+  };
 
   function useAvailableWebCams() {
     useEffect(() => {
@@ -85,11 +98,11 @@ export default function CameraList(props) {
     }, []);
   }
 
-  let initCams = () => {
+  const initCams = () => {
     stopAllCams("dummy");
   }
 
-  let startAllCams = () => {
+  const startAllCams = () => {
     availableCams.map(cam => {
       navigator.mediaDevices
         .getUserMedia({
@@ -122,22 +135,37 @@ export default function CameraList(props) {
             video.current.srcObject = camera;
             // resetInitialCams(recorder);
             recorder.startRecording();
+            // const camStatus = {};
+            // camStatus[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
+            // computerStatus[computerID].push(camStatus);
+            // console.log('%c' + JSON.stringify(computerStatus), 'background: #222; color: #bada55');
             // recorder.pauseRecording();
           }
         })
         .catch(error => {
           console.error(error);
         });
-      return availableCams;
+        return availableCams;
     });
   };
 
-  let stopAllCams = (dummy) => {
+  const stopAllCams = (dummy) => {
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       if (recorder !== null) {
         recorder.stopRecording(() => {
           let blob = recorder.getBlob();
+          console.log(computerStatus[computerID]);
+          computerStatus[computerID] = computerStatus[computerID].map(camera_status => {
+            console.log(camera_status);
+          });
+          const camStatus = {};
+          camStatus[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
+          computerStatus[computerID].push(camStatus);
+          console.log(
+            '%c' + JSON.stringify(computerStatus),
+            'background: #222; color: #bada55'
+          );
           console.log(
             '%c recorded data',
             'background: #222; color: #bada55',
@@ -147,7 +175,6 @@ export default function CameraList(props) {
             // do nothing
             console.log("got dummy blob");
           } else {
-            console.log("fjkldajfk;lajfdkslajf;; " + qs('name')+ ",,," + qs("sentence_index"));
             props.socket.emit('client: save data', {
               name: qs("name"),
               sentence_index: qs("sentence_index"),
@@ -161,7 +188,7 @@ export default function CameraList(props) {
     });
   };
 
-  let resumeAllCams = () => {
+  const resumeAllCams = () => {
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       let state = recorder.getState();
@@ -214,7 +241,7 @@ export default function CameraList(props) {
   //   });
   // }
 
-  const DebugControls = (debug) => {
+  const debugControls = (debug) => {
     if (debug) {
       return (
         <div>
@@ -223,6 +250,7 @@ export default function CameraList(props) {
           <button id="startBtn" onClick={startAllCams}>start and pause all cams</button>
           <button id="resumeBtn" onClick={resumeAllCams}>resume all cams</button>
           <button id="stopBtn" onClick={stopAllCams}>stop all cams</button>
+          <button id="setCompID" onClick={getSetCompID}>get set computer ID</button>
         </div>
       )
     }
@@ -231,9 +259,12 @@ export default function CameraList(props) {
   const renderCams = () => {
     //findMatchingAudio();
     //console.log(availableCams);
+
+    // console.log(computerId);
+    console.log(computerStatus);
     
-    let debug = true;
-    let cams_list = availableCams.map(cam => {
+    const debug = true;
+    const comp_camsList = availableCams.map(cam => {
       return (
         <Webcam
           key={cam['camera_info'].id}
@@ -243,11 +274,12 @@ export default function CameraList(props) {
       );
     });
 
+
     return (
       <div id='camera_list'>
-        {DebugControls(debug)}
+        {debugControls(debug)}
         <div>
-          <div className='cameras'>{cams_list}</div>
+          <div className='cameras'>{comp_camsList}</div>
         </div>
       </div>
     );

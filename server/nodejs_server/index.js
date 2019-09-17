@@ -38,14 +38,19 @@ const updateRecordingStatus = (data, path) => {
 
 const RECORDING_STATUS_PATH = './recording_status.json'
 const CONNECTION_STATUS_PATH = './connection_status.json'
-
+var connection_status = {};
 
 io.on('connection', function(socket) {
-  console.log('computer connected at', socket.id);
-  
+  connection_status.temp = socket.id; // using computer id as variable for object name
+  connection_status[connection_status.temp] = []; // cameras
+  delete connection_status.temp;
+  saveData(connection_status, CONNECTION_STATUS_PATH);
 
   socket.on('disconnect', function() {
-    console.log('computer disconnected');
+    console.log('computer disconnected at ' + socket.id);
+    const socketid = socket.id
+    delete connection_status[socketid];
+    saveData(connection_status, CONNECTION_STATUS_PATH);
   });
 
   socket.on('client: ping for connection status', function() {

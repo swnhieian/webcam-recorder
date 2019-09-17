@@ -26,15 +26,13 @@ class App extends React.Component {
       per_page: per_page,
       curr_page: curr_index ? Math.floor(Number(curr_index) / per_page) + 1 : 1
     };
-    this.props.socket.emit(
-      'client: update sentence_index', {
-        name: qs('name'),
-        curr_sentence_index: this.state.curr_sentence_index
-      }      
-    );
+    this.props.socket.emit('client: update sentence_index', {
+      name: qs('name'),
+      curr_sentence_index: this.state.curr_sentence_index
+    });
   }
 
-  readTextFile(file) {    
+  readTextFile(file) {
     return fetch(file)
       .then(response => response.text())
       .then(text => {
@@ -42,42 +40,36 @@ class App extends React.Component {
           let curr_sentence = qs('sentence_index')
             ? this.state.data[Number(qs('sentence_index'))]
             : this.state.data[0];
-          this.setState(
-            { curr_sentence},
-            () => {
-              // console.log(this.state.curr_sentence)
-            }
-          );
+          this.setState({ curr_sentence }, () => {
+            // console.log(this.state.curr_sentence)
+          });
         });
       });
   }
 
+  updateConnectionStatusDisplay = status => {
+    document.getElementById('camera_status_p').innerText = JSON.stringify(status, null, 4);
+  };
+
   componentDidMount() {
     this.readTextFile(sentences);
-    console.log('component did mount')
-    this.props.socket.on('server: response for connection status', function(status) {
-      updateConnectionStatusDisplay(status);
-    });
-    
-  }
-
-  updateConnectionStatusDisplay = (status) => {
-    
-
+    this.props.socket.on('server: response for connection status', this.updateConnectionStatusDisplay);
   }
 
   updateSentence = curr_sentence => {
     //console.log("in updateSentence(" + curr_sentence + "):" + qs('name'));
     if (curr_sentence === '$next') {
-      if (this.state.curr_sentence_index+1 === this.state.data.length) {
-        alert("实验结束！谢谢您的参与");
+      if (this.state.curr_sentence_index + 1 === this.state.data.length) {
+        alert('实验结束！谢谢您的参与');
       } else {
         this.setState(
           {
             curr_sentence_index: this.state.curr_sentence_index + 1
           },
           () => {
-            this.updateSentence(this.state.data[this.state.curr_sentence_index]);
+            this.updateSentence(
+              this.state.data[this.state.curr_sentence_index]
+            );
             this.props.socket.emit('client: update sentence_index', {
               name: qs('name'), //qs['name'],
               curr_sentence_index: this.state.curr_sentence_index
@@ -92,12 +84,10 @@ class App extends React.Component {
         },
         () => {
           this.updateSentence(this.state.data[this.state.curr_sentence_index]);
-          this.props.socket.emit(
-            'client: update sentence_index', {
-              name: qs('name'),
-              curr_sentence_index: this.state.curr_sentence_index
-            }            
-          );
+          this.props.socket.emit('client: update sentence_index', {
+            name: qs('name'),
+            curr_sentence_index: this.state.curr_sentence_index
+          });
         }
       );
     } else {
@@ -112,7 +102,10 @@ class App extends React.Component {
       // console.log(curr_sentence);
       this.setState({
         curr_sentence,
-        curr_page: Math.floor(Number(this.state.curr_sentence_index) / this.state.per_page) + 1
+        curr_page:
+          Math.floor(
+            Number(this.state.curr_sentence_index) / this.state.per_page
+          ) + 1
       });
     }
   };
@@ -162,22 +155,23 @@ class App extends React.Component {
         <h1>For User Researcher Purpose Only</h1>
         <hr />
       </div>
-    )
-  }
+    );
+  };
 
   getConnectionStatus = () => {
-    console.log('clicked!!')
+    console.log('clicked!!');
     this.props.socket.emit('client: ping for connection status');
-  }
+  };
 
   comp_cameraStatus = () => {
     return (
       <div className='camera_status'>
         <h1>Camera Status</h1>
+        <pre id="camera_status_p"></pre>
         <button onClick={this.getConnectionStatus}>get status</button>
-      </div> 
-    )
-  }
+      </div>
+    );
+  };
 
   comp_cameraList = () => {
     return <CameraList socket={this.props.socket} />;
@@ -191,7 +185,9 @@ class App extends React.Component {
         {this.comp_userResearchHeader()}
         <div className='contents'>
           <div className='left_panel'>{this.comp_dataCollection()}</div>
-          <div className='right_panel cameras_container'>{this.comp_cameraList()}</div>
+          <div className='right_panel cameras_container'>
+            {this.comp_cameraList()}
+          </div>
           <div className=''></div>
         </div>
       </div>

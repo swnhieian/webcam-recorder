@@ -42,6 +42,7 @@ const CONNECTION_STATUS_PATH = './connection_status.json'
 
 io.on('connection', function(socket) {
   console.log('computer connected at', socket.id);
+  
 
   socket.on('disconnect', function() {
     console.log('computer disconnected');

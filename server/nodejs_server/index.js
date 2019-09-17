@@ -41,6 +41,7 @@ const CONNECTION_STATUS_PATH = './connection_status.json'
 var connection_status = {};
 
 io.on('connection', function(socket) {
+  console.log('computer connected at ' + socket.id);
   connection_status.temp = socket.id; // using computer id as variable for object name
   connection_status[connection_status.temp] = []; // cameras
   delete connection_status.temp;

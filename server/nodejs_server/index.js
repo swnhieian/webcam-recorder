@@ -36,17 +36,25 @@ const updateRecordingStatus = (data, path) => {
   }
 }
 
-const RECORDING_STATUS_PATH = './recording_status.json'
-const CONNECTION_STATUS_PATH = './connection_status.json'
-var connection_status = {};
-
-io.on('connection', function(socket) {
-  console.log('computer connected at ' + socket.id);
-  io.emit('connected sync id', socket.id);
+const saveConnection = (socket) => {
   connection_status.temp = socket.id; // using computer id as variable for object name
   connection_status[connection_status.temp] = []; // cameras
   delete connection_status.temp;
   saveData(connection_status, CONNECTION_STATUS_PATH);
+}
+
+const RECORDING_STATUS_PATH = './recording_status.json'
+const CONNECTION_STATUS_PATH = './connection_status.json'
+let connection_status = {};
+
+io.on('connection', function(socket) {
+  console.log('computer connected at ' + socket.id);
+
+  saveConnection(socket);
+
+  socket.on('client: ask for sync id', function() {
+    io.emit('server: connected sync id', socket.id);
+  })
 
   socket.on('disconnect', function() {
     console.log('computer disconnected at ' + socket.id);

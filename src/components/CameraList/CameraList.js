@@ -26,13 +26,15 @@ const matchedDeviceList = {
 
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
+  const [computerId, setComputerId] = useState(null);
+
+  props.socket.emit('client: ask for sync id');
+  props.socket.on('server: connected sync id', id => {
+    setComputerId(id);
+  });
 
   function useAvailableWebCams() {
     useEffect(() => {
-      props.socket.on('connected sync id', (id) => {
-        console.log('ey check it out, i got the id, ', id);
-      })
-
       // console.log(navigator);
       if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
         console.log('enumerateDevices() not supported.');
@@ -226,7 +228,7 @@ export default function CameraList(props) {
     }
   }
 
-  let renderCams = () => {
+  const renderCams = () => {
     //findMatchingAudio();
     //console.log(availableCams);
     

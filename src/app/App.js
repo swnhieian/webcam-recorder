@@ -140,8 +140,14 @@ class App extends React.Component {
     });
   };
 
-  updateConnectionStatus = () => {
-    console.log('called from cameralist');
+  updateConnectionStatus = (recordingStatus) => {
+    console.log('called from cameralist' + JSON.stringify(recordingStatus));
+    if (this.state.computerStatus[this.state.computerID]){
+      const status = {};
+      status[this.state.computerID] = recordingStatus;
+      this.setState({ computerStatus: status });
+    }
+    this.props.socket.emit('client: update recording status', this.state.computerStatus);
   }
 
   comp_dataCollection = () => {
@@ -185,6 +191,7 @@ class App extends React.Component {
   getConnectionStatus = () => {
     console.log('clicked!!');
     this.props.socket.emit('client: ping for connection status');
+    this.props.socket.emit('client: stop cams');
   };
 
   comp_cameraStatus = () => {
@@ -192,7 +199,7 @@ class App extends React.Component {
       <div className='camera_status'>
         <h1>Connection Status</h1>
         <pre id="camera_status_p"></pre>
-        <button onClick={this.getConnectionStatus}>get status</button>
+        <button onClick={this.getConnectionStatus}>get status & reset cams</button>
       </div>
     );
   };

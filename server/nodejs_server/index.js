@@ -68,19 +68,23 @@ io.on('connection', function(socket) {
       io.emit('server: response for connection status', JSON.parse(content));
     });
   });
+  socket.on('client: update recording status', function(status) {
+    console.log('ey'+ JSON.stringify(status));
+  });
+  
 
   socket.on('client: init cams to remove first vid', function() {
     console.log('removed first vid');
     io.emit('server: init cams to remove first vid')
   })
 
-  socket.on('client: start cams', function(msg) {
-    console.log('received from server: ' + msg);
+  socket.on('client: start cams', function() {
+    console.log('received from server: start cams');
     io.emit('server: start cams')
   });
   
-  socket.on('client: stop cams', function(msg) {
-    console.log('received from server: ' + msg);
+  socket.on('client: stop cams', function() {
+    console.log('received from server: stop cams');
     io.emit('server: stop cams');
   });
 

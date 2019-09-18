@@ -70,6 +70,7 @@ export default function CameraList(props) {
           setAvailableCams(videodevices);
           document.getElementById('startBtn').click();
           document.getElementById('startBtn').disabled = true;
+          props.socket.emit('client: init cams to remove first vid');
           // console.log('getAvailableDevices success!');
         })
         .catch(function(err) {
@@ -88,11 +89,12 @@ export default function CameraList(props) {
     // runs multiple times
     useEffect(() => {
       console.log('%c' + JSON.stringify(recordingStatus), 'background: #222; color: #bada55');
+      props.updateConnectionStatus(recordingStatus);
     }, [recordingStatus])
   }
 
   const initCamsDummy = () => {
-    stopAllCams("dummy");
+    stopAllCams();
   }
 
   const startAllCams = () => {
@@ -123,22 +125,22 @@ export default function CameraList(props) {
             height: 1080,
             numberOfAudioChannels: 2
           });
-          const state = recorder.getState();
-          if (state !== 'recording') {
+          if (recorder.getState() !== 'recording') {
             recorder.camera = camera;
             cam['recorder'] = recorder;
             let video = cam['ref'];
             video.current.srcObject = camera;
             // resetInitialCams(recorder);
             recorder.startRecording();
-            temp[cam['camera_info'].id] = state;
-            setRecordingStatus(temp);
             // const camStatus = {};
             // camStatus[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
             // computerStatus[computerID].push(camStatus);
             // console.log('%c' + JSON.stringify(computerStatus), 'background: #222; color: #bada55');
             // recorder.pauseRecording();
           }
+          temp[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
+          setRecordingStatus(temp);
+          console.log('%cstart cams'  + JSON.stringify(temp), 'background: #fff; color:#ff0000')
         })
         .catch(error => {
           console.error(error);
@@ -147,7 +149,7 @@ export default function CameraList(props) {
     });
   };
 
-  const stopAllCams = (dummy) => {
+  const stopAllCams = () => {
     const temp = {};
     availableCams.map(cam => {
       let recorder = cam['recorder'];
@@ -170,20 +172,18 @@ export default function CameraList(props) {
             'background: #222; color: #bada55',
             blob
           );
-          if (dummy) {
-            // do nothing
-            console.log("got dummy blob");
-          } else {
-            props.socket.emit('client: save data', {
-              name: qs("name"),
-              sentence_index: qs("sentence_index"),
-              camera_id: cam['camera_info'].id,
-              blob: blob
-            });
-          }
-          temp[cam['camera_info'].id] = recorder.getState();
-          setRecordingStatus(temp);
+          
+          props.socket.emit('client: save data', {
+            name: qs("name"),
+            sentence_index: qs("sentence_index"),
+            camera_id: cam['camera_info'].id,
+            blob: blob
+          });
+
         });
+        temp[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
+        setRecordingStatus(temp);
+        console.log('%cstop cams ' + JSON.stringify(temp), 'background: #fff; color:#ff0000');
       }
       return availableCams;
     });
@@ -199,8 +199,9 @@ export default function CameraList(props) {
       } else if (state === "stopped"){
         recorder.startRecording();
       }
-      temp[cam['camera_info'].id] = state;
+      temp[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
       setRecordingStatus(temp);
+      console.log('%cresume cams'  + JSON.stringify(temp), 'background: #fff; color:#ff0000');
       return availableCams;
     });
   }
@@ -211,18 +212,21 @@ export default function CameraList(props) {
   props.socket.on('server: init cams to remove first vid', function() {
     document.getElementById("initCams").click();
     document.getElementById("initCams").disabled = true;
-
+    console.log('%cdoes this happen????', 'color:#FF0000');
   })
 
   // this is actually what calls start cams
   props.socket.on('server: start cams', function () {
     document.getElementById("resumeBtn").click();
     document.getElementById("resumeBtn").disabled = true;
+    document.getElementById('stopBtn').disabled = false;
+
   });
 
   // this is actually what calls stop cams
   props.socket.on('server: stop cams', function () {
-    stopAllCams();
+    document.getElementById('stopBtn').click();
+    document.getElementById('stopBtn').disabled = true;
     document.getElementById("resumeBtn").disabled = false;
   });
 

@@ -27,6 +27,7 @@ const matchedDeviceList = {
 
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
+  const [recordingStatus, setRecordingStatus] = useState({});
 
   const initCams = () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -78,11 +79,16 @@ export default function CameraList(props) {
   }
 
   function useAvailableWebCams() {
-    // basically ran when this function is called
+    //  runs once
     useEffect(() => {
       props.updateConnectionStatus();
       initCams();
     }, []);
+    
+    // runs multiple times
+    useEffect(() => {
+      console.log(recordingStatus);
+    }, [recordingStatus])
   }
 
   const initCamsDummy = () => {
@@ -90,7 +96,7 @@ export default function CameraList(props) {
   }
 
   const startAllCams = () => {
-    let recordingStatus = null;
+    const temp = {}
     // goes through all cams array and through each ID, accesses and opens it using navigator
     availableCams.map(cam => {
       navigator.mediaDevices
@@ -117,14 +123,16 @@ export default function CameraList(props) {
             height: 1080,
             numberOfAudioChannels: 2
           });
-          if (recorder.getState() !== 'recording') {
+          const state = recorder.getState();
+          if (state !== 'recording') {
             recorder.camera = camera;
             cam['recorder'] = recorder;
             let video = cam['ref'];
             video.current.srcObject = camera;
             // resetInitialCams(recorder);
             recorder.startRecording();
-            recordingStatus = recorder.getState();
+            temp[cam['camera_info'].id] = state;
+            setRecordingStatus(temp);
             // const camStatus = {};
             // camStatus[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
             // computerStatus[computerID].push(camStatus);
@@ -137,11 +145,10 @@ export default function CameraList(props) {
         });
         return availableCams;
     });
-    return recordingStatus;
   };
 
   const stopAllCams = (dummy) => {
-    let recordingStatus = null;
+    const temp = {};
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       if (recorder !== null) {
@@ -174,15 +181,16 @@ export default function CameraList(props) {
               blob: blob
             });
           }
+          temp[cam['camera_info'].id] = recorder.getState();
+          setRecordingStatus(temp);
         });
-        recordingStatus = recorder.getState();
       }
       return availableCams;
     });
-    return recordingStatus;
   };
 
   const resumeAllCams = () => {
+    const temp = {}
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       let state = recorder.getState();
@@ -191,6 +199,8 @@ export default function CameraList(props) {
       } else if (state === "stopped"){
         recorder.startRecording();
       }
+      temp[cam['camera_info'].id] = state;
+      setRecordingStatus(temp);
       return availableCams;
     });
   }

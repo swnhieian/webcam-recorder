@@ -27,7 +27,7 @@ const matchedDeviceList = {
 
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
-  const [recordingStatus, setRecordingStatus] = useState({});
+  const [recordingStatus, setRecordingStatus] = useState("recording-status-loading...");
 
   const initCams = () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -84,10 +84,10 @@ export default function CameraList(props) {
       props.updateConnectionStatus();
       initCams();
     }, []);
-    
+
     // runs multiple times
     useEffect(() => {
-      console.log(recordingStatus);
+      console.log('%c' + JSON.stringify(recordingStatus), 'background: #222; color: #bada55');
     }, [recordingStatus])
   }
 

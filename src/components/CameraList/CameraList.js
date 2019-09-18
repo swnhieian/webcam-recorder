@@ -27,22 +27,6 @@ const matchedDeviceList = {
 
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
-  let computerStatus = {};
-  let computerID = -1;
-
-  props.socket.emit('client: ask for sync id');
-  props.socket.on('server: connected sync id', id => {
-    if (getSetCompID) getSetCompID(id);
-    getSetCompID = null;
-  });
-
-  let getSetCompID = (id) => {
-    const status = {};
-    computerID = id;
-    status[computerID] = [];
-    computerStatus = status;
-    console.log(computerStatus);
-  };
 
   const initCams = () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -94,7 +78,9 @@ export default function CameraList(props) {
   }
 
   function useAvailableWebCams() {
+    // basically ran when this function is called
     useEffect(() => {
+      props.updateConnectionStatus();
       initCams();
     }, []);
   }
@@ -157,17 +143,17 @@ export default function CameraList(props) {
       if (recorder !== null) {
         recorder.stopRecording(() => {
           let blob = recorder.getBlob();
-          console.log(computerStatus[computerID]);
-          computerStatus[computerID] = computerStatus[computerID].map(camera_status => {
-            console.log(camera_status);
-          });
-          const camStatus = {};
-          camStatus[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
-          computerStatus[computerID].push(camStatus);
-          console.log(
-            '%c' + JSON.stringify(computerStatus),
-            'background: #222; color: #bada55'
-          );
+          // console.log(computerStatus[computerID]);
+          // computerStatus[computerID] = computerStatus[computerID].map(camera_status => {
+          //   console.log(camera_status);
+          // });
+          // const camStatus = {};
+          // camStatus[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
+          // computerStatus[computerID].push(camStatus);
+          // console.log(
+          //   '%c' + JSON.stringify(computerStatus),
+          //   'background: #222; color: #bada55'
+          // );
           console.log(
             '%c recorded data',
             'background: #222; color: #bada55',
@@ -252,7 +238,7 @@ export default function CameraList(props) {
           <button id="startBtn" onClick={startAllCams}>start and pause all cams</button>
           <button id="resumeBtn" onClick={resumeAllCams}>resume all cams</button>
           <button id="stopBtn" onClick={stopAllCams}>stop all cams</button>
-          <button id="setCompID" onClick={getSetCompID}>get set computer ID</button>
+          {/* <button id="setCompID" onClick={getSetCompID}>get set computer ID</button> */}
         </div>
       )
     }

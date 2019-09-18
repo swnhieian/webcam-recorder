@@ -24,11 +24,19 @@ class App extends React.Component {
       curr_sentence_index: curr_index ? Number(curr_index) : 0,
       data: [],
       per_page: per_page,
-      curr_page: curr_index ? Math.floor(Number(curr_index) / per_page) + 1 : 1
+      curr_page: curr_index ? Math.floor(Number(curr_index) / per_page) + 1 : 1,
+      computerStatus: {},
+      computerID: -1,
     };
     this.props.socket.emit('client: update sentence_index', {
       name: qs('name'),
       curr_sentence_index: this.state.curr_sentence_index
+    });
+
+    props.socket.emit('client: ask for sync id');
+    props.socket.on('server: connected sync id', id => {
+      if (this.getSetCompID) this.getSetCompID(id);
+      this.getSetCompID = null;
     });
   }
 
@@ -46,6 +54,18 @@ class App extends React.Component {
         });
       });
   }
+
+  getSetCompID = (id) => {
+    const status = {};
+    this.setState({ computerID: id });
+    status[this.state.computerID] = [];
+    this.setState({computerStatus: status});
+  };
+
+  boldString = (str, find) => {
+    var re = new RegExp(find, 'g');
+    return str.replace(re, '<b>'+find+'</b>');
+}
 
   updateConnectionStatusDisplay = status => {
     document.getElementById('camera_status_p').innerText = JSON.stringify(status, null, 4);
@@ -120,6 +140,10 @@ class App extends React.Component {
     });
   };
 
+  updateConnectionStatus = () => {
+    console.log('called from cameralist');
+  }
+
   comp_dataCollection = () => {
     return (
       <DataCollection
@@ -166,7 +190,7 @@ class App extends React.Component {
   comp_cameraStatus = () => {
     return (
       <div className='camera_status'>
-        <h1>Camera Status</h1>
+        <h1>Connection Status</h1>
         <pre id="camera_status_p"></pre>
         <button onClick={this.getConnectionStatus}>get status</button>
       </div>
@@ -174,10 +198,18 @@ class App extends React.Component {
   };
 
   comp_cameraList = () => {
-    return <CameraList socket={this.props.socket} />;
+    return (
+      <CameraList
+        socket={this.props.socket}
+        computerID={this.state.computerID}
+        computerStatus={this.state.computerStatus}
+        updateConnectionStatus={this.updateConnectionStatus}
+      />
+    );
   };
 
   render() {
+    console.log(this.state);
     return (
       <div className='container'>
         {this.comp_cameraStatus()}

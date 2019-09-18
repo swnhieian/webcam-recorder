@@ -70,7 +70,6 @@ export default function CameraList(props) {
           setAvailableCams(videodevices);
           document.getElementById('startBtn').click();
           document.getElementById('startBtn').disabled = true;
-          props.socket.emit('client: init cams to remove first vid');
           // console.log('getAvailableDevices success!');
         })
         .catch(function(err) {
@@ -212,7 +211,7 @@ export default function CameraList(props) {
   props.socket.on('server: init cams to remove first vid', function() {
     document.getElementById("initCams").click();
     document.getElementById("initCams").disabled = true;
-    console.log('%cdoes this happen????', 'color:#FF0000');
+
   })
 
   // this is actually what calls start cams

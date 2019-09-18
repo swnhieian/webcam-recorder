@@ -26,7 +26,8 @@ class App extends React.Component {
       per_page: per_page,
       curr_page: curr_index ? Math.floor(Number(curr_index) / per_page) + 1 : 1,
       computerStatus: {},
-      computerID: -1,
+      recordGreenLight: false,
+      computerID: -1
     };
     this.props.socket.emit('client: update sentence_index', {
       name: qs('name'),
@@ -35,8 +36,8 @@ class App extends React.Component {
 
     props.socket.emit('client: ask for sync id');
     props.socket.on('server: connected sync id', id => {
-      if (this.getSetCompID) this.getSetCompID(id);
-      this.getSetCompID = null;
+      if (this.socket_getSetCompID) this.socket_getSetCompID(id);
+      this.socket_getSetCompID = null;
     });
   }
 
@@ -55,25 +56,33 @@ class App extends React.Component {
       });
   }
 
-  getSetCompID = (id) => {
+  socket_getSetCompID = id => {
     const status = {};
     this.setState({ computerID: id });
     status[this.state.computerID] = [];
-    this.setState({computerStatus: status});
+    this.setState({ computerStatus: status });
   };
 
   boldString = (str, find) => {
     var re = new RegExp(find, 'g');
-    return str.replace(re, '<b>'+find+'</b>');
-}
+    return str.replace(re, '<b>' + find + '</b>');
+  };
 
-  updateConnectionStatusDisplay = status => {
-    document.getElementById('camera_status_p').innerText = JSON.stringify(status, null, 4);
+  // helper method
+  socket_updateConnectionStatusDisplay = status => {
+    document.getElementById('camera_status_p').innerText = JSON.stringify(
+      status,
+      null,
+      4
+    );
   };
 
   componentDidMount() {
     this.readTextFile(sentences);
-    this.props.socket.on('server: response for connection status', this.updateConnectionStatusDisplay);
+    this.props.socket.on(
+      'server: response for connection status',
+      this.socket_updateConnectionStatusDisplay
+    );
   }
 
   updateSentence = curr_sentence => {
@@ -140,15 +149,16 @@ class App extends React.Component {
     });
   };
 
-  updateConnectionStatus = (recordingStatus) => {
+  updateConnectionStatus = recordingStatus => {
     console.log('called from cameralist' + JSON.stringify(recordingStatus));
-    if (this.state.computerStatus[this.state.computerID]){
+    if (this.state.computerStatus[this.state.computerID]) {
       const status = {};
       status[this.state.computerID] = recordingStatus;
       this.setState({ computerStatus: status });
+      this.props.socket.emit('client: update recording status', status);
     }
-    this.props.socket.emit('client: update recording status', this.state.computerStatus);
-  }
+    this.getConnectionStatus();
+  };
 
   comp_dataCollection = () => {
     return (
@@ -164,6 +174,10 @@ class App extends React.Component {
     );
   };
 
+  updateGreenLightStatus = () => {
+    this.setState({ recordGreenLight : true });
+  }
+
   comp_tester = () => {
     return (
       <Tester
@@ -174,6 +188,8 @@ class App extends React.Component {
         first_sentence={this.state.data[this.state.curr_sentence_index]}
         curr_sentence={this.state.curr_sentence}
         socket={this.props.socket}
+        recordGreenLight={this.state.recordGreenLight}
+        updateGreenLightStatus={this.updateGreenLightStatus}
       />
     );
   };
@@ -189,17 +205,28 @@ class App extends React.Component {
   };
 
   getConnectionStatus = () => {
-    console.log('clicked!!');
     this.props.socket.emit('client: ping for connection status');
+  };
+
+  resetCams = () => {
     this.props.socket.emit('client: stop cams');
+    this.updateGreenLightStatus();
   };
 
   comp_cameraStatus = () => {
     return (
       <div className='camera_status'>
         <h1>Connection Status</h1>
-        <pre id="camera_status_p"></pre>
-        <button onClick={this.getConnectionStatus}>get status & reset cams</button>
+        <pre id='camera_status_p'></pre>
+        <button onClick={this.getConnectionStatus}>Get Status</button>
+        <button onClick={this.resetCams}>Reset Cams</button>
+        {console.log('ey there', qs('name'))}
+        <p
+          hidden={this.state.recordGreenLight || !qs('name')}
+          className='warning_message'
+        >
+          Please Click Reset!
+        </p>
       </div>
     );
   };

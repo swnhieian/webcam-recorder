@@ -20,6 +20,7 @@ export default class NameField extends Component {
     })
     this.props.socket.emit('client: init cams to remove first vid')
     this.props.updateTesterContents();
+    this.props.updateGreenLightStatus();
   }
 
   detectEnter = (e) => {
@@ -50,5 +51,6 @@ export default class NameField extends Component {
 
 NameField.propTypes = {
   socket: PropTypes.object.isRequired,
-  updateTesterContents: PropTypes.func.isRequired
-}
+  updateTesterContents: PropTypes.func.isRequired,
+  updateGreenLightStatus: PropTypes.func.isRequired,
+};

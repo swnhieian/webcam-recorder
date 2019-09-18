@@ -57,6 +57,7 @@ export default function InProcessScreen(props) {
       window.removeEventListener('keydown', downHandler);
     }
   });
+
   function trans(text) {
     if (text === 'Done') {
       return '结束录制';
@@ -80,6 +81,7 @@ export default function InProcessScreen(props) {
           <NameField
             socket={props.socket}
             updateTesterContents={updateTesterContents}
+            updateGreenLightStatus={props.updateGreenLightStatus}
           />
           <p className='warning_message'>Enter Name Before Starting</p>
         </div>
@@ -87,13 +89,17 @@ export default function InProcessScreen(props) {
     } else {
       return (
         <div>
-          <div className="recording_hint">
-            {getRecordState() === 'Done' ? '录制中...': ''}
+          <div className='recording_hint'>
+            {getRecordState() === 'Done' ? '录制中...' : ''}
           </div>
           <div className='testing_content sentence_to_be_read'>
             {props.curr_sentence}
           </div>
-          <button className={getRecordState()==='Done'?'btn btn-danger': 'btn'} onClick={record}>
+          <button
+            className={getRecordState() === 'Done' ? 'btn btn-danger' : 'btn'}
+            onClick={record}
+            disabled={!props.recordGreenLight}
+          >
             {trans(getRecordState())}
           </button>
           <br />
@@ -103,20 +109,20 @@ export default function InProcessScreen(props) {
             disabled={props.curr_sentence_index === 0 || reset_state}
           >
             ⬅上一句
-        </button>
+          </button>
           <button
             className='btn'
             onClick={() => updateSentence('$next')}
             disabled={
               props.curr_sentence_index === props.data_length - 1 ||
-              !done_recording || reset_state
+              !done_recording ||
+              reset_state
             }
           >
             下一句➡
-        </button>
-
+          </button>
         </div>
-      )
+      );
     }
   }
 
@@ -133,5 +139,7 @@ InProcessScreen.propTypes = {
   data_length: PropTypes.number.isRequired,
   updateSentence: PropTypes.func.isRequired,
   socket: PropTypes.object.isRequired,
-  data: PropTypes.array.isRequired
+  data: PropTypes.array.isRequired,
+  updateGreenLightStatus: PropTypes.func.isRequired,
+  recordGreenLight: PropTypes.bool.isRequired
 };

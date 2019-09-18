@@ -63,14 +63,13 @@ io.on('connection', function(socket) {
   });
 
   socket.on('client: ping for connection status', function() {
-    console.log('received from server: ping for connection status');
     readContent(CONNECTION_STATUS_PATH, function(err, content) {
       io.emit('server: response for connection status', JSON.parse(content));
     });
   });
   socket.on('client: update recording status', function(status) {
     saveConnection(socket, status[socket.id])
-    console.log('server: updated recording status', JSON.stringify(status[socket.id]));
+    console.log('server: updated recording status', JSON.stringify(status));
     // console.log(JSON.stringify(status));
   });
   

@@ -14,6 +14,8 @@ function Tester(props) {
         socket={props.socket}
         data={props.data}
         curr_sentence={props.curr_sentence}
+        recordGreenLight={props.recordGreenLight}
+        updateGreenLightStatus={props.updateGreenLightStatus}
       />
     );
   }
@@ -34,6 +36,8 @@ Tester.propTypes = {
   data_length: PropTypes.number.isRequired,
   socket: PropTypes.object.isRequired,
   data: PropTypes.array.isRequired,
+  recordGreenLight: PropTypes.bool.isRequired,
+  updateGreenLightStatus: PropTypes.func.isRequired
 };
 
 export default Tester;

@@ -90,6 +90,7 @@ export default function CameraList(props) {
   }
 
   const startAllCams = () => {
+    let recordingStatus = null;
     // goes through all cams array and through each ID, accesses and opens it using navigator
     availableCams.map(cam => {
       navigator.mediaDevices
@@ -123,6 +124,7 @@ export default function CameraList(props) {
             video.current.srcObject = camera;
             // resetInitialCams(recorder);
             recorder.startRecording();
+            recordingStatus = recorder.getState();
             // const camStatus = {};
             // camStatus[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
             // computerStatus[computerID].push(camStatus);
@@ -135,9 +137,11 @@ export default function CameraList(props) {
         });
         return availableCams;
     });
+    return recordingStatus;
   };
 
   const stopAllCams = (dummy) => {
+    let recordingStatus = null;
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       if (recorder !== null) {
@@ -171,9 +175,11 @@ export default function CameraList(props) {
             });
           }
         });
+        recordingStatus = recorder.getState();
       }
       return availableCams;
     });
+    return recordingStatus;
   };
 
   const resumeAllCams = () => {
@@ -191,17 +197,20 @@ export default function CameraList(props) {
 
   useAvailableWebCams();
 
+  // dummy to fix bug of first video
   props.socket.on('server: init cams to remove first vid', function() {
     document.getElementById("initCams").click();
     document.getElementById("initCams").disabled = true;
 
   })
 
+  // this is actually what calls start cams
   props.socket.on('server: start cams', function () {
     document.getElementById("resumeBtn").click();
     document.getElementById("resumeBtn").disabled = true;
   });
 
+  // this is actually what calls stop cams
   props.socket.on('server: stop cams', function () {
     stopAllCams();
     document.getElementById("resumeBtn").disabled = false;

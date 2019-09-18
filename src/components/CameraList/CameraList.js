@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
 // import sample_cam from '../../assets/svg/sample-cam.svg';
 import Webcam from '../Webcam/Webcam.js';
@@ -31,78 +32,79 @@ export default function CameraList(props) {
 
   props.socket.emit('client: ask for sync id');
   props.socket.on('server: connected sync id', id => {
-    console.log(id);
-    computerID = id;
-    console.log(computerID);
-    document.getElementById("setCompID").click();
-    document.getElementById("setCompID").disabled = true;
+    if (getSetCompID) getSetCompID(id);
+    getSetCompID = null;
   });
 
-  const getSetCompID = () => {
+  let getSetCompID = (id) => {
     const status = {};
-    console.log(computerID);
+    computerID = id;
     status[computerID] = [];
     computerStatus = status;
     console.log(computerStatus);
   };
 
+  const initCams = () => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+      console.log('enumerateDevices() not supported.');
+    } else {
+      navigator.mediaDevices
+        .enumerateDevices()
+        .then(devices => {
+          let videodevices = [];
+          devices.map(function(device) {
+            // console.log('%c ' + device.kind,
+            // 'background: #222; color: #bada55',
+            // device);
+            // console.log(
+            //   device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
+            // );
+            // console.log(device);
+            if (device.kind === 'videoinput') {
+              let videoDevice = {
+                camera_info: {
+                  id: device.deviceId,
+                  label: device.label,
+                  groupId: device.groupId
+                },
+                ref: React.createRef(),
+                recorder: null
+              };
+              if (device.deviceId in matchedDeviceList) {
+                videoDevice.mic_info = {
+                  id: matchedDeviceList[device.deviceId]
+                };
+              } else {
+                // alert("device not match!!!");
+                console.error('device not match!!!');
+              }
+              videodevices.push(videoDevice);
+            }
+            return null;
+          });
+          setAvailableCams(videodevices);
+          document.getElementById('startBtn').click();
+          document.getElementById('startBtn').disabled = true;
+          // console.log('getAvailableDevices success!');
+        })
+        .catch(function(err) {
+          console.log(err.name + ': ' + err.message);
+        });
+    }
+  }
+
   function useAvailableWebCams() {
     useEffect(() => {
-      // console.log(navigator);
-      if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-        console.log('enumerateDevices() not supported.');
-      } else {
-        navigator.mediaDevices
-          .enumerateDevices()
-          .then(devices => {
-            let videodevices = [];
-            devices.map(function (device) {
-              // console.log('%c ' + device.kind,
-              // 'background: #222; color: #bada55',
-              // device);
-              // console.log(
-              //   device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
-              // );
-              // console.log(device);
-              if (device.kind === 'videoinput') {
-                let videoDevice = {
-                  camera_info: {
-                    id: device.deviceId,
-                    label: device.label,
-                    groupId: device.groupId
-                  },
-                  ref: React.createRef(),
-                  recorder: null
-                };
-                if (device.deviceId in matchedDeviceList) {
-                  videoDevice.mic_info = {
-                    id: matchedDeviceList[device.deviceId]
-                  }
-                } else {
-                  // alert("device not match!!!");
-                  console.error("device not match!!!");
-                }
-                videodevices.push(videoDevice);
-              }
-              return null;
-            });
-            setAvailableCams(videodevices);
-            document.getElementById("startBtn").click();
-            document.getElementById("startBtn").disabled = true;
-            // console.log('getAvailableDevices success!');
-          })
-          .catch(function (err) {
-            console.log(err.name + ': ' + err.message);
-          });
-      }
+      initCams();
     }, []);
   }
 
-  const initCams = () => {
+  const initCamsDummy = () => {
     stopAllCams("dummy");
   }
 
   const startAllCams = () => {
+    // goes through all cams array and through each ID, accesses and opens it using navigator
     availableCams.map(cam => {
       navigator.mediaDevices
         .getUserMedia({
@@ -246,7 +248,7 @@ export default function CameraList(props) {
       return (
         <div>
           {/* <p>Don't click these while actual testing</p> */}
-          <button id="initCams" onClick={initCams}>Init Cams</button>
+          <button id="initCams" onClick={initCamsDummy}>Init Cams</button>
           <button id="startBtn" onClick={startAllCams}>start and pause all cams</button>
           <button id="resumeBtn" onClick={resumeAllCams}>resume all cams</button>
           <button id="stopBtn" onClick={stopAllCams}>stop all cams</button>
@@ -261,7 +263,6 @@ export default function CameraList(props) {
     //console.log(availableCams);
 
     // console.log(computerId);
-    console.log(computerStatus);
     
     const debug = true;
     const comp_camsList = availableCams.map(cam => {
@@ -273,7 +274,6 @@ export default function CameraList(props) {
         />
       );
     });
-
 
     return (
       <div id='camera_list'>

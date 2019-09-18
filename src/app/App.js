@@ -220,7 +220,6 @@ class App extends React.Component {
         <pre id='camera_status_p'></pre>
         <button onClick={this.getConnectionStatus}>Get Status</button>
         <button onClick={this.resetCams}>Reset Cams</button>
-        {console.log('ey there', qs('name'))}
         <p
           hidden={this.state.recordGreenLight || !qs('name')}
           className='warning_message'

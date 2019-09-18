@@ -35,9 +35,9 @@ const updateRecordingStatus = (data, path) => {
   }
 }
 
-const saveConnection = (socket) => {
+const saveConnection = (socket, status) => {
   connection_status.temp = socket.id; // using computer id as variable for object name
-  connection_status[connection_status.temp] = []; // cameras
+  connection_status[connection_status.temp] = status; // cameras
   delete connection_status.temp;
   saveData(connection_status, CONNECTION_STATUS_PATH);
 }
@@ -69,7 +69,9 @@ io.on('connection', function(socket) {
     });
   });
   socket.on('client: update recording status', function(status) {
-    console.log('ey'+ JSON.stringify(status));
+    saveConnection(socket, status[socket.id])
+    console.log('server: updated recording status', JSON.stringify(status[socket.id]));
+    // console.log(JSON.stringify(status));
   });
   
 

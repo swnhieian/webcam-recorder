@@ -64,6 +64,14 @@ io.on('connection', function(socket) {
     saveData(connection_status, CONNECTION_STATUS_PATH);
   });
 
+  socket.on('client: ping for numFilesSaved', function() {
+    try {
+      io.emit('server: response for numFilesSaved', numSaved);
+    } catch (SyntaxErrorException) {
+      console.error(SyntaxErrorException);
+    }
+  })
+
   socket.on('client: ping for connection status', function() {
     readContent(CONNECTION_STATUS_PATH, function(err, content) {
       try {

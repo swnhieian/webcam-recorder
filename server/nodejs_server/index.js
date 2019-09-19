@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {origins: '*:*'});
@@ -65,7 +66,11 @@ io.on('connection', function(socket) {
 
   socket.on('client: ping for connection status', function() {
     readContent(CONNECTION_STATUS_PATH, function(err, content) {
-      io.emit('server: response for connection status', JSON.parse(content));
+      try {
+        io.emit('server: response for connection status', JSON.parse(content));
+      } catch(SyntaxErrorException) {
+        console.error(SyntaxErrorException);
+      }
     });
   });
   socket.on('client: update recording status', function(status) {

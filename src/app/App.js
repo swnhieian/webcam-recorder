@@ -105,17 +105,18 @@ class App extends React.Component {
       });
     });
 
-    const refreshRates = [333, 666, 999]
+    const refreshRates = [0, 666, 1332];
     this.props.socket.on('server: refresh all', () => {
+      console.log(this.state.computerID);
       console.log(this.state.connectedOrderMap);
       const conectedOrderNum = this.state.connectedOrderMap[this.state.computerID];
       const indexRefresh = conectedOrderNum % 3;
+      console.log(indexRefresh);
       const time = refreshRates[indexRefresh];
       console.log(time);
-      console.log(time);
-      setTimeout(() => {
-        window.location.reload(false)
-      }, time)
+      // setTimeout(() => {
+      //   window.location.reload(false)
+      // }, time)
     });
   }
 

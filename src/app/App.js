@@ -27,7 +27,8 @@ class App extends React.Component {
       curr_page: curr_index ? Math.floor(Number(curr_index) / per_page) + 1 : 1,
       computerStatus: {},
       recordGreenLight: false,
-      computerID: -1
+      computerID: -1,
+      numFilesSaved: 0
     };
     this.props.socket.emit('client: update sentence_index', {
       name: qs('name'),
@@ -65,16 +66,17 @@ class App extends React.Component {
 
   boldString = (str, find) => {
     var re = new RegExp(find, 'g');
-    return str.replace(re, '<b>' + find + '</b>');
+    return str.replace(re, '<this computer>: ' + find);
   };
 
   // helper method
   socket_updateConnectionStatusDisplay = status => {
-    document.getElementById('camera_status_p').innerText = JSON.stringify(
+    document.getElementById('camera_status_p').innerText = this.boldString(JSON.stringify(
       status,
       null,
       4
-    );
+    ), this.state.computerID);
+    this.updateNumFilesSaved("num files saved: " + this.state.numFilesSaved);
   };
 
   componentDidMount() {
@@ -83,8 +85,21 @@ class App extends React.Component {
       'server: response for connection status',
       this.socket_updateConnectionStatusDisplay
     );
-    this.props.socket.on('server: save files successful', (numFiles) => {
-      this.updateNumFilesSaved("num files saved: " + numFiles);
+    this.props.socket.on(
+      'server: response for numFilesSaved', numFiles => {
+        this.helper_updateFilesSaved(numFiles);
+      }
+    );
+  
+    this.props.socket.on('server: save files successful', numFiles => {
+      this.helper_updateFilesSaved(numFiles);
+    });
+  }
+
+  helper_updateFilesSaved = numFiles => {
+    this.updateNumFilesSaved('num files saved: ' + numFiles);
+    this.setState({
+      numFilesSaved: numFiles
     });
   }
 
@@ -213,6 +228,7 @@ class App extends React.Component {
 
   getConnectionStatus = () => {
     this.props.socket.emit('client: ping for connection status');
+    this.props.socket.emit('client: ping for numFilesSaved');
   };
 
   resetCams = () => {

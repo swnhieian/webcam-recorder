@@ -95,6 +95,9 @@ class App extends React.Component {
       this.helper_updateFilesSaved(numFiles);
     });
 
+    let refreshTime = [333, 666, 999];
+    let refreshIndex = 0;
+
     this.props.socket.on('server: refresh all', (time) => {
       console.log(time);
       // setTimeout(() => {

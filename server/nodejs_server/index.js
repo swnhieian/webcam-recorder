@@ -47,8 +47,7 @@ const RECORDING_STATUS_PATH = './recording_status.json'
 const CONNECTION_STATUS_PATH = './connection_status.json'
 let connection_status = {};
 let numSaved = 0;
-let refreshTime = [333,666,999];
-let refreshIndex = 0;
+
 
 io.on('connection', function(socket) {
   console.log('computer connected at ' + socket.id);
@@ -75,10 +74,7 @@ io.on('connection', function(socket) {
   })
 
   socket.on('client: refresh all', function() {
-    const timeIndex = refreshIndex % 3;
-    console.log(refreshIndex);
-    io.emit('server: refresh all', refreshTime[timeIndex]);
-    refreshIndex++;
+    io.emit('server: refresh all');
   });
 
   socket.on('client: ping for connection status', function() {

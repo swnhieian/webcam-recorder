@@ -12,7 +12,7 @@ import DataCollection from '../components/Table/DataCollection';
 // data
 // import sentences from '../assets/data/sentences.txt';
 import sentences from '../assets/data/sentences-english-test.txt';
-
+import seedrandom from 'seedrandom'
 
 class App extends React.Component {
   constructor(props) {
@@ -96,7 +96,10 @@ class App extends React.Component {
       this.helper_updateFilesSaved(numFiles);
     });
 
-    this.props.socket.on('server: refresh all', () => {window.location.reload(false)});
+    this.props.socket.on('server: refresh all', () => {
+      console.log(seedrandom(this.state.computerID)());
+      // window.location.reload(false)
+    });
   }
 
   helper_updateFilesSaved = numFiles => {

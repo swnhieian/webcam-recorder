@@ -105,7 +105,7 @@ class App extends React.Component {
   }
 
   helper_updateFilesSaved = numFiles => {
-    this.updateNumFilesSaved('num files saved: ' + numFiles);
+    this.updateNumFilesSaved('num files saved: ' + numFiles + (numFiles % 8 === 0) ? " (successful)" : " (not all cams saved!!)");
     this.setState({
       numFilesSaved: numFiles
     });
@@ -217,7 +217,9 @@ class App extends React.Component {
         first_sentence={this.state.data[this.state.curr_sentence_index]}
         curr_sentence={this.state.curr_sentence}
         socket={this.props.socket}
-        recordGreenLight={this.state.recordGreenLight}
+        recordGreenLight={
+          this.state.recordGreenLight && this.state.numFilesSaved % 8 === 0
+        }
         updateGreenLightStatus={this.updateGreenLightStatus}
       />
     );

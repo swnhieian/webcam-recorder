@@ -250,7 +250,7 @@ class App extends React.Component {
     return (
       <div className='camera_status'>
         <h1>Connection Status</h1>
-        <pre id='camera_status_p'></pre>
+        <pre id='camera_status_p'>Server not online</pre>
         <pre id="num_files_saved"></pre>
         <button onClick={this.getConnectionStatus}>Get Status</button>
         <button onClick={this.resetCams}>Reset Cams</button>

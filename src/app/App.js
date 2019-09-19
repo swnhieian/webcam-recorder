@@ -83,6 +83,9 @@ class App extends React.Component {
       'server: response for connection status',
       this.socket_updateConnectionStatusDisplay
     );
+    this.props.socket.on('server: save files successful', (numFiles) => {
+      this.updateNumFilesSaved("num files saved: " + numFiles);
+    });
   }
 
   updateSentence = curr_sentence => {
@@ -160,6 +163,10 @@ class App extends React.Component {
     this.getConnectionStatus();
   };
 
+  updateNumFilesSaved = numFiles => {
+    document.getElementById('num_files_saved').innerHTML = numFiles;
+  }
+
   comp_dataCollection = () => {
     return (
       <DataCollection
@@ -219,6 +226,7 @@ class App extends React.Component {
       <div className='camera_status'>
         <h1>Connection Status</h1>
         <pre id='camera_status_p'></pre>
+        <pre id="num_files_saved"></pre>
         <button onClick={this.getConnectionStatus}>Get Status</button>
         <button onClick={this.resetCams}>Reset Cams</button>
         <p

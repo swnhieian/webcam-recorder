@@ -45,6 +45,7 @@ const saveConnection = (socket, status) => {
 const RECORDING_STATUS_PATH = './recording_status.json'
 const CONNECTION_STATUS_PATH = './connection_status.json'
 let connection_status = {};
+let numSaved = 0;
 
 io.on('connection', function(socket) {
   console.log('computer connected at ' + socket.id);
@@ -100,9 +101,10 @@ io.on('connection', function(socket) {
       sentence_index: data.curr_sentence_index
     }
     saveData(newStatus, RECORDING_STATUS_PATH);
-  })
+  });
 
   socket.on('client: save data', function(data) {
+    numSaved += 1;
     let status = updateRecordingStatus(data, RECORDING_STATUS_PATH);
     console.log(status);
 
@@ -131,6 +133,8 @@ io.on('connection', function(socket) {
       }
       console.log('the file was saved!');
     });
+    console.log("files saved: " + numSaved);
+    io.emit('server: save files successful', numSaved);
   })
 });
 

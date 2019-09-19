@@ -76,6 +76,7 @@ io.on('connection', function(socket) {
 
   socket.on('client: refresh all', function() {
     const timeIndex = refreshIndex % 3;
+    console.log(refreshIndex);
     io.emit('server: refresh all', refreshTime[timeIndex]);
     refreshIndex++;
   });

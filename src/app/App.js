@@ -97,7 +97,7 @@ class App extends React.Component {
     });
 
     this.props.socket.on('server: refresh all', () => {
-      const time = seedrandom(this.state.computerID)() * 5000;
+      const time = seedrandom(this.state.computerID)()**2 * 1000;
       console.log(time);
       // setTimeout(() => {
       //   window.location.reload(false)

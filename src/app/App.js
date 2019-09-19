@@ -96,6 +96,7 @@ class App extends React.Component {
     });
 
     this.props.socket.on('server: refresh all', (time) => {
+      console.log(time);
       setTimeout(() => {
         window.location.reload(false)
       }, time)

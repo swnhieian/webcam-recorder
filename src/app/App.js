@@ -117,7 +117,8 @@ class App extends React.Component {
   }
 
   helper_updateFilesSaved = numFiles => {
-    this.updateNumFilesSaved('num files saved: ' + numFiles + (numFiles % 8 === 0) ? " (successful)" : " (not all cams saved!!)");
+    const successMessage = (numFiles % 8 === 0) ? " (successful)" : " (not all cams saved!!)"
+    this.updateNumFilesSaved('num files saved: ' + numFiles + successMessage);
     this.setState({
       numFilesSaved: numFiles
     });

@@ -96,8 +96,8 @@ class App extends React.Component {
       this.helper_updateFilesSaved(numFiles);
     });
 
-    this.props.socket.on('server: refresh all', () => {
-      const time = seedrandom(this.state.computerID)()**2 * 1000;
+    this.props.socket.on('server: refresh all', (seed) => {
+      const time = seedrandom(seed)() * 1000;
       console.log(time);
       // setTimeout(() => {
       //   window.location.reload(false)

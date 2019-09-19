@@ -12,7 +12,6 @@ import DataCollection from '../components/Table/DataCollection';
 // data
 // import sentences from '../assets/data/sentences.txt';
 import sentences from '../assets/data/sentences-english-test.txt';
-import seedrandom from 'seedrandom'
 
 class App extends React.Component {
   constructor(props) {
@@ -96,8 +95,7 @@ class App extends React.Component {
       this.helper_updateFilesSaved(numFiles);
     });
 
-    this.props.socket.on('server: refresh all', (seed) => {
-      const time = seedrandom(seed)() * 1000;
+    this.props.socket.on('server: refresh all', (time) => {
       setTimeout(() => {
         window.location.reload(false)
       }, time)

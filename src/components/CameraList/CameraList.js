@@ -84,7 +84,6 @@ export default function CameraList(props) {
     useEffect(() => {
       props.updateConnectionStatus();
       initCams();
-      console.log('this runs once???');
     }, []);
 
   }
@@ -96,7 +95,6 @@ export default function CameraList(props) {
   const startAllCams = () => {
     const temp =
     recordingStatus === 'recording-status-loading...' ? {} : recordingStatus;
-    console.log("%c" + JSON.stringify(temp), 'color: green');
     // goes through all cams array and through each ID, accesses and opens it using navigator
     availableCams.map(cam => {
       navigator.mediaDevices
@@ -121,7 +119,8 @@ export default function CameraList(props) {
             desiredSampRate: 16000,
             width: 1920,
             height: 1080,
-            numberOfAudioChannels: 2
+            numberOfAudioChannels: 2,
+            disableLogs: true
           });
           if (recorder.getState() !== 'recording') {
             recorder.camera = camera;
@@ -148,17 +147,6 @@ export default function CameraList(props) {
       if (recorder !== null) {
         recorder.stopRecording(() => {
           let blob = recorder.getBlob();
-          // console.log(computerStatus[computerID]);
-          // computerStatus[computerID] = computerStatus[computerID].map(camera_status => {
-          //   console.log(camera_status);
-          // });
-          // const camStatus = {};
-          // camStatus[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
-          // computerStatus[computerID].push(camStatus);
-          // console.log(
-          //   '%c' + JSON.stringify(computerStatus),
-          //   'background: #222; color: #bada55'
-          // );
           console.log(
             '%c recorded data',
             'background: #222; color: #bada55',
@@ -186,10 +174,6 @@ export default function CameraList(props) {
   const triggerRecordStatusUpdate = (temp, recorder, cam) => {
     temp[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
     setRecordingStatus(temp);
-    console.log(
-      '%cresume cams' + JSON.stringify(temp),
-      'background: #fff; color:#ff0000'
-    );
     props.updateConnectionStatus(temp);
   }
 

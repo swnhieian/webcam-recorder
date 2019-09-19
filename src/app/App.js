@@ -171,7 +171,6 @@ class App extends React.Component {
   };
 
   updateConnectionStatus = recordingStatus => {
-    console.log('called from cameralist' + JSON.stringify(recordingStatus));
     if (this.state.computerStatus[this.state.computerID]) {
       const status = {};
       status[this.state.computerID] = recordingStatus;

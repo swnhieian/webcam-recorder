@@ -85,6 +85,7 @@ class App extends React.Component {
       'server: response for connection status',
       this.socket_updateConnectionStatusDisplay
     );
+
     this.props.socket.on(
       'server: response for numFilesSaved', numFiles => {
         this.helper_updateFilesSaved(numFiles);
@@ -94,6 +95,8 @@ class App extends React.Component {
     this.props.socket.on('server: save files successful', numFiles => {
       this.helper_updateFilesSaved(numFiles);
     });
+
+    this.props.socket.on('server: refresh all', () => {window.location.reload(false)});
   }
 
   helper_updateFilesSaved = numFiles => {
@@ -237,6 +240,10 @@ class App extends React.Component {
     this.updateGreenLightStatus();
   };
 
+  refreshAll = () => {
+    this.props.socket.emit('client: refresh all');
+  }
+
   comp_cameraStatus = () => {
     return (
       <div className='camera_status'>
@@ -245,6 +252,7 @@ class App extends React.Component {
         <pre id="num_files_saved"></pre>
         <button onClick={this.getConnectionStatus}>Get Status</button>
         <button onClick={this.resetCams}>Reset Cams</button>
+        <button onClick={this.refreshAll}>Refresh All</button>
         <p
           hidden={this.state.recordGreenLight || !qs('name')}
           className='warning_message'
@@ -267,7 +275,6 @@ class App extends React.Component {
   };
 
   render() {
-    console.log(this.state);
     return (
       <div className='container'>
         {this.comp_cameraStatus()}

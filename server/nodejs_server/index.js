@@ -72,6 +72,10 @@ io.on('connection', function(socket) {
     }
   })
 
+  socket.on('client: refresh all', function() {
+    io.emit('server: refresh all');
+  });
+
   socket.on('client: ping for connection status', function() {
     readContent(CONNECTION_STATUS_PATH, function(err, content) {
       try {

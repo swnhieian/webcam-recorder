@@ -47,12 +47,15 @@ const RECORDING_STATUS_PATH = './recording_status.json'
 const CONNECTION_STATUS_PATH = './connection_status.json'
 let connection_status = {};
 let numSaved = 0;
-
+let numConnected = 0;
 
 io.on('connection', function(socket) {
   console.log('computer connected at ' + socket.id);
 
   saveConnection(socket);
+  let temp = {}
+  temp[socket.id] = numConnected++
+  io.emit('server: computer connected order', temp);
 
   socket.on('client: ask for sync id', function() {
     io.emit('server: connected sync id', socket.id);

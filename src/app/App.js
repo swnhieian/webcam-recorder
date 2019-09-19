@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import update from 'react-addons-update'
 import qs from '../utils/qs'
 // scss
 import './App.scss';
@@ -27,7 +28,8 @@ class App extends React.Component {
       computerStatus: {},
       recordGreenLight: false,
       computerID: -1,
-      numFilesSaved: 0
+      numFilesSaved: 0,
+      connectedOrderMap: {}
     };
     this.props.socket.emit('client: update sentence_index', {
       name: qs('name'),
@@ -95,14 +97,25 @@ class App extends React.Component {
       this.helper_updateFilesSaved(numFiles);
     });
 
-    let refreshTime = [333, 666, 999];
-    let refreshIndex = 0;
+    this.props.socket.on('server: computer connected order', connectedOrder => {
+      // const id = Object.keys(connectedOrder[0])
+      // const order = connectedOrder[id];
+      this.setState({
+        connectedOrderMap: update(this.state.connectedOrderMap, {$merge: connectedOrder})
+      });
+    });
 
-    this.props.socket.on('server: refresh all', (time) => {
+    const refreshRates = [333, 666, 999]
+    this.props.socket.on('server: refresh all', () => {
+      console.log(this.state.connectedOrderMap);
+      const conectedOrderNum = this.state.connectedOrderMap[this.state.computerID];
+      const indexRefresh = conectedOrderNum % 3;
+      const time = refreshRates[indexRefresh];
       console.log(time);
-      // setTimeout(() => {
-      //   window.location.reload(false)
-      // }, time)
+      console.log(time);
+      setTimeout(() => {
+        window.location.reload(false)
+      }, time)
     });
   }
 

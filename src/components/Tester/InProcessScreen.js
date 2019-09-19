@@ -41,10 +41,14 @@ export default function InProcessScreen(props) {
     //console.log(e);
     if ([' ', 'ArrowLeft', 'ArrowRight'].includes(key)) {
       if (key === ' ') {
-        record();
+        // record();
+        document.getElementById('testerRecordBtn').click();
       } else if (key === 'ArrowLeft') {
-        updateSentence('$prev');
+        // updateSentence('$prev');
+        document.getElementById('testerPrevBtn').click();
+
       } else if (key === 'ArrowRight') {
+        document.getElementById('testerNextBtn').click();
         updateSentence('$next');
       }
       event.preventDefault();
@@ -96,6 +100,7 @@ export default function InProcessScreen(props) {
             {props.curr_sentence}
           </div>
           <button
+            id='testerRecordBtn'
             className={getRecordState() === 'Done' ? 'btn btn-danger' : 'btn'}
             onClick={record}
             disabled={!props.recordGreenLight}
@@ -105,18 +110,25 @@ export default function InProcessScreen(props) {
           <br />
           <button
             className='btn'
+            id='testerPrevBtn'
             onClick={() => updateSentence('$prev')}
-            disabled={props.curr_sentence_index === 0 || reset_state}
+            disabled={
+              props.curr_sentence_index === 0 ||
+              reset_state ||
+              !props.recordGreenLight
+            }
           >
             ⬅上一句
           </button>
           <button
             className='btn'
+            id='testerNextBtn'
             onClick={() => updateSentence('$next')}
             disabled={
               props.curr_sentence_index === props.data_length - 1 ||
               !done_recording ||
-              reset_state
+              reset_state ||
+              !props.recordGreenLight
             }
           >
             下一句➡

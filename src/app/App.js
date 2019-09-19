@@ -29,7 +29,8 @@ class App extends React.Component {
       recordGreenLight: false,
       computerID: -1,
       numFilesSaved: 0,
-      connectedOrderMap: {}
+      connectedOrderMap: {}, 
+      numCams: 6
     };
     this.props.socket.emit('client: update sentence_index', {
       name: qs('name'),
@@ -117,7 +118,7 @@ class App extends React.Component {
   }
 
   helper_updateFilesSaved = numFiles => {
-    const successMessage = (numFiles % 8 === 0) ? " (successful)" : " (not all cams saved!!)"
+    const successMessage = (numFiles % this.state.numCams === 0) ? " (successful)" : " (not all cams saved!!)"
     this.updateNumFilesSaved('num files saved: ' + numFiles + successMessage);
     this.setState({
       numFilesSaved: numFiles
@@ -231,7 +232,7 @@ class App extends React.Component {
         curr_sentence={this.state.curr_sentence}
         socket={this.props.socket}
         recordGreenLight={
-          this.state.recordGreenLight && this.state.numFilesSaved % 8 === 0
+          this.state.recordGreenLight && this.state.numFilesSaved % this.state.numCams === 0
         }
         updateGreenLightStatus={this.updateGreenLightStatus}
       />
@@ -266,7 +267,7 @@ class App extends React.Component {
   comp_cameraStatus = () => {
     return (
       <div className='camera_status'>
-        <h1>Connection Status</h1>
+        <pre>Connection Status</pre>
         <pre id='camera_status_p'>Server not online</pre>
         <pre id="num_files_saved"></pre>
         <button onClick={this.getConnectionStatus}>Get Status</button>

@@ -90,7 +90,7 @@ export default function CameraList(props) {
   }
 
   const initCamsDummy = () => {
-    stopAllCams();
+    stopAllCams(true);
   }
 
   const startAllCams = () => {
@@ -140,7 +140,7 @@ export default function CameraList(props) {
     });
   };
 
-  const stopAllCams = () => {
+  const stopAllCams = (dummy) => {
     const temp =
       recordingStatus === 'recording-status-loading...' ? {} : recordingStatus;
     availableCams.map(cam => {
@@ -164,13 +164,15 @@ export default function CameraList(props) {
             'background: #222; color: #bada55',
             blob
           );
-          
-          props.socket.emit('client: save data', {
-            name: qs("name"),
-            sentence_index: qs("sentence_index"),
-            camera_id: cam['camera_info'].id,
-            blob: blob
-          });
+          console.log("ehehehehehehe", dummy);
+          if (!dummy) {
+            props.socket.emit('client: save data', {
+              name: qs("name"),
+              sentence_index: qs("sentence_index"),
+              camera_id: cam['camera_info'].id,
+              blob: blob
+            });
+          }
 
         });
         triggerRecordStatusUpdate(temp, recorder, cam);
@@ -208,11 +210,10 @@ export default function CameraList(props) {
   useAvailableWebCams();
 
   // dummy to fix bug of first video
-  props.socket.on('server: init cams to remove first vid', function() {
-    document.getElementById("initCams").click();
-    document.getElementById("initCams").disabled = true;
-
-  })
+  props.socket.on('server: dummy vid, do not save', function() {
+    document.getElementById('dummyBtn').click();
+    document.getElementById('dummyBtn').disabled = true;
+  });
 
   // this is actually what calls start cams
   props.socket.on('server: start cams', function () {
@@ -256,7 +257,7 @@ export default function CameraList(props) {
       return (
         <div>
           {/* <p>Don't click these while actual testing</p> */}
-          <button id="initCams" onClick={initCamsDummy}>Init Cams</button>
+          <button id="dummyBtn" onClick={initCamsDummy}>dummy reset</button>
           <button id="startBtn" onClick={startAllCams}>start and pause all cams</button>
           <button id="resumeBtn" onClick={resumeAllCams}>resume all cams</button>
           <button id="stopBtn" onClick={stopAllCams}>stop all cams</button>

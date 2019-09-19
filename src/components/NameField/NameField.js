@@ -18,7 +18,7 @@ export default class NameField extends Component {
       name,
       sentence_index: 0
     })
-    this.props.socket.emit('client: init cams to remove first vid')
+    this.props.socket.emit('client: dummy vid, do not save');
     this.props.updateTesterContents();
     this.props.updateGreenLightStatus();
   }

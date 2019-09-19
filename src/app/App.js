@@ -209,7 +209,8 @@ class App extends React.Component {
   };
 
   resetCams = () => {
-    this.props.socket.emit('client: stop cams');
+    // this.props.socket.emit('client: stop cams');
+    this.props.socket.emit('client: dummy vid, do not save');
     this.updateGreenLightStatus();
   };
 

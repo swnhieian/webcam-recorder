@@ -74,10 +74,10 @@ io.on('connection', function(socket) {
   });
   
 
-  socket.on('client: init cams to remove first vid', function() {
+  socket.on('client: dummy vid, do not save', function() {
     console.log('removed first vid');
-    io.emit('server: init cams to remove first vid')
-  })
+    io.emit('server: dummy vid, do not save');
+  });
 
   socket.on('client: start cams', function() {
     console.log('received from server: start cams');

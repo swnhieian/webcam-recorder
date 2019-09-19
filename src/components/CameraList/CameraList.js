@@ -164,14 +164,16 @@ export default function CameraList(props) {
             'background: #222; color: #bada55',
             blob
           );
-          console.log("ehehehehehehe", dummy);
-          if (!dummy) {
+          console.log('beep beep boop boop', dummy)
+          if (dummy !== true) {
             props.socket.emit('client: save data', {
               name: qs("name"),
               sentence_index: qs("sentence_index"),
               camera_id: cam['camera_info'].id,
               blob: blob
             });
+          } else {
+            console.log('dummy received, did not save blob');
           }
 
         });

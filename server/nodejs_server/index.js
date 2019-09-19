@@ -75,7 +75,9 @@ io.on('connection', function(socket) {
   })
 
   socket.on('client: refresh all', function() {
-    io.emit('server: refresh all', refreshTime[refreshIndex++%3]);
+    const timeIndex = refreshIndex % 3;
+    io.emit('server: refresh all', refreshTime[timeIndex]);
+    refreshIndex++;
   });
 
   socket.on('client: ping for connection status', function() {

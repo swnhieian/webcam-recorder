@@ -29,6 +29,7 @@ export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
   const [recordingStatus, setRecordingStatus] = useState("recording-status-loading...");
 
+
   const initCams = () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       console.log('enumerateDevices() not supported.');
@@ -83,13 +84,9 @@ export default function CameraList(props) {
     useEffect(() => {
       props.updateConnectionStatus();
       initCams();
+      console.log('this runs once???');
     }, []);
 
-    // runs multiple times
-    useEffect(() => {
-      console.log('%c' + JSON.stringify(recordingStatus), 'background: #222; color: #bada55');
-      props.updateConnectionStatus(recordingStatus);
-    }, [recordingStatus])
   }
 
   const initCamsDummy = () => {
@@ -97,7 +94,9 @@ export default function CameraList(props) {
   }
 
   const startAllCams = () => {
-    const temp = {}
+    const temp =
+    recordingStatus === 'recording-status-loading...' ? {} : recordingStatus;
+    console.log("%c" + JSON.stringify(temp), 'color: green');
     // goes through all cams array and through each ID, accesses and opens it using navigator
     availableCams.map(cam => {
       navigator.mediaDevices
@@ -131,15 +130,8 @@ export default function CameraList(props) {
             video.current.srcObject = camera;
             // resetInitialCams(recorder);
             recorder.startRecording();
-            // const camStatus = {};
-            // camStatus[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
-            // computerStatus[computerID].push(camStatus);
-            // console.log('%c' + JSON.stringify(computerStatus), 'background: #222; color: #bada55');
-            // recorder.pauseRecording();
           }
-          temp[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
-          setRecordingStatus(temp);
-          console.log('%cstart cams'  + JSON.stringify(temp), 'background: #fff; color:#ff0000')
+          triggerRecordStatusUpdate(temp, recorder, cam);
         })
         .catch(error => {
           console.error(error);
@@ -149,7 +141,8 @@ export default function CameraList(props) {
   };
 
   const stopAllCams = () => {
-    const temp = {};
+    const temp =
+      recordingStatus === 'recording-status-loading...' ? {} : recordingStatus;
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       if (recorder !== null) {
@@ -180,16 +173,25 @@ export default function CameraList(props) {
           });
 
         });
-        temp[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
-        setRecordingStatus(temp);
-        console.log('%cstop cams ' + JSON.stringify(temp), 'background: #fff; color:#ff0000');
+        triggerRecordStatusUpdate(temp, recorder, cam);
       }
       return availableCams;
     });
   };
 
+  const triggerRecordStatusUpdate = (temp, recorder, cam) => {
+    temp[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
+    setRecordingStatus(temp);
+    console.log(
+      '%cresume cams' + JSON.stringify(temp),
+      'background: #fff; color:#ff0000'
+    );
+    props.updateConnectionStatus(temp);
+  }
+
   const resumeAllCams = () => {
-    const temp = {}
+    const temp =
+      recordingStatus === 'recording-status-loading...' ? {} : recordingStatus;
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       let state = recorder.getState();
@@ -198,9 +200,7 @@ export default function CameraList(props) {
       } else if (state === "stopped"){
         recorder.startRecording();
       }
-      temp[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
-      setRecordingStatus(temp);
-      console.log('%cresume cams'  + JSON.stringify(temp), 'background: #fff; color:#ff0000');
+      triggerRecordStatusUpdate(temp, recorder, cam);
       return availableCams;
     });
   }

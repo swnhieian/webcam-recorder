@@ -99,7 +99,7 @@ export default function InProcessScreen(props) {
             id='testerRecordBtn'
             className={getRecordState() === 'Done' ? 'btn btn-danger' : 'btn'}
             onClick={record}
-            disabled={!props.recordGreenLight}
+            disabled={!props.recordGreenLight || props.numFilesSaved % props.numCams !== 0}
           >
             {trans(getRecordState())}
           </button>
@@ -111,7 +111,8 @@ export default function InProcessScreen(props) {
             disabled={
               props.curr_sentence_index === 0 ||
               reset_state ||
-              !props.recordGreenLight
+              !props.recordGreenLight ||
+              props.numFilesSaved % props.numCams !== 0
             }
           >
             ⬅上一句
@@ -124,7 +125,8 @@ export default function InProcessScreen(props) {
               props.curr_sentence_index === props.data_length - 1 ||
               !done_recording ||
               reset_state ||
-              !props.recordGreenLight
+              !props.recordGreenLight ||
+              props.numFilesSaved % props.numCams !== 0
             }
           >
             下一句➡

@@ -17,6 +17,8 @@ function Tester(props) {
         curr_sentence={props.curr_sentence}
         recordGreenLight={props.recordGreenLight}
         updateGreenLightStatus={props.updateGreenLightStatus}
+        numFilesSaved={props.numFilesSaved}
+        numCams={props.numCams}
       />
     );
   }

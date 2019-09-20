@@ -243,6 +243,8 @@ class App extends React.Component {
           this.state.recordGreenLight &&
           (this.state.numFilesSaved % this.state.numCams === 0 || this.state.overRiddenStatus)
         }
+        numFilesSaved={this.state.numFilesSaved}
+        numCams={this.state.numCams}
         updateGreenLightStatus={this.updateGreenLightStatus}
       />
     );

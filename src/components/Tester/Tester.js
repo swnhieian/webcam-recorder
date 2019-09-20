@@ -2,8 +2,34 @@ import React from 'react';
 import './Tester.scss';
 import PropTypes from 'prop-types';
 import InProcessScreen from './InProcessScreen.js';
+import { Line } from 'rc-progress';
 
 function Tester(props) {
+
+  function comp_progressBar() {
+    // const percent = 0;
+    // console.log(this.state.curr_sentence_index);
+    // if (this.state.curr_sentence_index) {
+    const percent = (
+      (props.curr_sentence_index / props.data.length) *
+      100
+    ).toFixed(2);
+    return (
+      <div id='progress_bar'>
+        <pre>
+          Progress: {props.curr_sentence_index} / {props.data.length} ({percent}
+          %)
+        </pre>
+        <Line
+          percent={percent}
+          strokeWidth='1.5'
+          trailWidth='1.5'
+          strokeColor='#2db7f5'
+          trailColor='#D9D9D9'
+        />
+      </div>
+    );
+  }
   
   function content(props) {
     return (
@@ -24,6 +50,7 @@ function Tester(props) {
 
   return (
     <div className='testing_screen'>
+      {comp_progressBar()}
       <div className='middle'>
         <div className='inner'>{content(props)}</div>
       </div>
@@ -39,7 +66,9 @@ Tester.propTypes = {
   socket: PropTypes.object.isRequired,
   data: PropTypes.array.isRequired,
   recordGreenLight: PropTypes.bool.isRequired,
-  updateGreenLightStatus: PropTypes.func.isRequired
+  updateGreenLightStatus: PropTypes.func.isRequired,
+  numFilesSaved: PropTypes.number.isRequired,
+  numCams: PropTypes.number.isRequired
 };
 
 export default Tester;

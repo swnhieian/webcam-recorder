@@ -284,20 +284,25 @@ class App extends React.Component {
 
   comp_cameraStatus = () => {
     return (
-      <div className='camera_status'>
-        <pre>Connection Status</pre>
-        <pre id='camera_status_p'>Server not online</pre>
-        <pre id='num_files_saved'></pre>
-        <button onClick={this.getConnectionStatus}>Get Status</button>
-        <button onClick={this.resetCams}>Reset Cams</button>
-        <button onClick={this.refreshAll}>Refresh All</button>
-        <button onClick={this.overRideGreenLight}>Override Green Light</button>
-        <p
-          hidden={this.state.recordGreenLight || !qs('name')}
-          className='warning_message'
-        >
-          Please Click Reset!
-        </p>
+      <div id="connection_status">
+        <div className="shadow_overlay"></div>
+        <div className='camera_status'>
+          <div className="camera_status_content">
+            <pre>Connection Status</pre>
+            <pre id='camera_status_p'>Server not online</pre>
+            <pre id='num_files_saved'></pre>
+            <button onClick={this.getConnectionStatus}>Get Status</button>
+            <button onClick={this.resetCams}>Reset Cams</button>
+            <button onClick={this.refreshAll}>Refresh All</button>
+            <button onClick={this.overRideGreenLight}>Override Green Light</button>
+            <pre
+              hidden={this.state.recordGreenLight || !qs('name')}
+              className='warning_message'
+            >
+              Please Click Reset!
+            </pre>
+          </div>
+        </div>
       </div>
     );
   };
@@ -313,10 +318,22 @@ class App extends React.Component {
     );
   };
 
+  toggleConnectionStatusDisplay = () => {
+    console.log('clicked here')
+    const displayStatus = document.getElementById('connection_status').style.display;
+    console.log(displayStatus);
+    document.getElementById('connection_status').style.display = (displayStatus === "none") ? "block" : "none";
+  }
+
+  
+
   render() {
     return (
       <div className='container'>
         {this.comp_cameraStatus()}
+        <button onClick={this.toggleConnectionStatusDisplay} className="debug_button">
+          show/hide status
+        </button>
         {this.comp_tester()}
         {this.comp_userResearchHeader()}
         <div className='contents'>

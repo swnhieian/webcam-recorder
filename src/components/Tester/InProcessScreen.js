@@ -33,7 +33,11 @@ export default function InProcessScreen(props) {
       props.socket.emit('client: stop cams', 'in process screen');
       reset(false);
       setWaitForSave(true);
-      cogoToast.loading('Files are currently saving. Please wait...');
+      cogoToast
+        .loading('Files are currently saving. Please wait...', { hideAfter: 2 })
+        .then(() => {
+          cogoToast.success('Files successfully saved.', { hideAfter: 1.5 });
+        });
       setTimeout(() => {
         setWaitForSave(false);
       }, 2000)
@@ -60,9 +64,6 @@ export default function InProcessScreen(props) {
 
   useEffect(() => {
     window.addEventListener('keydown', downHandler);
-    if (props.numFilesSaved % props.numCams === 0) {
-      cogoToast.success('Files successfully saved.')
-    }
     return () => {
       window.removeEventListener('keydown', downHandler);
     };
@@ -102,14 +103,18 @@ export default function InProcessScreen(props) {
           <div className='recording_hint'>
             {getRecordState() === 'Done' ? '录制中...' : ''}
           </div>
-          <div className='testing_content sentence_to_be_read'>
+          <div className='sentence_to_be_read'>
             {props.curr_sentence}
           </div>
           <button
             id='testerRecordBtn'
             className={getRecordState() === 'Done' ? 'btn btn-danger' : 'btn'}
             onClick={record}
-            disabled={!props.recordGreenLight || props.numFilesSaved % props.numCams !== 0 || waitForSave}
+            disabled={
+              !props.recordGreenLight ||
+              props.numFilesSaved % props.numCams !== 0 ||
+              waitForSave
+            }
           >
             {trans(getRecordState())}
           </button>
@@ -137,7 +142,7 @@ export default function InProcessScreen(props) {
               !done_recording ||
               reset_state ||
               !props.recordGreenLight ||
-              props.numFilesSaved % props.numCams !== 0 || 
+              props.numFilesSaved % props.numCams !== 0 ||
               waitForSave
             }
           >
@@ -163,5 +168,7 @@ InProcessScreen.propTypes = {
   socket: PropTypes.object.isRequired,
   data: PropTypes.array.isRequired,
   updateGreenLightStatus: PropTypes.func.isRequired,
-  recordGreenLight: PropTypes.bool.isRequired
+  recordGreenLight: PropTypes.bool.isRequired,
+  numFilesSaved: PropTypes.number.isRequired,
+  numCams: PropTypes.number.isRequired
 };

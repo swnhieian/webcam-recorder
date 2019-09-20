@@ -1,14 +1,23 @@
 
 .testing_screen {
   text-align:center;
-  padding: 20vh;
-  height: 53vh;
+  padding-top: 3vh;
+  padding-bottom: 30vh;
+  margin-left: 1em;
+  margin-right: 1em;
+  height: 60vh;
   // position: fixed;
   // width:100%;
   display: absolute;
   border: 1px solid black;
-  margin-bottom: 10em;
+  // margin: 1em;
 }
+
+#progress_bar {
+  width: 70%;
+  margin: auto;
+}
+
 
 .btn {
   font-size: 1.05em;
@@ -33,6 +42,7 @@
 .sentence_to_be_read {
   font-size: 3em;
   line-height: 2;
+  margin-top: 1em;
   margin-bottom: 0.5em;
 }
 .recording_hint {

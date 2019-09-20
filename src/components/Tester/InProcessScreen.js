@@ -63,10 +63,10 @@ export default function InProcessScreen(props) {
     if (props.numFilesSaved % props.numCams === 0) {
       cogoToast.success('Files successfully saved.')
     }
-      return () => {
-        window.removeEventListener('keydown', downHandler);
-      };
-  });
+    return () => {
+      window.removeEventListener('keydown', downHandler);
+    };
+  }, []);
 
   function trans(text) {
     if (text === 'Done') {

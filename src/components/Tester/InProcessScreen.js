@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import NameField from '../NameField/NameField';
 import qs from '../../utils/qs';
+import cogoToast from 'cogo-toast';
 
 export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
@@ -32,6 +33,7 @@ export default function InProcessScreen(props) {
       props.socket.emit('client: stop cams', 'in process screen');
       reset(false);
       setWaitForSave(true);
+      cogoToast.loading('Files are currently saving. Please wait...');
       setTimeout(() => {
         setWaitForSave(false);
       }, 2000)
@@ -58,9 +60,12 @@ export default function InProcessScreen(props) {
 
   useEffect(() => {
     window.addEventListener('keydown', downHandler);
-    return () => {
-      window.removeEventListener('keydown', downHandler);
+    if (props.numFilesSaved % props.numCams === 0) {
+      cogoToast.success('Files successfully saved.')
     }
+      return () => {
+        window.removeEventListener('keydown', downHandler);
+      };
   });
 
   function trans(text) {

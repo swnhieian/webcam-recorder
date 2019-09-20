@@ -2,7 +2,6 @@ import React from 'react';
 import './Tester.scss';
 import PropTypes from 'prop-types';
 import InProcessScreen from './InProcessScreen.js';
-import { useEffect } from 'react';
 
 function Tester(props) {
   

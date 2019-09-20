@@ -3,6 +3,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import update from 'react-addons-update'
 import qs from '../utils/qs'
+import cogoToast from 'cogo-toast';
+
 // scss
 import './App.scss';
 
@@ -32,7 +34,6 @@ class App extends React.Component {
       numFilesSaved: 0,
       connectedOrderMap: {},
       numCams: 8,
-      overRiddenStatus: false
     };
     this.props.socket.emit('client: update sentence_index', {
       name: qs('name'),
@@ -82,6 +83,10 @@ class App extends React.Component {
     this.updateNumFilesSaved('num files saved: ' + this.state.numFilesSaved);
   };
 
+  showFileSavedMessage = () => {
+    cogoToast.success('Files successfully saved.', { hideAfter: 1.5 });
+  }
+
   componentDidMount() {
     this.readTextFile(sentences);
     this.props.socket.on(
@@ -95,6 +100,8 @@ class App extends React.Component {
 
     this.props.socket.on('server: save files successful', numFiles => {
       this.helper_updateFilesSaved(numFiles);
+      document.getElementById('showSavedFilesBtn').click();
+      document.getElementById('showSavedFilesBtn').disabled = true;
     });
 
     this.props.socket.on('server: computer connected order', connectedOrder => {
@@ -241,7 +248,7 @@ class App extends React.Component {
         socket={this.props.socket}
         recordGreenLight={
           this.state.recordGreenLight &&
-          (this.state.numFilesSaved % this.state.numCams === 0 || this.state.overRiddenStatus)
+          this.state.numFilesSaved % this.state.numCams === 0
         }
         numFilesSaved={this.state.numFilesSaved}
         numCams={this.state.numCams}
@@ -275,28 +282,26 @@ class App extends React.Component {
     this.props.socket.emit('client: refresh all');
   };
 
-  overRideGreenLight = () => {
-    this.updateGreenLightStatus();
-    this.setState({overRiddenStatus: true});
-  }
-
-  resetOverride
-
   comp_cameraStatus = () => {
     return (
-      <div id="connection_status">
-        <div className="shadow_overlay"></div>
+      <div id='connection_status'>
+        <div className='shadow_overlay'></div>
         <div className='camera_status'>
-          <div className="camera_status_content">
+          <div className='camera_status_content'>
             <pre>Connection Status</pre>
             <pre id='camera_status_p'>Server not online</pre>
             <pre id='num_files_saved'></pre>
             <button onClick={this.getConnectionStatus}>Get Status</button>
             <button onClick={this.resetCams}>Reset Cams</button>
             <button onClick={this.refreshAll}>Refresh All</button>
-            <button onClick={this.overRideGreenLight}>Override Green Light</button>
+            <button
+              onClick={this.toggleConnectionStatusDisplay}
+              className='debug_button'
+            >
+              hide
+            </button>
             <pre
-              hidden={this.state.recordGreenLight || !qs('name')}
+              hidden={this.state.recordGreenLight}
               className='warning_message'
             >
               Please Click Reset!
@@ -331,9 +336,15 @@ class App extends React.Component {
     return (
       <div className='container'>
         {this.comp_cameraStatus()}
-        <button onClick={this.toggleConnectionStatusDisplay} className="debug_button">
+        <button
+          onClick={this.toggleConnectionStatusDisplay}
+          className='debug_button'
+        >
           show/hide status
         </button>
+        <button onClick={this.resetCams}>Reset Cams</button>
+        <button onClick={this.showFileSavedMessage} style={{"visibility":"hidden"}} id="showSavedFilesBtn"></button>
+        <pre hidden={this.state.numCams === 8}>debug mode, remember to change num cams back to 8</pre>
         {this.comp_tester()}
         {this.comp_userResearchHeader()}
         <div className='contents'>

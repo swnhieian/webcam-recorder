@@ -155,7 +155,9 @@ io.on('connection', function(socket) {
       console.log('the file was saved!');
     });
     console.log("files saved: " + numSaved);
+    // setTimeout(()=> {
     io.emit('server: save files successful', numSaved);
+    // }, 5000)
   })
 });
 

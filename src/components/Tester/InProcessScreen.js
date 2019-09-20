@@ -27,6 +27,7 @@ export default function InProcessScreen(props) {
   }
 
   function record() {
+    document.getElementById('showSavedFilesBtn').disabled = false;
     if (recording) {
       setDoneRecording(true);
       setRecordState(false);
@@ -34,10 +35,7 @@ export default function InProcessScreen(props) {
       reset(false);
       setWaitForSave(true);
       cogoToast
-        .loading('Files are currently saving. Please wait...', { hideAfter: 2 })
-        .then(() => {
-          cogoToast.success('Files successfully saved.', { hideAfter: 1.5 });
-        });
+        .loading('Files are currently saving. Please wait...', { hideAfter: 2 });
       setTimeout(() => {
         setWaitForSave(false);
       }, 2000)
@@ -103,9 +101,7 @@ export default function InProcessScreen(props) {
           <div className='recording_hint'>
             {getRecordState() === 'Done' ? '录制中...' : ''}
           </div>
-          <div className='sentence_to_be_read'>
-            {props.curr_sentence}
-          </div>
+          <div className='sentence_to_be_read'>{props.curr_sentence}</div>
           <button
             id='testerRecordBtn'
             className={getRecordState() === 'Done' ? 'btn btn-danger' : 'btn'}
@@ -128,7 +124,8 @@ export default function InProcessScreen(props) {
               reset_state ||
               !props.recordGreenLight ||
               props.numFilesSaved % props.numCams !== 0 ||
-              waitForSave
+              waitForSave ||
+              recording
             }
           >
             ⬅上一句
@@ -143,7 +140,8 @@ export default function InProcessScreen(props) {
               reset_state ||
               !props.recordGreenLight ||
               props.numFilesSaved % props.numCams !== 0 ||
-              waitForSave
+              waitForSave ||
+              recording
             }
           >
             下一句➡

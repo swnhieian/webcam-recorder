@@ -17,7 +17,7 @@ function Tester(props) {
     return (
       <div id='progress_bar'>
         <pre>
-          Progress: {props.curr_sentence_index} / {props.data.length} ({percent}
+          Progress: {props.curr_sentence_index} / {props.data.length - 1} ({percent}
           %)
         </pre>
         <Line
@@ -54,6 +54,12 @@ function Tester(props) {
       <div className='middle'>
         <div className='inner'>{content(props)}</div>
       </div>
+      <pre
+        hidden={props.recordGreenLight}
+        className='warning_message'
+      >
+        Please Click Reset!
+      </pre>
     </div>
   );
 }

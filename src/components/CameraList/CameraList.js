@@ -29,7 +29,26 @@ export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
   const [recordingStatus, setRecordingStatus] = useState("recording-status-loading...");
 
-
+  const helper_addToVideoDevices = (device, videodevices) => {
+    let videoDevice = {
+      camera_info: {
+        id: device.deviceId,
+        label: device.label,
+        groupId: device.groupId
+      },
+      ref: React.createRef(),
+      recorder: null
+    };
+    if (device.deviceId in matchedDeviceList) {
+      videoDevice.mic_info = {
+        id: matchedDeviceList[device.deviceId]
+      };
+    } else {
+      // alert("device not match!!!");
+      console.error('device not match!!!');
+    }
+    videodevices.push(videoDevice);
+  }
   const initCams = () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       console.log('enumerateDevices() not supported.');
@@ -47,24 +66,7 @@ export default function CameraList(props) {
             // );
             // console.log(device);
             if (device.kind === 'videoinput') {
-              let videoDevice = {
-                camera_info: {
-                  id: device.deviceId,
-                  label: device.label,
-                  groupId: device.groupId
-                },
-                ref: React.createRef(),
-                recorder: null
-              };
-              if (device.deviceId in matchedDeviceList) {
-                videoDevice.mic_info = {
-                  id: matchedDeviceList[device.deviceId]
-                };
-              } else {
-                // alert("device not match!!!");
-                console.error('device not match!!!');
-              }
-              videodevices.push(videoDevice);
+              helper_addToVideoDevices(device, videodevices);
             }
             return null;
           });

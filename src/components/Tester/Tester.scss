@@ -30,6 +30,10 @@
   margin: 0.5em;
 }
 
+.btn:disabled {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
 .btn-center {
   margin: auto auto;
 }

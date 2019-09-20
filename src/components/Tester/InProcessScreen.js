@@ -6,8 +6,9 @@ import qs from '../../utils/qs';
 export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
   const [done_recording, setDoneRecording] = useState(false);
-  const [reset_state, reset] = useState(false)
-  const [nameSet, setName] = useState(!!qs('name'))
+  const [reset_state, reset] = useState(false);
+  const [nameSet, setName] = useState(!!qs('name'));
+  const [waitForSave, setWaitForSave] = useState(false); 
 
   function updateSentence(data) {
     reset(true);
@@ -30,6 +31,10 @@ export default function InProcessScreen(props) {
       setRecordState(false);
       props.socket.emit('client: stop cams', 'in process screen');
       reset(false);
+      setWaitForSave(true);
+      setTimeout(() => {
+        setWaitForSave(false);
+      }, 2000)
     } else {
       props.socket.emit('client: start cams', 'in process screen');
       setRecordState(true);
@@ -99,7 +104,7 @@ export default function InProcessScreen(props) {
             id='testerRecordBtn'
             className={getRecordState() === 'Done' ? 'btn btn-danger' : 'btn'}
             onClick={record}
-            disabled={!props.recordGreenLight || props.numFilesSaved % props.numCams !== 0}
+            disabled={!props.recordGreenLight || props.numFilesSaved % props.numCams !== 0 || waitForSave}
           >
             {trans(getRecordState())}
           </button>
@@ -112,7 +117,8 @@ export default function InProcessScreen(props) {
               props.curr_sentence_index === 0 ||
               reset_state ||
               !props.recordGreenLight ||
-              props.numFilesSaved % props.numCams !== 0
+              props.numFilesSaved % props.numCams !== 0 ||
+              waitForSave
             }
           >
             ⬅上一句
@@ -126,7 +132,8 @@ export default function InProcessScreen(props) {
               !done_recording ||
               reset_state ||
               !props.recordGreenLight ||
-              props.numFilesSaved % props.numCams !== 0
+              props.numFilesSaved % props.numCams !== 0 || 
+              waitForSave
             }
           >
             下一句➡

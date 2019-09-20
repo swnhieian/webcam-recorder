@@ -41,15 +41,11 @@ export default function InProcessScreen(props) {
     //console.log(e);
     if ([' ', 'ArrowLeft', 'ArrowRight'].includes(key)) {
       if (key === ' ') {
-        // record();
         document.getElementById('testerRecordBtn').click();
       } else if (key === 'ArrowLeft') {
-        // updateSentence('$prev');
         document.getElementById('testerPrevBtn').click();
-
       } else if (key === 'ArrowRight') {
         document.getElementById('testerNextBtn').click();
-        updateSentence('$next');
       }
       event.preventDefault();
     }

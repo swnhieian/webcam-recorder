@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React from 'react';
 import PropTypes from 'prop-types';
 import update from 'react-addons-update'
@@ -29,8 +30,9 @@ class App extends React.Component {
       recordGreenLight: false,
       computerID: -1,
       numFilesSaved: 0,
-      connectedOrderMap: {}, 
-      numCams: 6
+      connectedOrderMap: {},
+      numCams: 6,
+      overRiddenStatus: false
     };
     this.props.socket.emit('client: update sentence_index', {
       name: qs('name'),
@@ -73,12 +75,11 @@ class App extends React.Component {
 
   // helper method
   socket_updateConnectionStatusDisplay = status => {
-    document.getElementById('camera_status_p').innerText = this.boldString(JSON.stringify(
-      status,
-      null,
-      4
-    ), this.state.computerID);
-    this.updateNumFilesSaved("num files saved: " + this.state.numFilesSaved);
+    document.getElementById('camera_status_p').innerText = this.boldString(
+      JSON.stringify(status, null, 4),
+      this.state.computerID
+    );
+    this.updateNumFilesSaved('num files saved: ' + this.state.numFilesSaved);
   };
 
   componentDidMount() {
@@ -88,12 +89,10 @@ class App extends React.Component {
       this.socket_updateConnectionStatusDisplay
     );
 
-    this.props.socket.on(
-      'server: response for numFilesSaved', numFiles => {
-        this.helper_updateFilesSaved(numFiles);
-      }
-    );
-  
+    this.props.socket.on('server: response for numFilesSaved', numFiles => {
+      this.helper_updateFilesSaved(numFiles);
+    });
+
     this.props.socket.on('server: save files successful', numFiles => {
       this.helper_updateFilesSaved(numFiles);
     });
@@ -102,28 +101,35 @@ class App extends React.Component {
       // const id = Object.keys(connectedOrder[0])
       // const order = connectedOrder[id];
       this.setState({
-        connectedOrderMap: update(this.state.connectedOrderMap, {$merge: connectedOrder})
+        connectedOrderMap: update(this.state.connectedOrderMap, {
+          $merge: connectedOrder
+        })
       });
     });
 
     const refreshRates = [0, 666, 1332];
     this.props.socket.on('server: refresh all', () => {
-      const conectedOrderNum = this.state.connectedOrderMap[this.state.computerID];
+      const conectedOrderNum = this.state.connectedOrderMap[
+        this.state.computerID
+      ];
       const indexRefresh = conectedOrderNum % 3;
       const time = refreshRates[indexRefresh];
       setTimeout(() => {
-        window.location.reload(false)
-      }, time)
+        window.location.reload(false);
+      }, time);
     });
   }
 
   helper_updateFilesSaved = numFiles => {
-    const successMessage = (numFiles % this.state.numCams === 0) ? " (successful)" : " (not all cams saved!!)"
+    const successMessage =
+      numFiles % this.state.numCams === 0
+        ? ' (successful)'
+        : ' (not all cams saved!!)';
     this.updateNumFilesSaved('num files saved: ' + numFiles + successMessage);
     this.setState({
       numFilesSaved: numFiles
     });
-  }
+  };
 
   updateSentence = curr_sentence => {
     //console.log("in updateSentence(" + curr_sentence + "):" + qs('name'));
@@ -201,7 +207,7 @@ class App extends React.Component {
 
   updateNumFilesSaved = numFiles => {
     document.getElementById('num_files_saved').innerHTML = numFiles;
-  }
+  };
 
   comp_dataCollection = () => {
     return (
@@ -218,8 +224,10 @@ class App extends React.Component {
   };
 
   updateGreenLightStatus = () => {
-    this.setState({ recordGreenLight : true });
-  }
+    this.setState({ recordGreenLight: true }, () => {
+      console.log('updated green light status, ' + this.state.recordGreenLight);
+    });
+  };
 
   comp_tester = () => {
     return (
@@ -232,7 +240,8 @@ class App extends React.Component {
         curr_sentence={this.state.curr_sentence}
         socket={this.props.socket}
         recordGreenLight={
-          this.state.recordGreenLight && this.state.numFilesSaved % this.state.numCams === 0
+          this.state.recordGreenLight &&
+          (this.state.numFilesSaved % this.state.numCams === 0 || this.state.overRiddenStatus)
         }
         updateGreenLightStatus={this.updateGreenLightStatus}
       />
@@ -262,17 +271,25 @@ class App extends React.Component {
 
   refreshAll = () => {
     this.props.socket.emit('client: refresh all');
+  };
+
+  overRideGreenLight = () => {
+    this.updateGreenLightStatus();
+    this.setState({overRiddenStatus: true});
   }
+
+  resetOverride
 
   comp_cameraStatus = () => {
     return (
       <div className='camera_status'>
         <pre>Connection Status</pre>
         <pre id='camera_status_p'>Server not online</pre>
-        <pre id="num_files_saved"></pre>
+        <pre id='num_files_saved'></pre>
         <button onClick={this.getConnectionStatus}>Get Status</button>
         <button onClick={this.resetCams}>Reset Cams</button>
         <button onClick={this.refreshAll}>Refresh All</button>
+        <button onClick={this.overRideGreenLight}>Override Green Light</button>
         <p
           hidden={this.state.recordGreenLight || !qs('name')}
           className='warning_message'

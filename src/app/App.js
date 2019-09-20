@@ -31,7 +31,7 @@ class App extends React.Component {
       computerID: -1,
       numFilesSaved: 0,
       connectedOrderMap: {},
-      numCams: 6,
+      numCams: 8,
       overRiddenStatus: false
     };
     this.props.socket.emit('client: update sentence_index', {

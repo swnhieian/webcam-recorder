@@ -5,6 +5,7 @@ import update from 'react-addons-update'
 import qs from '../utils/qs'
 import cogoToast from 'cogo-toast';
 import { Line } from 'rc-progress';
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 // scss
 import './App.scss';
@@ -76,7 +77,7 @@ class App extends React.Component {
 
   boldString = (str, find) => {
     var re = new RegExp(find, 'g');
-    return str.replace(re, '<this computer>: ' + find);
+    return str.replace(re, '🖥: ' + find);
   };
 
   // helper method
@@ -394,28 +395,30 @@ class App extends React.Component {
 
   render() {
     return (
-      <div className='container'>
-        {this.comp_cameraStatus()}
-        <button
-          onClick={this.toggleConnectionStatusDisplay}
-          className='debug_button'
-        >
-          show/hide status
-        </button>
-        <button className='debug_button' onClick={this.resetCams} >Reset Cams</button>
-        <button className='debug_button' onClick={() => this.props.socket.emit('client: update recording progress', {})}>Reset Progress</button>
-        <button onClick={this.showFileSavedMessage} style={{"visibility":"hidden"}} id="showSavedFilesBtn"></button>
-        <pre hidden={this.state.numCams === 8}>debug mode, remember to change num cams back to 8</pre>
-        {this.comp_tester()}
-        {this.comp_userResearchHeader()}
-        <div className='contents'>
-          <div className='left_panel'>{this.comp_dataCollection()}</div>
-          <div className='right_panel cameras_container'>
-            {this.comp_cameraList()}
+      <Router>
+        <div className='container'>
+          {this.comp_cameraStatus()}
+          <button
+            onClick={this.toggleConnectionStatusDisplay}
+            className='debug_button'
+          >
+            show/hide status
+          </button>
+          <button className='debug_button' onClick={this.resetCams} >Reset Cams</button>
+          <button className='debug_button' onClick={() => this.props.socket.emit('client: update recording progress', {})}>Reset Progress</button>
+          <button onClick={this.showFileSavedMessage} style={{"visibility":"hidden"}} id="showSavedFilesBtn"></button>
+          <pre hidden={this.state.numCams === 8}>debug mode, remember to change num cams back to 8</pre>
+          {this.comp_tester()}
+          {this.comp_userResearchHeader()}
+          <div className='contents'>
+            <div className='left_panel'>{this.comp_dataCollection()}</div>
+            <div className='right_panel cameras_container'>
+              {this.comp_cameraList()}
+            </div>
+            <div className=''></div>
           </div>
-          <div className=''></div>
         </div>
-      </div>
+      </Router>
     );
   }
 }

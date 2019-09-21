@@ -44,6 +44,7 @@ const saveConnection = (socket, status) => {
 }
 
 const RECORDING_STATUS_PATH = './recording_status.json'
+const PROGRESS_PATH = './progress.json'
 const CONNECTION_STATUS_PATH = './connection_status.json'
 let connection_status = {};
 let numSaved = 0;
@@ -78,6 +79,21 @@ io.on('connection', function(socket) {
 
   socket.on('client: refresh all', function() {
     io.emit('server: refresh all');
+  });
+
+  socket.on('client: update recording progress', function(progress) {
+    console.log(progress);
+    saveData(progress, PROGRESS_PATH);
+  });
+
+  socket.on('client: check for progress', function() {
+    readContent(PROGRESS_PATH, function (err, content) {
+      try {
+        io.emit('server: response for progress', JSON.parse(content));
+      } catch (SyntaxErrorException) {
+        console.error(SyntaxErrorException);
+      }
+    }); 
   });
 
   socket.on('client: ping for connection status', function() {

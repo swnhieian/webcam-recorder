@@ -8,7 +8,7 @@ export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
   const [done_recording, setDoneRecording] = useState(false);
   const [reset_state, reset] = useState(false);
-  const [nameSet, setName] = useState(!!qs('name'));
+  const [nameSet, setName] = useState(qs('name'));
 
   function updateSentence(data) {
     reset(true);
@@ -72,8 +72,21 @@ export default function InProcessScreen(props) {
       event.preventDefault();
     }
   }
+  function disableNextButtonIfCurrNotRead() {
+    const recordedYet = (props.recordedProgress[props.curr_sentence_index]) ? props.recordedProgress[props.curr_sentence_index] : false;
+    try {
+      if (recordedYet) {
+        document.getElementById('testerNextBtn').disabled = false;
+      } else {
+        document.getElementById('testerNextBtn').disabled = true;
+      }
+    } catch (Exception) {
+      // console.log(Exception);
+    }
+  }
 
   function displaySentenceToBeRead() {
+    disableNextButtonIfCurrNotRead();
     const recordedYet = (props.recordedProgress[props.curr_sentence_index]) ? props.recordedProgress[props.curr_sentence_index] : false;
     const recordedMessage = (recordedYet) ? '(录过)' : ''
     const sentence = props.curr_sentence + ' ' + recordedMessage;
@@ -155,7 +168,6 @@ export default function InProcessScreen(props) {
             onClick={() => updateSentence('$next')}
             disabled={
               props.curr_sentence_index === props.data_length - 1 ||
-              !done_recording ||
               !props.recordGreenLight ||
               props.numFilesSaved % props.numCams !== 0 ||
               recording 

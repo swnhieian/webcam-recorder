@@ -42,6 +42,8 @@ class App extends React.Component {
       curr_sentence_index: this.state.curr_sentence_index
     });
 
+    props.socket.emit('client: check for progress');
+
     props.socket.emit('client: ask for sync id');
     props.socket.on('server: connected sync id', id => {
       if (this.socket_getSetCompID) this.socket_getSetCompID(id);
@@ -95,6 +97,10 @@ class App extends React.Component {
       this.socket_updateConnectionStatusDisplay
     );
 
+    this.props.socket.on('server: response for progress', progress => {
+      this.setState({ recordedProgress: progress});
+    })
+
     this.props.socket.on('server: response for numFilesSaved', numFiles => {
       this.helper_updateFilesSaved(numFiles);
     });
@@ -143,6 +149,8 @@ class App extends React.Component {
     this.readTextFile(sentences);
     this.initSocketListeners();
   }
+
+
 
   helper_updateFilesSaved = numFiles => {
     const successMessage =
@@ -227,9 +235,7 @@ class App extends React.Component {
         $merge: sentence_obj
       })
     }, () => {
-      console.log(this.state.recordedProgress);
-      // window.localStorage['recordedProgress'] = this.state.recordedProgress;
-      // console.log(JSON.parse(window.localStorage['recordedProgress']))
+      this.props.socket.emit('client: update recording progress', this.state.recordedProgress);
     });
 
   };

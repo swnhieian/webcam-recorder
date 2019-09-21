@@ -34,9 +34,11 @@ export default function InProcessScreen(props) {
       cogoToast
         .loading('Files are currently saving. Please wait...', { hideAfter: 2 });
       props.updateGreenLightStatus(false);
+      props.stopTimer();
     } else {
       props.socket.emit('client: start cams', 'in process screen');
       setRecordState(true);
+      props.startTimer();
     }
   }
 
@@ -160,5 +162,7 @@ InProcessScreen.propTypes = {
   updateGreenLightStatus: PropTypes.func.isRequired,
   recordGreenLight: PropTypes.bool.isRequired,
   numFilesSaved: PropTypes.number.isRequired,
-  numCams: PropTypes.number.isRequired
+  numCams: PropTypes.number.isRequired,
+  stopTimer: PropTypes.func.isRequired,
+  startTimer: PropTypes.func.isRequired
 };

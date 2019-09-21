@@ -9,7 +9,6 @@ export default function InProcessScreen(props) {
   const [done_recording, setDoneRecording] = useState(false);
   const [reset_state, reset] = useState(false);
   const [nameSet, setName] = useState(!!qs('name'));
-  const [waitForSave, setWaitForSave] = useState(false); 
 
   function updateSentence(data) {
     reset(true);
@@ -25,7 +24,6 @@ export default function InProcessScreen(props) {
       return 'Record';
     }
   }
-
   function record() {
     document.getElementById('showSavedFilesBtn').disabled = false;
     if (recording) {
@@ -33,12 +31,9 @@ export default function InProcessScreen(props) {
       setRecordState(false);
       props.socket.emit('client: stop cams', 'in process screen');
       reset(false);
-      setWaitForSave(true);
       cogoToast
         .loading('Files are currently saving. Please wait...', { hideAfter: 2 });
-      setTimeout(() => {
-        setWaitForSave(false);
-      }, 2000)
+      props.updateGreenLightStatus(false);
     } else {
       props.socket.emit('client: start cams', 'in process screen');
       setRecordState(true);
@@ -108,8 +103,7 @@ export default function InProcessScreen(props) {
             onClick={record}
             disabled={
               !props.recordGreenLight ||
-              props.numFilesSaved % props.numCams !== 0 ||
-              waitForSave
+              props.numFilesSaved % props.numCams !== 0
             }
           >
             {trans(getRecordState())}
@@ -124,7 +118,6 @@ export default function InProcessScreen(props) {
               reset_state ||
               !props.recordGreenLight ||
               props.numFilesSaved % props.numCams !== 0 ||
-              waitForSave ||
               recording
             }
           >
@@ -140,7 +133,6 @@ export default function InProcessScreen(props) {
               reset_state ||
               !props.recordGreenLight ||
               props.numFilesSaved % props.numCams !== 0 ||
-              waitForSave ||
               recording
             }
           >

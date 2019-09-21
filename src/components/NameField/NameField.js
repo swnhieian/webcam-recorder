@@ -20,7 +20,7 @@ export default class NameField extends Component {
     })
     this.props.socket.emit('client: dummy vid, do not save');
     this.props.updateTesterContents();
-    this.props.updateGreenLightStatus();
+    this.props.updateGreenLightStatus(true);
   }
 
   detectEnter = (e) => {

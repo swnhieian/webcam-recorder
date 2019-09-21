@@ -5,20 +5,14 @@ import InProcessScreen from './InProcessScreen.js';
 import { Line } from 'rc-progress';
 
 function Tester(props) {
-
   function comp_progressBar() {
-    // const percent = 0;
-    // console.log(this.state.curr_sentence_index);
-    // if (this.state.curr_sentence_index) {
     const percent = (
-      (props.curr_sentence_index / props.data.length) *
-      100
+      (props.curr_sentence_index / props.data.length) * 100
     ).toFixed(2);
     return (
       <div id='progress_bar'>
         <pre>
-          Progress: {props.curr_sentence_index} / {props.data.length - 1} ({percent}
-          %)
+          Progress: {props.curr_sentence_index} / {props.data.length - 1} ({percent}%)
         </pre>
         <Line
           percent={percent}
@@ -51,14 +45,12 @@ function Tester(props) {
   return (
     <div className='testing_screen'>
       {comp_progressBar()}
+      <div id="record_time_placeholder"></div>
       <div className='middle'>
         <div className='inner'>{content(props)}</div>
       </div>
-      <pre
-        hidden={props.recordGreenLight}
-        className='warning_message'
-      >
-        Please Click Reset!
+      <pre hidden={props.recordGreenLight || props.curr_sentence_index === 0} className='warning_message'>
+        There may be an issue with file saves. Please notify research facilitator.
       </pre>
     </div>
   );

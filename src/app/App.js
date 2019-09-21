@@ -31,9 +31,10 @@ class App extends React.Component {
       computerStatus: {},
       recordGreenLight: false,
       computerID: -1,
-      numFilesSaved: 0,
+      numFilesSavedTotal: 0,
+      numFilesSavedInd: 0,
       connectedOrderMap: {},
-      numCams: 8,
+      numCams: 1,
     };
     this.props.socket.emit('client: update sentence_index', {
       name: qs('name'),
@@ -80,15 +81,14 @@ class App extends React.Component {
       JSON.stringify(status, null, 4),
       this.state.computerID
     );
-    this.updateNumFilesSaved('num files saved: ' + this.state.numFilesSaved);
+    this.updateNumFilesSaved('num files saved: ' + this.state.numFilesSavedTotal);
   };
 
   showFileSavedMessage = () => {
     cogoToast.success('Files successfully saved.', { hideAfter: 1.5 });
   }
 
-  componentDidMount() {
-    this.readTextFile(sentences);
+  initSocketListeners = () => {
     this.props.socket.on(
       'server: response for connection status',
       this.socket_updateConnectionStatusDisplay
@@ -100,8 +100,19 @@ class App extends React.Component {
 
     this.props.socket.on('server: save files successful', numFiles => {
       this.helper_updateFilesSaved(numFiles);
-      document.getElementById('showSavedFilesBtn').click();
-      document.getElementById('showSavedFilesBtn').disabled = true;
+      this.setState({
+        numFilesSavedInd: this.state.numFilesSavedInd + 1
+      }, () => {
+        console.log('this occured: ' + this.state.numFilesSavedInd + ' times.');
+        if (this.state.numFilesSavedInd === this.state.numCams) {
+          document.getElementById('showSavedFilesBtn').click();
+          document.getElementById('showSavedFilesBtn').disabled = true;
+          this.setState({
+            numFilesSavedInd: 0
+          });
+          this.updateGreenLightStatus(true);
+        }
+      });
     });
 
     this.props.socket.on('server: computer connected order', connectedOrder => {
@@ -116,15 +127,18 @@ class App extends React.Component {
 
     const refreshRates = [0, 666, 1332];
     this.props.socket.on('server: refresh all', () => {
-      const conectedOrderNum = this.state.connectedOrderMap[
-        this.state.computerID
-      ];
+      const conectedOrderNum = this.state.connectedOrderMap[this.state.computerID];
       const indexRefresh = conectedOrderNum % 3;
       const time = refreshRates[indexRefresh];
       setTimeout(() => {
         window.location.reload(false);
       }, time);
     });
+  }
+
+  componentDidMount() {
+    this.readTextFile(sentences);
+    this.initSocketListeners();
   }
 
   helper_updateFilesSaved = numFiles => {
@@ -230,10 +244,8 @@ class App extends React.Component {
     );
   };
 
-  updateGreenLightStatus = () => {
-    this.setState({ recordGreenLight: true }, () => {
-      console.log('updated green light status, ' + this.state.recordGreenLight);
-    });
+  updateGreenLightStatus = (bool) => {
+    this.setState({ recordGreenLight: bool });
   };
 
   comp_tester = () => {
@@ -248,9 +260,9 @@ class App extends React.Component {
         socket={this.props.socket}
         recordGreenLight={
           this.state.recordGreenLight &&
-          this.state.numFilesSaved % this.state.numCams === 0
+          this.state.numFilesSavedTotal % this.state.numCams === 0
         }
-        numFilesSaved={this.state.numFilesSaved}
+        numFilesSaved={this.state.numFilesSavedTotal}
         numCams={this.state.numCams}
         updateGreenLightStatus={this.updateGreenLightStatus}
       />
@@ -275,7 +287,7 @@ class App extends React.Component {
   resetCams = () => {
     // this.props.socket.emit('client: stop cams');
     this.props.socket.emit('client: dummy vid, do not save');
-    this.updateGreenLightStatus();
+    this.updateGreenLightStatus(true);
   };
 
   refreshAll = () => {

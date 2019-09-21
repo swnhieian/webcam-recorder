@@ -24,21 +24,30 @@ export default function InProcessScreen(props) {
       return 'Record';
     }
   }
+
+  function stopRecording() {
+    setDoneRecording(true);
+    setRecordState(false);
+    props.socket.emit('client: stop cams', 'in process screen');
+    reset(false);
+    cogoToast
+      .loading('Files are currently saving. Please wait...', { hideAfter: 2 });
+    props.updateGreenLightStatus(false);
+    props.stopTimer();
+  }
+
+  function startRecording() {
+    props.socket.emit('client: start cams', 'in process screen');
+    setRecordState(true);
+    props.startTimer();
+  }
+
   function record() {
     document.getElementById('showSavedFilesBtn').disabled = false;
     if (recording) {
-      setDoneRecording(true);
-      setRecordState(false);
-      props.socket.emit('client: stop cams', 'in process screen');
-      reset(false);
-      cogoToast
-        .loading('Files are currently saving. Please wait...', { hideAfter: 2 });
-      props.updateGreenLightStatus(false);
-      props.stopTimer();
+      stopRecording();
     } else {
-      props.socket.emit('client: start cams', 'in process screen');
-      setRecordState(true);
-      props.startTimer();
+      startRecording();
     }
   }
 

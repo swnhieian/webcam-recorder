@@ -71,9 +71,7 @@ function Tester(props) {
         'recording time—' + diffMin + ':' + diffSec;
     }, 100);
   }
-  useEffect(() => {
-    // startTimer();
-  }, []);
+
 
   function comp_Timer(props) {
     return (

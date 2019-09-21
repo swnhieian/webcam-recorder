@@ -35,6 +35,7 @@ class App extends React.Component {
       numFilesSavedInd: 0,
       connectedOrderMap: {},
       numCams: 1,
+      recordedProgress: {}
     };
     this.props.socket.emit('client: update sentence_index', {
       name: qs('name'),
@@ -109,6 +110,8 @@ class App extends React.Component {
           document.getElementById('showSavedFilesBtn').disabled = true;
           this.setState({
             numFilesSavedInd: 0
+          }, () => {
+            document.getElementById('testerNextBtn').click();
           });
           this.updateGreenLightStatus(true);
         }
@@ -216,6 +219,21 @@ class App extends React.Component {
     });
   };
 
+  updateRecordProgress = (sentence_obj) => {
+    // { <sentence_index> : <bool: recorded/not> }
+    console.log('added to progress ', JSON.stringify(sentence_obj))
+    this.setState({
+      recordedProgress: update(this.state.recordedProgress, {
+        $merge: sentence_obj
+      })
+    }, () => {
+      console.log(this.state.recordedProgress);
+      // window.localStorage['recordedProgress'] = this.state.recordedProgress;
+      // console.log(JSON.parse(window.localStorage['recordedProgress']))
+    });
+
+  };
+
   updateConnectionStatus = recordingStatus => {
     if (this.state.computerStatus[this.state.computerID]) {
       const status = {};
@@ -265,6 +283,8 @@ class App extends React.Component {
         numFilesSaved={this.state.numFilesSavedTotal}
         numCams={this.state.numCams}
         updateGreenLightStatus={this.updateGreenLightStatus}
+        recordedProgress={this.state.recordedProgress}
+        updateRecordProgress={this.updateRecordProgress}
       />
     );
   };

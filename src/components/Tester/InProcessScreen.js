@@ -34,6 +34,13 @@ export default function InProcessScreen(props) {
       .loading('Files are currently saving. Please wait...', { hideAfter: 2 });
     props.updateGreenLightStatus(false);
     props.stopTimer();
+    markSentenceAsDone(props.curr_sentence_index);
+  }
+
+  function markSentenceAsDone(curr_sentence_index) {
+    const temp = {}
+    temp[curr_sentence_index] = true;
+    props.updateRecordProgress(temp);
   }
 
   function startRecording() {
@@ -64,6 +71,15 @@ export default function InProcessScreen(props) {
       }
       event.preventDefault();
     }
+  }
+
+  function displaySentenceToBeRead() {
+    const recordedYet = (props.recordedProgress[props.curr_sentence_index]) ? props.recordedProgress[props.curr_sentence_index] : false;
+    const recordedMessage = (recordedYet) ? '(录过)' : ''
+    const sentence = props.curr_sentence + ' ' + recordedMessage;
+    return (
+      <div className={(recordedYet) ? "recorded_sentence_highlight" : ""}>{sentence}</div>
+    )
   }
 
   useEffect(() => {
@@ -107,7 +123,7 @@ export default function InProcessScreen(props) {
           <div className='recording_hint'>
             {getRecordState() === 'Done' ? '录制中...' : ''}
           </div>
-          <div className='sentence_to_be_read'>{props.curr_sentence}</div>
+          <div className='sentence_to_be_read'>{displaySentenceToBeRead()}</div>
           <button
             id='testerRecordBtn'
             className={getRecordState() === 'Done' ? 'btn btn-danger' : 'btn'}
@@ -126,7 +142,6 @@ export default function InProcessScreen(props) {
             onClick={() => updateSentence('$prev')}
             disabled={
               props.curr_sentence_index === 0 ||
-              reset_state ||
               !props.recordGreenLight ||
               props.numFilesSaved % props.numCams !== 0 ||
               recording
@@ -141,13 +156,12 @@ export default function InProcessScreen(props) {
             disabled={
               props.curr_sentence_index === props.data_length - 1 ||
               !done_recording ||
-              reset_state ||
               !props.recordGreenLight ||
               props.numFilesSaved % props.numCams !== 0 ||
-              recording
-            }
-          >
-            下一句➡
+              recording 
+    }
+  >
+    下一句➡
           </button>
         </div>
       );
@@ -173,5 +187,7 @@ InProcessScreen.propTypes = {
   numFilesSaved: PropTypes.number.isRequired,
   numCams: PropTypes.number.isRequired,
   stopTimer: PropTypes.func.isRequired,
-  startTimer: PropTypes.func.isRequired
+  startTimer: PropTypes.func.isRequired,
+  recordedProgress: PropTypes.object.isRequired,
+  updateRecordProgress: PropTypes.func.isRequired
 };

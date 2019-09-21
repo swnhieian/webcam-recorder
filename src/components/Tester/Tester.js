@@ -43,6 +43,8 @@ function Tester(props) {
         numCams={props.numCams}
         stopTimer={stopTimer}
         startTimer={startTimer}
+        recordedProgress={props.recordedProgress}
+        updateRecordProgress={props.updateRecordProgress}
       />
     );
   }
@@ -107,7 +109,9 @@ Tester.propTypes = {
   recordGreenLight: PropTypes.bool.isRequired,
   updateGreenLightStatus: PropTypes.func.isRequired,
   numFilesSaved: PropTypes.number.isRequired,
-  numCams: PropTypes.number.isRequired
+  numCams: PropTypes.number.isRequired,
+  recordedProgress: PropTypes.object.isRequired,
+  updateRecordProgress: PropTypes.func.isRequired
 };
 
 export default Tester;

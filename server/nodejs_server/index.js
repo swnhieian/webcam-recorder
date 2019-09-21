@@ -112,7 +112,6 @@ io.on('connection', function(socket) {
   socket.on('client: update recording status', function(status) {
     saveConnection(socket, status[socket.id])
     console.log('server: updated recording status', JSON.stringify(status));
-    // console.log(JSON.stringify(status));
   });
   
 
@@ -137,9 +136,15 @@ io.on('connection', function(socket) {
   });
 
   socket.on('client: ask for sentence index', function() {
-    // readContent(RECORDING_STATUS_PATH, )
-    // const index = 
-    // io.emit('server: response for sentence index', index);
+    readContent(RECORDING_STATUS_PATH, function (err, content) {
+      try {
+        console.log(JSON.parse(content));
+        // io.emit('server: response for sentence index', index);
+
+      } catch (SyntaxErrorException) {
+        console.error(SyntaxErrorException);
+      }
+    });
   })
 
   socket.on('client: update sentence_index', function(data) {

@@ -45,7 +45,6 @@ class App extends React.Component {
     });
 
 
-    props.socket.emit('client: ask for sentence index');
     props.socket.emit('client: check for progress');
     props.socket.emit('client: ask for sync id');
     props.socket.on('server: connected sync id', id => {

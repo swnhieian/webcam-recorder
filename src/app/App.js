@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import update from 'react-addons-update'
 import qs from '../utils/qs'
 import cogoToast from 'cogo-toast';
+import { Line } from 'rc-progress';
 
 // scss
 import './App.scss';
@@ -150,6 +151,25 @@ class App extends React.Component {
     this.initSocketListeners();
   }
 
+  comp_progressBar(curr, total) {
+    const percent = (
+      (curr / total) * 100
+    ).toFixed(2);
+    return (
+      <div id='progress_bar'>
+        <pre>
+          Progress: {} / {total} ({percent}%)
+          </pre>
+        <Line
+          percent={percent}
+          strokeWidth='1.5'
+          trailWidth='1.5'
+          strokeColor='#2db7f5'
+          trailColor='#D9D9D9'
+        />
+      </div>
+    );
+  }
 
 
   helper_updateFilesSaved = numFiles => {
@@ -291,6 +311,7 @@ class App extends React.Component {
         updateGreenLightStatus={this.updateGreenLightStatus}
         recordedProgress={this.state.recordedProgress}
         updateRecordProgress={this.updateRecordProgress}
+        comp_progressBar={this.comp_progressBar}
       />
     );
   };
@@ -329,6 +350,7 @@ class App extends React.Component {
             <pre>Connection Status</pre>
             <pre id='camera_status_p'>Server not online</pre>
             <pre id='num_files_saved'></pre>
+            {this.comp_progressBar(this.state.curr_sentence_index, this.state.data.length - 1)}
             <button onClick={this.getConnectionStatus}>Get Status</button>
             <button onClick={this.resetCams}>Reset Cams</button>
             <button onClick={this.refreshAll}>Refresh All</button>

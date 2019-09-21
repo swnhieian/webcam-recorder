@@ -7,26 +7,6 @@ import Timer from '../Timer.js'
 
 function Tester(props) {
   const [intervalID, setIntervalID] = useState(undefined);
-
-  function comp_progressBar() {
-    const percent = (
-      (props.curr_sentence_index / props.data.length) * 100
-    ).toFixed(2);
-    return (
-      <div id='progress_bar'>
-        <pre>
-          Progress: {props.curr_sentence_index} / {props.data.length - 1} ({percent}%)
-        </pre>
-        <Line
-          percent={percent}
-          strokeWidth='1.5'
-          trailWidth='1.5'
-          strokeColor='#2db7f5'
-          trailColor='#D9D9D9'
-        />
-      </div>
-    );
-  }
   
   function comp_inProcessScreen() {
     return (
@@ -75,11 +55,10 @@ function Tester(props) {
   }
 
 
-  function comp_Timer(props) {
+  function comp_Timer() {
     return (
       <div>
         <pre id='record_time_content'></pre>
-        {/* <button onClick={resetTimerClick}>reset</button> */}
       </div>
     );
   }
@@ -87,7 +66,7 @@ function Tester(props) {
   return (
     <div className='testing_screen'>
       <Timer name={'total_timer'}/>
-      {comp_progressBar()}
+      {props.comp_progressBar(props.curr_sentence_index, props.data_length)}
       <div className='middle'>
         <div className='inner'>{comp_inProcessScreen(props)}</div>
         {comp_Timer()}
@@ -111,7 +90,8 @@ Tester.propTypes = {
   numFilesSaved: PropTypes.number.isRequired,
   numCams: PropTypes.number.isRequired,
   recordedProgress: PropTypes.object.isRequired,
-  updateRecordProgress: PropTypes.func.isRequired
+  updateRecordProgress: PropTypes.func.isRequired,
+  comp_progressBar: PropTypes.func.isRequired
 };
 
 export default Tester;

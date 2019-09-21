@@ -114,14 +114,18 @@ class App extends React.Component {
       }, () => {
         console.log('this occured: ' + this.state.numFilesSavedInd + ' times.');
         if (this.state.numFilesSavedInd === this.state.numCams) {
-          document.getElementById('showSavedFilesBtn').click();
-          document.getElementById('showSavedFilesBtn').disabled = true;
-          this.setState({
-            numFilesSavedInd: 0
-          }, () => {
-            document.getElementById('testerNextBtn').click();
-          });
-          this.updateGreenLightStatus(true);
+          try {
+            document.getElementById('showSavedFilesBtn').click();
+            document.getElementById('showSavedFilesBtn').disabled = true;
+            this.setState({
+              numFilesSavedInd: 0
+            }, () => {
+              document.getElementById('testerNextBtn').click();
+            });
+            this.updateGreenLightStatus(true);
+          } catch (Exception) {
+            console.log('probably mobile view error');
+          }
         }
       });
     });
@@ -159,7 +163,7 @@ class App extends React.Component {
     return (
       <div id='progress_bar'>
         <pre>
-          Progress: {} / {total} ({percent}%)
+          Progress: {curr} / {total} ({percent}%)
           </pre>
         <Line
           percent={percent}
@@ -342,32 +346,38 @@ class App extends React.Component {
     this.props.socket.emit('client: refresh all');
   };
 
-  comp_cameraStatus = () => {
+  comp_cameraStatusContent = () => {
+    return (
+      <div className='camera_status_content'>
+        <pre>Connection Status</pre>
+        <pre id='camera_status_p'>Server not online</pre>
+        <pre id='num_files_saved'></pre>
+        {this.comp_progressBar(this.state.curr_sentence_index, this.state.data.length - 1)}
+        <button onClick={this.getConnectionStatus}>Get Status</button>
+        <button onClick={this.resetCams}>Reset Cams</button>
+        <button onClick={this.refreshAll}>Refresh All</button>
+        <button
+          onClick={this.toggleConnectionStatusDisplay}
+          className='debug_button'
+        >
+          hide
+            </button>
+        <pre
+          hidden={this.state.recordGreenLight || window.location.href.includes('mobile')}
+          className='warning_message'
+        >
+          Please Click Reset!
+            </pre>
+      </div>
+    )
+  }
+
+  comp_cameraStatusContainer = () => {
     return (
       <div id='connection_status'>
         <div className='shadow_overlay'></div>
         <div className='camera_status'>
-          <div className='camera_status_content'>
-            <pre>Connection Status</pre>
-            <pre id='camera_status_p'>Server not online</pre>
-            <pre id='num_files_saved'></pre>
-            {this.comp_progressBar(this.state.curr_sentence_index, this.state.data.length - 1)}
-            <button onClick={this.getConnectionStatus}>Get Status</button>
-            <button onClick={this.resetCams}>Reset Cams</button>
-            <button onClick={this.refreshAll}>Refresh All</button>
-            <button
-              onClick={this.toggleConnectionStatusDisplay}
-              className='debug_button'
-            >
-              hide
-            </button>
-            <pre
-              hidden={this.state.recordGreenLight}
-              className='warning_message'
-            >
-              Please Click Reset!
-            </pre>
-          </div>
+          {this.comp_cameraStatusContent()}
         </div>
       </div>
     );
@@ -391,33 +401,56 @@ class App extends React.Component {
     document.getElementById('connection_status').style.display = (displayStatus === "none") ? "block" : "none";
   }
 
-  
+  comp_debug = () => {
+    return (
+      <div>
+        <button
+          onClick={this.toggleConnectionStatusDisplay}
+          className='debug_button'
+        >
+          show/hide status
+            </button>
+        <button className='debug_button' onClick={this.resetCams} >Reset Cams</button>
+        <button className='debug_button' onClick={() => this.props.socket.emit('client: update recording progress', {})}>Reset Progress</button>
+        <button onClick={this.showFileSavedMessage} style={{ "visibility": "hidden" }} id="showSavedFilesBtn"></button>
+        <pre hidden={this.state.numCams === 8}>debug mode, remember to change num cams back to 8</pre>
+      </div>
+    )
+  }
+
+  desktopView = () => {
+    return (
+      <div className='container'>
+        {this.comp_cameraStatusContainer()}
+        {this.comp_debug()}
+        {this.comp_tester()}
+        {this.comp_userResearchHeader()}
+        <div className='contents'>
+          <div className='left_panel'>{this.comp_dataCollection()}</div>
+          <div className='right_panel cameras_container'>
+            {this.comp_cameraList()}
+          </div>
+          <div className=''></div>
+        </div>
+      </div>
+    )
+  }
+
+  mobileView = () => {
+    return (
+      <div>
+        {this.comp_cameraStatusContent()}
+      </div>
+    )
+  }
 
   render() {
     return (
       <Router>
-        <div className='container'>
-          {this.comp_cameraStatus()}
-          <button
-            onClick={this.toggleConnectionStatusDisplay}
-            className='debug_button'
-          >
-            show/hide status
-          </button>
-          <button className='debug_button' onClick={this.resetCams} >Reset Cams</button>
-          <button className='debug_button' onClick={() => this.props.socket.emit('client: update recording progress', {})}>Reset Progress</button>
-          <button onClick={this.showFileSavedMessage} style={{"visibility":"hidden"}} id="showSavedFilesBtn"></button>
-          <pre hidden={this.state.numCams === 8}>debug mode, remember to change num cams back to 8</pre>
-          {this.comp_tester()}
-          {this.comp_userResearchHeader()}
-          <div className='contents'>
-            <div className='left_panel'>{this.comp_dataCollection()}</div>
-            <div className='right_panel cameras_container'>
-              {this.comp_cameraList()}
-            </div>
-            <div className=''></div>
-          </div>
-        </div>
+        <Route path="/" exact component={this.desktopView} />
+        <Route path="/mobile" exact component={this.mobileView} />
+
+
       </Router>
     );
   }

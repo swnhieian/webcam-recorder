@@ -136,6 +136,12 @@ io.on('connection', function(socket) {
     saveData(data, RECORDING_STATUS_PATH);
   });
 
+  socket.on('client: ask for sentence index', function() {
+    // readContent(RECORDING_STATUS_PATH, )
+    // const index = 
+    // io.emit('server: response for sentence index', index);
+  })
+
   socket.on('client: update sentence_index', function(data) {
     let newStatus = {
       name: data.name,

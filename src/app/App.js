@@ -44,8 +44,9 @@ class App extends React.Component {
       curr_sentence_index: this.state.curr_sentence_index
     });
 
-    props.socket.emit('client: check for progress');
 
+    props.socket.emit('client: ask for sentence index');
+    props.socket.emit('client: check for progress');
     props.socket.emit('client: ask for sync id');
     props.socket.on('server: connected sync id', id => {
       if (this.socket_getSetCompID) this.socket_getSetCompID(id);

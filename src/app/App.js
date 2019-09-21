@@ -380,7 +380,8 @@ class App extends React.Component {
         >
           show/hide status
         </button>
-        <button onClick={this.resetCams}>Reset Cams</button>
+        <button className='debug_button' onClick={this.resetCams} >Reset Cams</button>
+        <button className='debug_button' onClick={() => this.props.socket.emit('client: update recording progress', {})}>Reset Progress</button>
         <button onClick={this.showFileSavedMessage} style={{"visibility":"hidden"}} id="showSavedFilesBtn"></button>
         <pre hidden={this.state.numCams === 8}>debug mode, remember to change num cams back to 8</pre>
         {this.comp_tester()}

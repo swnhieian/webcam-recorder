@@ -348,43 +348,6 @@ class App extends React.Component {
     this.props.socket.emit('client: refresh all');
   };
 
-  comp_cameraStatusContent = () => {
-    return (
-      <div className='camera_status_content'>
-        {/* <pre>Connection Status</pre>
-        <pre id='camera_status_p'>Server not online</pre>
-        <pre id='num_files_saved'></pre> */}
-        {/* {this.comp_progressBar(this.state.curr_sentence_index, this.state.data.length - 1)} */}
-        <button onClick={this.getConnectionStatus}>Get Status</button>
-        <button onClick={this.resetCams}>Reset Cams</button>
-        <button onClick={this.refreshAll}>Refresh All</button>
-        <button
-          onClick={this.toggleConnectionStatusDisplay}
-          className='debug_button'
-        >
-          hide
-            </button>
-        <pre
-          hidden={this.state.recordGreenLight || window.location.href.includes('mobile')}
-          className='warning_message'
-        >
-          Please Click Reset!
-            </pre>
-      </div>
-    )
-  }
-
-  comp_cameraStatusContainer = () => {
-    return (
-      <div id='connection_status'>
-        <div className='shadow_overlay'></div>
-        <div className='camera_status'>
-          {this.comp_cameraStatusContent()}
-        </div>
-      </div>
-    );
-  };
-
   comp_cameraList = () => {
     return (
       <CameraList
@@ -396,23 +359,28 @@ class App extends React.Component {
     );
   };
 
-  toggleConnectionStatusDisplay = () => {
-    console.log('clicked here')
-    const displayStatus = document.getElementById('connection_status').style.display;
-    console.log(displayStatus);
-    document.getElementById('connection_status').style.display = (displayStatus === "none") ? "block" : "none";
-  }
-
   toggleModal = (id) => {
     document.getElementById(id).click();
   }
 
-  getStatusContent = () => {
+  comp_overallStatusContent = () => {
     return (
       <div>
         <pre>Connection Status</pre>
         <pre id='camera_status_p'>Server not online</pre>
         <pre id='num_files_saved'></pre>
+        <button onClick={this.getConnectionStatus}>Get Status</button>
+        <button onClick={this.resetCams}>Reset Cams</button>
+        <button onClick={this.refreshAll}>Refresh All</button>
+        <pre
+          hidden={
+            this.state.recordGreenLight ||
+            window.location.href.includes('mobile')
+          }
+          className='warning_message'
+        >
+          Please Click Reset!
+        </pre>
         {this.comp_progressBar(
           this.state.curr_sentence_index,
           this.state.data.length - 1,
@@ -446,7 +414,7 @@ class App extends React.Component {
           socket={this.props.socket}
           title={'Status'}
           onLoadFunc={this.getOverallStatus()}
-          message={this.getStatusContent()}
+          message={this.comp_overallStatusContent()}
           buttonConfirm={'Hide'}
         />
       </div>
@@ -457,17 +425,11 @@ class App extends React.Component {
     return (
       <div>
         <button
-          onClick={this.toggleConnectionStatusDisplay}
-          className='debug_button'
-        >
-          show/hide status
-        </button>
-        <button
           onClick={() => {
             this.toggleModal('overallStatus');
           }}
         >
-          show/hide status v2
+          show/hide status
         </button>
         <button className='debug_button' onClick={this.resetCams}>
           Reset Cams
@@ -496,7 +458,6 @@ class App extends React.Component {
   desktopView = () => {
     return (
       <div className='container'>
-        {this.comp_cameraStatusContainer()}
         {this.comp_debug()}
         {this.comp_tester()}
         {this.comp_userResearchHeader()}

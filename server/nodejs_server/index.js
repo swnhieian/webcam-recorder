@@ -143,7 +143,7 @@ io.on('connection', function(socket) {
         console.error(SyntaxErrorException);
       }
     });
-  })
+  });
 
   socket.on('client: update sentence_index', function(data) {
     let newStatus = {

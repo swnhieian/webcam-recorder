@@ -348,6 +348,7 @@ class App extends React.Component {
     // this.props.socket.emit('client: stop cams');
     this.props.socket.emit('client: dummy vid, do not save');
     this.updateGreenLightStatus(true);
+    cogoToast.info('Cams are reset');
   };
 
   refreshAll = () => {
@@ -410,10 +411,7 @@ class App extends React.Component {
   }
 
   resetProgress = () => {
-    console.log('clicked reset progress')
-    // return (
-    //   <Modal />
-    // )
+    document.getElementById('resetProgressModal').click();
   }
 
   comp_debug = () => {
@@ -431,11 +429,22 @@ class App extends React.Component {
         <button className='debug_button' onClick={this.resetProgress}>
           Reset Progress
         </button>
-        <Modal />
+        <Modal
+          modalID={"resetProgressModal"}
+          socket={this.props.socket}
+          title={'Are you sure?'}
+          message={'Resetting progress will be permanent.'}
+          buttonCancel={'Cancel'}
+          buttonConfirm={'Reset'}
+          toast={'Progress reset'}
+          confirmFunc={() => {
+            this.props.socket.emit('client: update recording progress', {});
+          }}
+        />
         <button
           onClick={this.showFileSavedMessage}
-          style={{ visibility: 'hidden' }}
           id='showSavedFilesBtn'
+          className="hidden_button"
         ></button>
         <pre hidden={this.state.numCams === 8}>
           debug mode, remember to change num cams back to 8

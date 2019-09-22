@@ -51,10 +51,7 @@ class App extends React.Component {
 
     props.socket.emit('client: check for progress');
     props.socket.emit('client: ask for sync id');
-    props.socket.on('server: connected sync id', id => {
-      if (this.socket_getSetCompID) this.socket_getSetCompID(id);
-      this.socket_getSetCompID = null;
-    });
+    
   }
 
   readTextFile(file) {
@@ -76,7 +73,9 @@ class App extends React.Component {
     const status = {};
     this.setState({ computerID: id });
     status[this.state.computerID] = [];
-    this.setState({ computerStatus: status });
+    this.setState({ computerStatus: status }, () => {
+      console.log("init computer status", this.state.computerStatus);
+    });
   };
 
   boldString = (str, find) => {
@@ -86,7 +85,7 @@ class App extends React.Component {
 
   // helper method
   socket_updateConnectionStatus = status => {
-    console.log('updating connection status here!!!');
+    console.log('updating connection status here!!! ' + JSON.stringify(status));
     this.setState({ computerStatus: status });
   };
 
@@ -95,10 +94,22 @@ class App extends React.Component {
   };
 
   initSocketListeners = () => {
-    this.props.socket.on(
-      'server: response for connection status',
-      this.socket_updateConnectionStatus
-    );
+    this.props.socket.on('server: connected sync id', id => {
+      if (this.socket_getSetCompID) this.socket_getSetCompID(id);
+      this.socket_getSetCompID = null;
+    });
+
+    this.props.socket.on('server: response for connection status', status => {
+      try {
+        document.getElementById('connection_status').innerHTML = JSON.stringify(
+          status,
+          null,
+          2
+        );
+      } catch (NotOnPageError) {
+        //
+      }
+    });
 
     this.props.socket.on('server: response for recording status', status => {
       console.log('beeppppps' + JSON.stringify(status));
@@ -213,6 +224,11 @@ class App extends React.Component {
     this.setState({
       numFilesSavedTotal: numFiles
     });
+    try {
+      document.getElementById('num_files_saved').innerHTML = numFiles + successMessage;
+    } catch (NotYetLoadedException) {
+      // console.error(NotYetLoadedException);
+    }
   };
 
   updateSentence = curr_sentence => {
@@ -302,9 +318,12 @@ class App extends React.Component {
     if (this.state.computerStatus[this.state.computerID]) {
       const status = {};
       status[this.state.computerID] = recordingStatus;
-      this.setState({ computerStatus: status });
+      this.setState({ computerStatus: status }, () => {
+        console.log(this.state.computerStatus);
+      });
       this.props.socket.emit('client: update recording status', status);
     }
+    console.log(recordingStatus);
     this.getConnectionStatus();
   };
 
@@ -392,10 +411,10 @@ class App extends React.Component {
   };
 
   comp_overallStatusContent = () => {
+
     return (
       <div>
-        <pre>Connection Status</pre>
-        <pre id='camera_status_p'>Server not online</pre>
+        <pre id='connection_status'></pre>
         <pre id='num_files_saved'></pre>
         <button onClick={this.getConnectionStatus}>Get Status</button>
         <button onClick={this.resetCams}>Reset Cams</button>
@@ -419,10 +438,6 @@ class App extends React.Component {
     );
   };
 
-  getOverallStatus = () => {
-    console.log('getting overall status');
-  };
-
   comp_modals = () => {
     return (
       <div>
@@ -443,7 +458,7 @@ class App extends React.Component {
           modalID={'overallStatus'}
           socket={this.props.socket}
           title={'Status'}
-          onLoadFunc={this.getOverallStatus()}
+          onLoadFunc={this.getConnectionStatus()}
           message={this.comp_overallStatusContent()}
           buttonConfirm={'Hide'}
         />

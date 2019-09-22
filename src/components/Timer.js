@@ -29,13 +29,18 @@ export default function Timer(props) {
         min = 0;
       }
       time = [hour, min, sec];
-      document.getElementById(props.name).innerHTML =
-        'Total Recording Time—' +
-        ('0' + hour).slice(-2) +
-        ':' +
-        ('0' + min).slice(-2) +
-        ':' +
-        ('0' + sec).slice(-2);
+      try {
+        document.getElementById(props.name).innerHTML =
+          'Total Recording Time—' +
+          ('0' + hour).slice(-2) +
+          ':' +
+          ('0' + min).slice(-2) +
+          ':' +
+          ('0' + sec).slice(-2);
+
+      } catch (SomeError) {
+        console.error(SomeError);
+      }
     }, 1000);
   }
 

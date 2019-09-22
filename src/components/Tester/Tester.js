@@ -34,23 +34,36 @@ function Tester(props) {
   }
 
   function startTimer() {
-    setIntervalID(createInterval(new Date()));
+    setIntervalID(createInterval());
   }
 
-  function createInterval(startTime) {
+  function createInterval() {
+    let time = [0, 0, 0];
     return setInterval(() => {
-      const start_min = startTime.getMinutes();
-      const start_sec = startTime.getSeconds() % 60;
+      let hour = time[0];
+      let min = time[1];
+      let sec = time[2];
 
-      const curr = new Date();
-      const curr_min = curr.getMinutes();
-      const curr_sec = curr.getSeconds() % 60;
-
-      const diffMin = ('0' + (curr_min - start_min)).slice(-2);
-      const diffSec = ('0' + (curr_sec - start_sec)).slice(-2);
+      if (sec < 60) {
+        sec += 1;
+      }
+      if (sec === 60) {
+        min += 1;
+        sec = 0;
+      }
+      if (min === 60) {
+        hour += 1;
+        min = 0;
+      }
+      time = [hour, min, sec];
       document.getElementById('record_time_content').innerHTML =
-        'recording time—' + diffMin + ':' + diffSec;
-    }, 100);
+        'Total Recording Time—' +
+        ('0' + hour).slice(-2) +
+        ':' +
+        ('0' + min).slice(-2) +
+        ':' +
+        ('0' + sec).slice(-2);
+    }, 1000);
   }
 
 

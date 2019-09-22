@@ -11,6 +11,7 @@ export default function InProcessScreen(props) {
   const [nameSet, setName] = useState(qs('name'));
 
   function updateSentence(data) {
+    console.log('update sentence from in process screen')
     reset(true);
     props.updateSentence(data);
   }
@@ -67,6 +68,7 @@ export default function InProcessScreen(props) {
       } else if (key === 'ArrowLeft') {
         document.getElementById('testerPrevBtn').click();
       } else if (key === 'ArrowRight') {
+        console.log('detected right arrow key')
         document.getElementById('testerNextBtn').click();
       }
       event.preventDefault();

@@ -216,6 +216,7 @@ class App extends React.Component {
   };
 
   updateSentence = curr_sentence => {
+    console.log('update sentence called here beep')
     //console.log("in updateSentence(" + curr_sentence + "):" + qs('name'));
     if (curr_sentence === '$next') {
       if (this.state.curr_sentence_index + 1 === this.state.data.length) {

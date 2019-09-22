@@ -410,25 +410,21 @@ class App extends React.Component {
     document.getElementById('connection_status').style.display = (displayStatus === "none") ? "block" : "none";
   }
 
-  resetProgress = () => {
-    document.getElementById('resetProgressModal').click();
+  toggleModal = (id) => {
+    document.getElementById(id).click();
   }
 
-  comp_debug = () => {
+  getStatusContent = () => {
+    const connectionStatus = '';
+    const numFilesSaved = '';
+    const progress = '';
+    const totalContent = ''
+    return (totalContent);
+  }
+
+  comp_modals = () => {
     return (
-      <div>
-        <button
-          onClick={this.toggleConnectionStatusDisplay}
-          className='debug_button'
-        >
-          show/hide status
-        </button>
-        <button className='debug_button' onClick={this.resetCams}>
-          Reset Cams
-        </button>
-        <button className='debug_button' onClick={this.resetProgress}>
-          Reset Progress
-        </button>
+      <div>]
         <Modal
           modalID={"resetProgressModal"}
           socket={this.props.socket}
@@ -441,10 +437,49 @@ class App extends React.Component {
             this.props.socket.emit('client: update recording progress', {});
           }}
         />
+        <Modal
+          modalID={"overallStatus"}
+          socket={this.props.socket}
+          title={'Status'}
+          message={this.getStatusContent()}
+          buttonConfirm={'Hide'}
+        />
+      </div>
+    )
+  }
+
+  comp_debug = () => {
+    return (
+      <div>
+        <button
+          onClick={this.toggleConnectionStatusDisplay}
+          className='debug_button'
+        >
+          show/hide status
+        </button>
+        <button
+          onClick={() => {
+            this.toggleModal('overallStatus');
+          }}
+        >
+          show/hide status v2
+        </button>
+        <button className='debug_button' onClick={this.resetCams}>
+          Reset Cams
+        </button>
+        <button
+          className='debug_button'
+          onClick={() => {
+            this.toggleModal('resetProgressModal');
+          }}
+        >
+          Reset Progress
+        </button>
+
         <button
           onClick={this.showFileSavedMessage}
           id='showSavedFilesBtn'
-          className="hidden_button"
+          className='hidden_button'
         ></button>
         <pre hidden={this.state.numCams === 8}>
           debug mode, remember to change num cams back to 8
@@ -484,7 +519,7 @@ class App extends React.Component {
       <Router>
         <Route path="/" exact component={this.desktopView} />
         <Route path="/mobile" exact component={this.mobileView} />
-
+        {this.comp_modals()}
 
       </Router>
     );

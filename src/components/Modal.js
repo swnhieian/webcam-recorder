@@ -20,9 +20,9 @@ export default function Modal(props) {
         label={props.buttonConfirm}
         isStyleDestructive
         onClick={() => {
-          props.confirmFunc();
+          if (props.confirmFunc) props.confirmFunc();
           toggleCompleteModal();
-          cogoToast.info(props.toast);
+          if (props.toast) cogoToast.info(props.toast);
         }}
         hidden={!props.buttonConfirm}
         key={props.buttonConfirm}

@@ -56,6 +56,7 @@ const sendProgressUpdate = () => {
 const RECORDING_STATUS_PATH = './recording_status.json'
 const PROGRESS_PATH = './progress.json'
 const CONNECTION_STATUS_PATH = './connection_status.json'
+const TOTAL_TIME_PATH = './time.json'
 let connection_status = {};
 let numSaved = 0;
 let numConnected = 0;
@@ -164,6 +165,12 @@ io.on('connection', function(socket) {
       sentence_index: data.curr_sentence_index
     }
     saveData(newStatus, RECORDING_STATUS_PATH);
+  });
+
+  socket.on('client: save total time', function(time) {
+    console.log('received save total time command');
+    time = {time}
+    saveData(time, TOTAL_TIME_PATH);
   });
 
   socket.on('client: save data', function(data) {

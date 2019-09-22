@@ -8,6 +8,8 @@ import qs from '../../utils/qs'
 function Tester(props) {
   const [intervalID, setIntervalID] = useState(undefined);
   
+
+  
   function comp_inProcessScreen() {
     return (
       <InProcessScreen
@@ -68,7 +70,7 @@ function Tester(props) {
   }
 
 
-  function comp_Timer() {
+  function comp_timer() {
     return (
       <div>
         <pre id='record_time_content'></pre>
@@ -76,13 +78,19 @@ function Tester(props) {
     );
   }
 
+  function comp_totalTimer() {
+    if (qs('name')) {
+      return <Timer name={'total_timer'} socket={props.socket} />;
+    }
+  }
+
   return (
     <div className='testing_screen'>
-      <Timer name={'total_timer'}/>
+      {comp_totalTimer()}
       {props.comp_progressBar(props.curr_sentence_index, props.data_length, 'center', 2)}
       <div className='middle'>
         <div className='inner'>{comp_inProcessScreen(props)}</div>
-        {comp_Timer()}
+        {comp_timer()}
       </div>
       <pre hidden={props.recordGreenLight || props.curr_sentence_index === 0 || !qs('name')} className='warning_message'>
         There may be an issue with file saves. Please notify research facilitator.
@@ -104,7 +112,7 @@ Tester.propTypes = {
   numCams: PropTypes.number.isRequired,
   recordedProgress: PropTypes.object.isRequired,
   updateRecordProgress: PropTypes.func.isRequired,
-  comp_progressBar: PropTypes.func.isRequired
+  comp_progressBar: PropTypes.func.isRequired,
 };
 
 export default Tester;

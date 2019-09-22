@@ -3,11 +3,19 @@ import PropTypes from 'prop-types';
 
 export default function Timer(props) {
   const [intervalID, setIntervalID] = useState(undefined);
+  let totalTime = [];
 
-  function resetTimerClick() {
-    console.log('reset clicked, ', intervalID);
-    clearInterval(intervalID);
-    setIntervalID(createInterval(new Date()));
+  function saveTotalTime (event) {
+    // Cancel the event as stated by the standard.
+    event.preventDefault();
+
+    // console.log(totalTime);
+    props.socket.emit(
+      'client: save total time',
+      totalTime
+    );
+    // Chrome requires returnValue to be set.
+    event.returnValue = '';
   }
 
   function createInterval() {
@@ -29,6 +37,7 @@ export default function Timer(props) {
         min = 0;
       }
       time = [hour, min, sec];
+      totalTime = time;
       try {
         document.getElementById(props.name).innerHTML =
           'Total Recording Time—' +
@@ -45,6 +54,7 @@ export default function Timer(props) {
   }
 
   useEffect(() => {
+    window.addEventListener('beforeunload', saveTotalTime);
     if (!intervalID) {
       setIntervalID(createInterval());
     }
@@ -58,5 +68,6 @@ export default function Timer(props) {
 }
 
 Timer.propTypes = {
-  name: PropTypes.string.isRequired
+  name: PropTypes.string.isRequired,
+  socket: PropTypes.object.isRequired
 };

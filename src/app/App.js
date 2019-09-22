@@ -214,7 +214,6 @@ class App extends React.Component {
       console.error(ServerPingFailedException);
     }
   }
-
   
 
   componentDidMount() {
@@ -222,10 +221,12 @@ class App extends React.Component {
     this.initSocketListeners();
     this.pingServer();
     window.addEventListener('keydown', this.downHandler);
+    
   }
   
   componentWillUnmount() {
     window.removeEventListener('keydown', this.downHandler);
+    window.removeEventListener('beforeunload');
   }
 
   comp_progressBar(curr, total, align, strokeWidth) {
@@ -574,7 +575,6 @@ class App extends React.Component {
 
   downHandler(event) {
     let key = event.key;
-    console.log(key);
     if ([' ', 'ArrowLeft', 'ArrowRight', 'Escape'].includes(key)) {
       if (key === ' ') {
         document.getElementById('testerRecordBtn').click();

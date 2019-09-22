@@ -255,12 +255,11 @@ export default function CameraList(props) {
     }
   }
 
+
+
   const renderCams = () => {
     //findMatchingAudio();
-    //console.log(availableCams);
-
     // console.log(computerId);
-    
     const debug = true;
     const comp_camsList = availableCams.map(cam => {
       return (
@@ -271,6 +270,7 @@ export default function CameraList(props) {
         />
       );
     });
+
 
     return (
       <div id='camera_list'>

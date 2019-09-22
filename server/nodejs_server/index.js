@@ -135,12 +135,10 @@ io.on('connection', function(socket) {
     saveData(data, RECORDING_STATUS_PATH);
   });
 
-  socket.on('client: ask for sentence index', function() {
+  socket.on('client: ask for recording status', function() {
     readContent(RECORDING_STATUS_PATH, function (err, content) {
       try {
-        console.log(JSON.parse(content));
-        // io.emit('server: response for sentence index', index);
-
+        io.emit('server: response for recording status', JSON.parse(content));
       } catch (SyntaxErrorException) {
         console.error(SyntaxErrorException);
       }

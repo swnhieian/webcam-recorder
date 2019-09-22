@@ -5,7 +5,7 @@ import update from 'react-addons-update'
 import qs from '../utils/qs'
 import cogoToast from 'cogo-toast';
 import { Line } from 'rc-progress';
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 
 // scss
 import './App.scss';
@@ -14,6 +14,7 @@ import './App.scss';
 import CameraList from '../components/CameraList/CameraList';
 import Tester from '../components/Tester/Tester';
 import DataCollection from '../components/Table/DataCollection';
+import Modal from '../components/Modal'
 
 // data
 // import sentences from '../assets/data/sentences.txt';
@@ -39,11 +40,14 @@ class App extends React.Component {
       numCams: 1,
       recordedProgress: {}
     };
-    this.props.socket.emit('client: update sentence_index', {
-      name: qs('name'),
-      curr_sentence_index: this.state.curr_sentence_index
-    });
-
+    if (!window.location.href.includes('mobile')) {
+      this.props.socket.emit('client: update sentence_index', {
+        name: qs('name'),
+        curr_sentence_index: this.state.curr_sentence_index
+      });
+    } else {
+      this.props.socket.emit('client: ask for recording status');
+    }
 
     props.socket.emit('client: check for progress');
     props.socket.emit('client: ask for sync id');
@@ -98,6 +102,10 @@ class App extends React.Component {
       'server: response for connection status',
       this.socket_updateConnectionStatusDisplay
     );
+
+    this.props.socket.on('server: response for recording status', status => {
+      console.log('beeppppps' + JSON.stringify(status));
+    })
 
     this.props.socket.on('server: response for progress', progress => {
       this.setState({ recordedProgress: progress});
@@ -184,7 +192,7 @@ class App extends React.Component {
         : ' (not all cams saved!!)';
     this.updateNumFilesSaved('num files saved: ' + numFiles + successMessage);
     this.setState({
-      numFilesSaved: numFiles
+      numFilesSavedTotal: numFiles
     });
   };
 
@@ -401,6 +409,13 @@ class App extends React.Component {
     document.getElementById('connection_status').style.display = (displayStatus === "none") ? "block" : "none";
   }
 
+  resetProgress = () => {
+    console.log('clicked reset progress')
+    // return (
+    //   <Modal />
+    // )
+  }
+
   comp_debug = () => {
     return (
       <div>
@@ -409,13 +424,24 @@ class App extends React.Component {
           className='debug_button'
         >
           show/hide status
-            </button>
-        <button className='debug_button' onClick={this.resetCams} >Reset Cams</button>
-        <button className='debug_button' onClick={() => this.props.socket.emit('client: update recording progress', {})}>Reset Progress</button>
-        <button onClick={this.showFileSavedMessage} style={{ "visibility": "hidden" }} id="showSavedFilesBtn"></button>
-        <pre hidden={this.state.numCams === 8}>debug mode, remember to change num cams back to 8</pre>
+        </button>
+        <button className='debug_button' onClick={this.resetCams}>
+          Reset Cams
+        </button>
+        <button className='debug_button' onClick={this.resetProgress}>
+          Reset Progress
+        </button>
+        <Modal />
+        <button
+          onClick={this.showFileSavedMessage}
+          style={{ visibility: 'hidden' }}
+          id='showSavedFilesBtn'
+        ></button>
+        <pre hidden={this.state.numCams === 8}>
+          debug mode, remember to change num cams back to 8
+        </pre>
       </div>
-    )
+    );
   }
 
   desktopView = () => {

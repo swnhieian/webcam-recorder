@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './Tester.scss';
 import PropTypes from 'prop-types';
 import InProcessScreen from './InProcessScreen.js';
-import { Line } from 'rc-progress';
 import Timer from '../Timer.js'
 
 function Tester(props) {

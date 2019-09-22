@@ -1,4 +1,4 @@
-import React, { useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types';
 
 export default function Timer(props) {
@@ -24,9 +24,9 @@ export default function Timer(props) {
       document.getElementById(props.name).innerHTML =  "Total Recording Time—" + diffMin + ":" + diffSec
     }, 100);
   }
-  useEffect(() => {    
+  useEffect(() => {
     setIntervalID(createInterval(new Date()));
-  }, [])
+  }, []);
   return (
     <div>
       <pre id={props.name}></pre>

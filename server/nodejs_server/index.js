@@ -94,16 +94,19 @@ io.on('connection', function(socket) {
   socket.on('client: update recording progress', function(progress) {
     saveData(progress, PROGRESS_PATH);
     sendProgressUpdate();
+    console.log('updating progress');
   });
 
   socket.on('client: check for progress', function() {
     sendProgressUpdate();
+    console.log('check progress');
   });
 
   socket.on('client: ping for connection status', function() {
     readContent(CONNECTION_STATUS_PATH, function(err, content) {
       try {
         io.emit('server: response for connection status', JSON.parse(content));
+        console.log('ping for connection status')
       } catch(SyntaxErrorException) {
         console.error(SyntaxErrorException);
       }

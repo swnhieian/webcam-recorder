@@ -44,7 +44,7 @@ export default function Modal(props) {
     } catch (NotYetLoadedException) {
       // console.log(NotYetLoadedException);
     }
-  })
+  }, [])
 
   return (
     <div style={{ height: '0px' }}>

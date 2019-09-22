@@ -324,7 +324,7 @@ class App extends React.Component {
       this.props.socket.emit('client: update recording status', status);
     }
     console.log(recordingStatus);
-    this.getConnectionStatus();
+    // this.getConnectionStatus();
   };
 
   comp_dataCollection = () => {
@@ -458,7 +458,7 @@ class App extends React.Component {
           modalID={'overallStatus'}
           socket={this.props.socket}
           title={'Status'}
-          onLoadFunc={this.getConnectionStatus()}
+          onLoadFunc={this.getConnectionStatus}
           message={this.comp_overallStatusContent()}
           buttonConfirm={'Hide'}
         />

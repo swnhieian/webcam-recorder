@@ -59,21 +59,7 @@ export default function InProcessScreen(props) {
     }
   }
 
-  function downHandler(event) {
-    let key = event.key;
-    //console.log(e);
-    if ([' ', 'ArrowLeft', 'ArrowRight'].includes(key)) {
-      if (key === ' ') {
-        document.getElementById('testerRecordBtn').click();
-      } else if (key === 'ArrowLeft') {
-        document.getElementById('testerPrevBtn').click();
-      } else if (key === 'ArrowRight') {
-        console.log('detected right arrow key')
-        document.getElementById('testerNextBtn').click();
-      }
-      event.preventDefault();
-    }
-  }
+  
   function disableNextButtonIfCurrNotRead() {
     const recordedYet = (props.recordedProgress[props.curr_sentence_index]) ? props.recordedProgress[props.curr_sentence_index] : false;
     try {
@@ -97,12 +83,7 @@ export default function InProcessScreen(props) {
     )
   }
 
-  useEffect(() => {
-    window.addEventListener('keydown', downHandler);
-    return () => {
-      window.removeEventListener('keydown', downHandler);
-    };
-  }, []);
+  
 
   function trans(text) {
     if (text === 'Done') {

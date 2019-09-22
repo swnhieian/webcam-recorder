@@ -40,7 +40,7 @@ class App extends React.Component {
       numCams: 1,
       recordedProgress: {}
     };
-    if (!window.location.href.includes('mobile')) {
+    if (!this.helper_checkIfMobileView) {
       this.props.socket.emit('client: update sentence_index', {
         name: qs('name'),
         curr_sentence_index: this.state.curr_sentence_index
@@ -98,6 +98,10 @@ class App extends React.Component {
       if (this.socket_getSetCompID) this.socket_getSetCompID(id);
       this.socket_getSetCompID = null;
     });
+    
+    this.props.socket.on('server: reset cams', () => {
+      this.updateGreenLightStatus(true);
+    });
 
     this.props.socket.on('server: response for connection status', status => {
       try {
@@ -117,6 +121,11 @@ class App extends React.Component {
 
     this.props.socket.on('server: response for progress', progress => {
       this.setState({ recordedProgress: progress });
+      try {
+        this.setState({ curr_sentence_index: Object.keys(progress).length })
+      } catch (NotYetLoadedException) {
+        console.error(NotYetLoadedException);
+      }
     });
 
     this.props.socket.on('server: response for numFilesSaved', numFiles => {
@@ -134,6 +143,7 @@ class App extends React.Component {
             'this occured: ' + this.state.numFilesSavedInd + ' times.'
           );
           if (this.state.numFilesSavedInd === this.state.numCams) {
+            console.log('correct number of files saved');
             try {
               document.getElementById('showSavedFilesBtn').click();
               document.getElementById('showSavedFilesBtn').disabled = true;
@@ -149,9 +159,19 @@ class App extends React.Component {
                   }
                 }
               );
+              
               this.updateGreenLightStatus(true);
             } catch (Exception) {
-              console.log('probably mobile view error');
+              console.error(Exception);
+            }
+            try {
+              if (this.helper_checkIfMobileView()) {
+                console.log('here here??');
+                cogoToast.info('Completed @ Sentence [' + this.state.curr_sentence_index + ']', {hideAfter: 0.75});
+              }
+              console.log('clicked??');
+            } catch (NotYetLoadedException) {
+              console.error(NotYetLoadedException);
             }
           }
         }
@@ -195,10 +215,17 @@ class App extends React.Component {
     }
   }
 
+  
+
   componentDidMount() {
     this.readTextFile(sentences);
     this.initSocketListeners();
     this.pingServer();
+    window.addEventListener('keydown', this.downHandler);
+  }
+  
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.downHandler);
   }
 
   comp_progressBar(curr, total, align) {
@@ -229,7 +256,7 @@ class App extends React.Component {
       numFilesSavedTotal: numFiles
     });
     try {
-      document.getElementById('num_files_saved').innerHTML = numFiles + successMessage;
+      document.getElementById('num_files_saved').innerHTML = 'Total Files Saved: ' + numFiles + successMessage;
     } catch (NotYetLoadedException) {
       // console.error(NotYetLoadedException);
     }
@@ -316,6 +343,7 @@ class App extends React.Component {
         );
       }
     );
+    
   };
 
   updateConnectionStatus = recordingStatus => {
@@ -328,7 +356,7 @@ class App extends React.Component {
       this.props.socket.emit('client: update recording status', status);
     }
     console.log(recordingStatus);
-    this.getConnectionStatus();
+    this.getStatus();
   };
 
   comp_dataCollection = () => {
@@ -383,15 +411,19 @@ class App extends React.Component {
     );
   };
 
-  getConnectionStatus = () => {
+  getStatus = () => {
     this.props.socket.emit('client: ping for connection status');
     this.props.socket.emit('client: ping for numFilesSaved');
+    this.props.socket.emit('client: ping for progress');
+
   };
 
   resetCams = () => {
     // this.props.socket.emit('client: stop cams');
     this.props.socket.emit('client: dummy vid, do not save');
     this.updateGreenLightStatus(true);
+    this.props.socket.emit('client: reset cams');
+
     cogoToast.info('Cams are reset');
   };
 
@@ -414,19 +446,22 @@ class App extends React.Component {
     document.getElementById(id).click();
   };
 
-  comp_overallStatusContent = () => {
+  helper_checkIfMobileView = () => {
+    return window.location.href.includes('mobile')
+  }
 
+  comp_overallStatusContent = () => {
     return (
       <div>
         <pre id='connection_status'></pre>
         <pre id='num_files_saved'></pre>
-        <button onClick={this.getConnectionStatus}>Get Status</button>
+        <button onClick={this.getStatus}>Get Status</button>
         <button onClick={this.resetCams}>Reset Cams</button>
         <button onClick={this.refreshAll}>Refresh All</button>
         <pre
           hidden={
             this.state.recordGreenLight ||
-            window.location.href.includes('mobile') ||
+            this.helper_checkIfMobileView() ||
             !qs('name')
           }
           className='warning_message'
@@ -445,7 +480,6 @@ class App extends React.Component {
   comp_modals = () => {
     return (
       <div>
-        ]
         <Modal
           modalID={'resetProgressModal'}
           socket={this.props.socket}
@@ -462,7 +496,7 @@ class App extends React.Component {
           modalID={'overallStatus'}
           socket={this.props.socket}
           title={'Status'}
-          onLoadFunc={this.getConnectionStatus}
+          onLoadFunc={this.getStatus}
           message={this.comp_overallStatusContent()}
           buttonConfirm={'Hide'}
         />
@@ -481,7 +515,7 @@ class App extends React.Component {
         >
           Status
         </button>
-        <button className='debug_button' onClick={this.resetCams}>
+        <button id="resetCamsBtn" className='debug_button' onClick={this.resetCams}>
           Reset Cams
         </button>
         <button
@@ -523,8 +557,32 @@ class App extends React.Component {
   };
 
   mobileView = () => {
-    return <div>{this.comp_cameraStatusContent()}</div>;
+    return (
+      <div>
+        {this.comp_modals()}
+        {/* <button id="mobileStatusBtn" onClick={() => {this.toggleModal('overallStatus');}}>Status</button> */}
+        {this.comp_debug()}
+      </div>
+    )
   };
+
+  downHandler(event) {
+    let key = event.key;
+    console.log(key);
+    if ([' ', 'ArrowLeft', 'ArrowRight', 'Escape'].includes(key)) {
+      if (key === ' ') {
+        document.getElementById('testerRecordBtn').click();
+      } else if (key === 'ArrowLeft') {
+        document.getElementById('testerPrevBtn').click();
+      } else if (key === 'ArrowRight') {
+        console.log('detected right arrow key');
+        document.getElementById('testerNextBtn').click();
+      } else if (key === 'Escape') {
+        document.getElementById('resetCamsBtn').click();
+      }
+      event.preventDefault();
+    }
+  }
 
   render() {
     return (

@@ -40,16 +40,6 @@ body {
   line-height: 400px;
   border-radius: 0.5em;
 }
-.shadow_overlay {
-  position: absolute;
-  background-color: rgba(0, 0, 0, 0.7);
-  top: 2.5em;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  min-height: 100%;
-}
 
 .camera_status_content {
   display: inline-block;
@@ -133,4 +123,9 @@ body {
   position: absolute;
   left: 0;
   top: 0;
+}
+
+.modali-content {
+  margin-top: 5em;
+  margin-right: auto;
 }

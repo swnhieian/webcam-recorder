@@ -71,6 +71,10 @@ io.on('connection', function(socket) {
   socket.on('client: ask for sync id', function() {
     io.emit('server: connected sync id', socket.id);
   })
+   socket.on('client: reset cams', function() {
+     io.emit('server: reset cams');
+   });
+  
 
   socket.on('disconnect', function() {
     console.log('computer disconnected at ' + socket.id);
@@ -78,6 +82,10 @@ io.on('connection', function(socket) {
     delete connection_status[socketid];
     saveData(connection_status, CONNECTION_STATUS_PATH);
   });
+
+  socket.on('client: ping for progress', function() {
+    sendProgressUpdate();
+  })
 
   socket.on('client: ping for numFilesSaved', function() {
     try {
@@ -112,6 +120,8 @@ io.on('connection', function(socket) {
       }
     });
   });
+
+
   socket.on('client: update recording status', function(status) {
     saveConnection(socket, status[socket.id])
     console.log('server: updated recording status', JSON.stringify(status));

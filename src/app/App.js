@@ -375,7 +375,8 @@ class App extends React.Component {
         <pre
           hidden={
             this.state.recordGreenLight ||
-            window.location.href.includes('mobile')
+            window.location.href.includes('mobile') ||
+            !qs('name')
           }
           className='warning_message'
         >
@@ -392,6 +393,7 @@ class App extends React.Component {
 
   getOverallStatus = () => {
     console.log('getting overall status')
+
   }
 
   comp_modals = () => {
@@ -428,8 +430,9 @@ class App extends React.Component {
           onClick={() => {
             this.toggleModal('overallStatus');
           }}
+          className='debug_button'
         >
-          show/hide status
+          Status
         </button>
         <button className='debug_button' onClick={this.resetCams}>
           Reset Cams

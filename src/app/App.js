@@ -142,7 +142,11 @@ class App extends React.Component {
                   numFilesSavedInd: 0
                 },
                 () => {
-                  document.getElementById('testerNextBtn').click();
+                  try {
+                    document.getElementById('testerNextBtn').click();
+                  } catch (NotOnPageError) {
+                    console.error(NotOnPageError);
+                  }
                 }
               );
               this.updateGreenLightStatus(true);
@@ -324,7 +328,7 @@ class App extends React.Component {
       this.props.socket.emit('client: update recording status', status);
     }
     console.log(recordingStatus);
-    // this.getConnectionStatus();
+    this.getConnectionStatus();
   };
 
   comp_dataCollection = () => {

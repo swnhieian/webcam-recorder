@@ -92,7 +92,7 @@ class App extends React.Component {
 
   showFileSavedMessage = () => {
     cogoToast.success('Files successfully saved.', { hideAfter: 1.5 });
-  }
+  };
 
   initSocketListeners = () => {
     this.props.socket.on(
@@ -102,11 +102,11 @@ class App extends React.Component {
 
     this.props.socket.on('server: response for recording status', status => {
       console.log('beeppppps' + JSON.stringify(status));
-    })
+    });
 
     this.props.socket.on('server: response for progress', progress => {
-      this.setState({ recordedProgress: progress});
-    })
+      this.setState({ recordedProgress: progress });
+    });
 
     this.props.socket.on('server: response for numFilesSaved', numFiles => {
       this.helper_updateFilesSaved(numFiles);
@@ -114,25 +114,33 @@ class App extends React.Component {
 
     this.props.socket.on('server: save files successful', numFiles => {
       this.helper_updateFilesSaved(numFiles);
-      this.setState({
-        numFilesSavedInd: this.state.numFilesSavedInd + 1
-      }, () => {
-        console.log('this occured: ' + this.state.numFilesSavedInd + ' times.');
-        if (this.state.numFilesSavedInd === this.state.numCams) {
-          try {
-            document.getElementById('showSavedFilesBtn').click();
-            document.getElementById('showSavedFilesBtn').disabled = true;
-            this.setState({
-              numFilesSavedInd: 0
-            }, () => {
-              document.getElementById('testerNextBtn').click();
-            });
-            this.updateGreenLightStatus(true);
-          } catch (Exception) {
-            console.log('probably mobile view error');
+      this.setState(
+        {
+          numFilesSavedInd: this.state.numFilesSavedInd + 1
+        },
+        () => {
+          console.log(
+            'this occured: ' + this.state.numFilesSavedInd + ' times.'
+          );
+          if (this.state.numFilesSavedInd === this.state.numCams) {
+            try {
+              document.getElementById('showSavedFilesBtn').click();
+              document.getElementById('showSavedFilesBtn').disabled = true;
+              this.setState(
+                {
+                  numFilesSavedInd: 0
+                },
+                () => {
+                  document.getElementById('testerNextBtn').click();
+                }
+              );
+              this.updateGreenLightStatus(true);
+            } catch (Exception) {
+              console.log('probably mobile view error');
+            }
           }
         }
-      });
+      );
     });
 
     this.props.socket.on('server: computer connected order', connectedOrder => {
@@ -147,30 +155,45 @@ class App extends React.Component {
 
     const refreshRates = [0, 666, 1332];
     this.props.socket.on('server: refresh all', () => {
-      const conectedOrderNum = this.state.connectedOrderMap[this.state.computerID];
+      const conectedOrderNum = this.state.connectedOrderMap[
+        this.state.computerID
+      ];
       const indexRefresh = conectedOrderNum % 3;
       const time = refreshRates[indexRefresh];
       setTimeout(() => {
         window.location.reload(false);
       }, time);
     });
+  };
+
+  async pingServer() {
+    try {
+      const serverID = this.props.socket.io.opts.hostname;
+      const response = await fetch(serverID, { mode: 'no-cors' });
+      if (!response.ok) {
+        console.error('no response from server');
+      } else {
+        console.log('connection successful');
+      }
+    } catch (ServerPingFailedException) {
+      console.error(ServerPingFailedException);
+    }
   }
 
   componentDidMount() {
     this.readTextFile(sentences);
     this.initSocketListeners();
+    this.pingServer();
   }
 
   comp_progressBar(curr, total, align) {
-    const percent = (
-      (curr / total) * 100
-    ).toFixed(2);
-    const alignmentStyle = (align === 'left') ? {margin: '0'} : {}
+    const percent = ((curr / total) * 100).toFixed(2);
+    const alignmentStyle = align === 'left' ? { margin: '0' } : {};
     return (
       <div className='progress_bar' style={alignmentStyle}>
         <pre>
           Progress: {curr} / {total} ({percent}%)
-          </pre>
+        </pre>
         <Line
           percent={percent}
           strokeWidth='1.5'
@@ -181,7 +204,6 @@ class App extends React.Component {
       </div>
     );
   }
-
 
   helper_updateFilesSaved = numFiles => {
     const successMessage =
@@ -257,17 +279,22 @@ class App extends React.Component {
     });
   };
 
-  updateRecordProgress = (sentence_obj) => {
+  updateRecordProgress = sentence_obj => {
     // { <sentence_index> : <bool: recorded/not> }
-    console.log('added to progress ', JSON.stringify(sentence_obj))
-    this.setState({
-      recordedProgress: update(this.state.recordedProgress, {
-        $merge: sentence_obj
-      })
-    }, () => {
-      this.props.socket.emit('client: update recording progress', this.state.recordedProgress);
-    });
-
+    console.log('added to progress ', JSON.stringify(sentence_obj));
+    this.setState(
+      {
+        recordedProgress: update(this.state.recordedProgress, {
+          $merge: sentence_obj
+        })
+      },
+      () => {
+        this.props.socket.emit(
+          'client: update recording progress',
+          this.state.recordedProgress
+        );
+      }
+    );
   };
 
   updateConnectionStatus = recordingStatus => {
@@ -294,7 +321,7 @@ class App extends React.Component {
     );
   };
 
-  updateGreenLightStatus = (bool) => {
+  updateGreenLightStatus = bool => {
     this.setState({ recordGreenLight: bool });
   };
 
@@ -359,9 +386,9 @@ class App extends React.Component {
     );
   };
 
-  toggleModal = (id) => {
+  toggleModal = id => {
     document.getElementById(id).click();
-  }
+  };
 
   comp_overallStatusContent = () => {
     return (
@@ -389,18 +416,18 @@ class App extends React.Component {
         )}
       </div>
     );
-  }
+  };
 
   getOverallStatus = () => {
-    console.log('getting overall status')
-
-  }
+    console.log('getting overall status');
+  };
 
   comp_modals = () => {
     return (
-      <div>]
+      <div>
+        ]
         <Modal
-          modalID={"resetProgressModal"}
+          modalID={'resetProgressModal'}
           socket={this.props.socket}
           title={'Are you sure?'}
           message={'Resetting progress will be permanent.'}
@@ -412,7 +439,7 @@ class App extends React.Component {
           }}
         />
         <Modal
-          modalID={"overallStatus"}
+          modalID={'overallStatus'}
           socket={this.props.socket}
           title={'Status'}
           onLoadFunc={this.getOverallStatus()}
@@ -420,8 +447,8 @@ class App extends React.Component {
           buttonConfirm={'Hide'}
         />
       </div>
-    )
-  }
+    );
+  };
 
   comp_debug = () => {
     return (
@@ -456,7 +483,7 @@ class App extends React.Component {
         </pre>
       </div>
     );
-  }
+  };
 
   desktopView = () => {
     return (
@@ -472,24 +499,19 @@ class App extends React.Component {
           <div className=''></div>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   mobileView = () => {
-    return (
-      <div>
-        {this.comp_cameraStatusContent()}
-      </div>
-    )
-  }
+    return <div>{this.comp_cameraStatusContent()}</div>;
+  };
 
   render() {
     return (
       <Router>
-        <Route path="/" exact component={this.desktopView} />
-        <Route path="/mobile" exact component={this.mobileView} />
+        <Route path='/' exact component={this.desktopView} />
+        <Route path='/mobile' exact component={this.mobileView} />
         {this.comp_modals()}
-
       </Router>
     );
   }

@@ -105,11 +105,11 @@ class App extends React.Component {
 
     this.props.socket.on('server: response for connection status', status => {
       try {
-        document.getElementById('connection_status').innerHTML = JSON.stringify(
+        document.getElementById('connection_status').innerHTML = this.boldString(JSON.stringify(
           status,
           null,
           2
-        );
+        ), this.state.computerID);
       } catch (NotOnPageError) {
         //
       }
@@ -228,7 +228,7 @@ class App extends React.Component {
     window.removeEventListener('keydown', this.downHandler);
   }
 
-  comp_progressBar(curr, total, align) {
+  comp_progressBar(curr, total, align, strokeWidth) {
     const percent = ((curr / total) * 100).toFixed(2);
     const alignmentStyle = align === 'left' ? { margin: '0' } : {};
     return (
@@ -238,8 +238,8 @@ class App extends React.Component {
         </pre>
         <Line
           percent={percent}
-          strokeWidth='1.5'
-          trailWidth='1.5'
+          strokeWidth={strokeWidth}
+          trailWidth={strokeWidth}
           strokeColor='#2db7f5'
           trailColor='#D9D9D9'
         />
@@ -453,11 +453,9 @@ class App extends React.Component {
   comp_overallStatusContent = () => {
     return (
       <div>
+        <h4>Connection Status</h4>
         <pre id='connection_status'></pre>
         <pre id='num_files_saved'></pre>
-        <button onClick={this.getStatus}>Get Status</button>
-        <button onClick={this.resetCams}>Reset Cams</button>
-        <button onClick={this.refreshAll}>Refresh All</button>
         <pre
           hidden={
             this.state.recordGreenLight ||
@@ -471,7 +469,7 @@ class App extends React.Component {
         {this.comp_progressBar(
           this.state.curr_sentence_index,
           this.state.data.length - 1,
-          'left'
+          'left', 3
         )}
       </div>
     );
@@ -506,16 +504,21 @@ class App extends React.Component {
 
   comp_debug = () => {
     return (
-      <div>
+      <div style={{margin: 'auto', textAlign: 'center'}}>
         <button
           onClick={() => {
             this.toggleModal('overallStatus');
+            this.getStatus();
           }}
           className='debug_button'
         >
           Status
         </button>
-        <button id="resetCamsBtn" className='debug_button' onClick={this.resetCams}>
+        <button
+          id='resetCamsBtn'
+          className='debug_button'
+          onClick={this.resetCams}
+        >
           Reset Cams
         </button>
         <button
@@ -525,6 +528,9 @@ class App extends React.Component {
           }}
         >
           Reset Progress
+        </button>
+        <button className='debug_button' onClick={this.refreshAll}>
+          Refresh All
         </button>
 
         <button
@@ -558,7 +564,7 @@ class App extends React.Component {
 
   mobileView = () => {
     return (
-      <div>
+      <div onClick={() => this.getStatus()}>
         {this.comp_modals()}
         {/* <button id="mobileStatusBtn" onClick={() => {this.toggleModal('overallStatus');}}>Status</button> */}
         {this.comp_debug()}

@@ -3,6 +3,7 @@ import './Tester.scss';
 import PropTypes from 'prop-types';
 import InProcessScreen from './InProcessScreen.js';
 import Timer from '../Timer.js'
+import qs from '../../utils/qs'
 
 function Tester(props) {
   const [intervalID, setIntervalID] = useState(undefined);
@@ -78,12 +79,12 @@ function Tester(props) {
   return (
     <div className='testing_screen'>
       <Timer name={'total_timer'}/>
-      {props.comp_progressBar(props.curr_sentence_index, props.data_length)}
+      {props.comp_progressBar(props.curr_sentence_index, props.data_length, 'center', 2)}
       <div className='middle'>
         <div className='inner'>{comp_inProcessScreen(props)}</div>
         {comp_Timer()}
       </div>
-      <pre hidden={props.recordGreenLight || props.curr_sentence_index === 0} className='warning_message'>
+      <pre hidden={props.recordGreenLight || props.curr_sentence_index === 0 || !qs('name')} className='warning_message'>
         There may be an issue with file saves. Please notify research facilitator.
       </pre>
     </div>

@@ -413,9 +413,17 @@ class App extends React.Component {
         <pre>Connection Status</pre>
         <pre id='camera_status_p'>Server not online</pre>
         <pre id='num_files_saved'></pre>
-        {this.comp_progressBar(this.state.curr_sentence_index, this.state.data.length - 1, 'left')}
+        {this.comp_progressBar(
+          this.state.curr_sentence_index,
+          this.state.data.length - 1,
+          'left'
+        )}
       </div>
     );
+  }
+
+  getOverallStatus = () => {
+    console.log('getting overall status')
   }
 
   comp_modals = () => {
@@ -437,6 +445,7 @@ class App extends React.Component {
           modalID={"overallStatus"}
           socket={this.props.socket}
           title={'Status'}
+          onLoadFunc={this.getOverallStatus()}
           message={this.getStatusContent()}
           buttonConfirm={'Hide'}
         />

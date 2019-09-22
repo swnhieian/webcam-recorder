@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Modali, { useModali } from 'modali';
 import PropTypes from 'prop-types';
 import cogoToast from 'cogo-toast';
@@ -10,11 +10,12 @@ export default function Modal(props) {
     message: props.message,
     buttons: [
       <Modali.Button
-        label={props.buttonCancel}
+        label={props.buttonCancel ? props.buttonCancel : ''}
         isStyleCancel
-        onClick={() => toggleCompleteModal()}
+        className={!props.buttonCancel ? 'display_none' : ''}
         key={props.buttonCancel}
         hidden={!props.buttonCancel}
+        onClick={() => toggleCompleteModal()}
       />,
       <Modali.Button
         label={props.buttonConfirm}
@@ -29,6 +30,22 @@ export default function Modal(props) {
       />
     ]
   });
+  useEffect(() => {
+    if (props.onLoadFunc) props.onLoadFunc()
+    try {
+      if (!props.buttonCancel)
+        document.getElementsByClassName(
+          'modali-button-cancel'
+          )[0].className += ' display_none';
+      if (!props.buttonConfirm)
+        document.getElementsByClassName(
+          'modali-button-destructive'
+        )[0].className += ' display_none';
+    } catch (NotYetLoadedException) {
+      // console.log(NotYetLoadedException);
+    }
+  })
+
   return (
     <div style={{ height: '0px' }}>
       <button
@@ -46,10 +63,11 @@ export default function Modal(props) {
 Modal.propTypes = {
   socket: PropTypes.object,
   title: PropTypes.string,
-  message: PropTypes.string,
+  message: PropTypes.any,
   buttonCancel: PropTypes.string,
   buttonConfirm: PropTypes.string,
   toast: PropTypes.string,
   confirmFunc: PropTypes.func,
-  modalID: PropTypes.string
+  modalID: PropTypes.string,
+  onLoadFunc: PropTypes.func
 };

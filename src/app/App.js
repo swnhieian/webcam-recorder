@@ -85,12 +85,9 @@ class App extends React.Component {
   };
 
   // helper method
-  socket_updateConnectionStatusDisplay = status => {
-    document.getElementById('camera_status_p').innerText = this.boldString(
-      JSON.stringify(status, null, 4),
-      this.state.computerID
-    );
-    this.updateNumFilesSaved('num files saved: ' + this.state.numFilesSavedTotal);
+  socket_updateConnectionStatus = status => {
+    console.log('updating connection status here!!!');
+    this.setState({ computerStatus: status });
   };
 
   showFileSavedMessage = () => {
@@ -100,7 +97,7 @@ class App extends React.Component {
   initSocketListeners = () => {
     this.props.socket.on(
       'server: response for connection status',
-      this.socket_updateConnectionStatusDisplay
+      this.socket_updateConnectionStatus
     );
 
     this.props.socket.on('server: response for recording status', status => {
@@ -164,12 +161,13 @@ class App extends React.Component {
     this.initSocketListeners();
   }
 
-  comp_progressBar(curr, total) {
+  comp_progressBar(curr, total, align) {
     const percent = (
       (curr / total) * 100
     ).toFixed(2);
+    const alignmentStyle = (align === 'left') ? {margin: '0'} : {}
     return (
-      <div id='progress_bar'>
+      <div className='progress_bar' style={alignmentStyle}>
         <pre>
           Progress: {curr} / {total} ({percent}%)
           </pre>
@@ -190,7 +188,6 @@ class App extends React.Component {
       numFiles % this.state.numCams === 0
         ? ' (successful)'
         : ' (not all cams saved!!)';
-    this.updateNumFilesSaved('num files saved: ' + numFiles + successMessage);
     this.setState({
       numFilesSavedTotal: numFiles
     });
@@ -283,10 +280,6 @@ class App extends React.Component {
     this.getConnectionStatus();
   };
 
-  updateNumFilesSaved = numFiles => {
-    document.getElementById('num_files_saved').innerHTML = numFiles;
-  };
-
   comp_dataCollection = () => {
     return (
       <DataCollection
@@ -358,10 +351,10 @@ class App extends React.Component {
   comp_cameraStatusContent = () => {
     return (
       <div className='camera_status_content'>
-        <pre>Connection Status</pre>
+        {/* <pre>Connection Status</pre>
         <pre id='camera_status_p'>Server not online</pre>
-        <pre id='num_files_saved'></pre>
-        {this.comp_progressBar(this.state.curr_sentence_index, this.state.data.length - 1)}
+        <pre id='num_files_saved'></pre> */}
+        {/* {this.comp_progressBar(this.state.curr_sentence_index, this.state.data.length - 1)} */}
         <button onClick={this.getConnectionStatus}>Get Status</button>
         <button onClick={this.resetCams}>Reset Cams</button>
         <button onClick={this.refreshAll}>Refresh All</button>
@@ -415,11 +408,14 @@ class App extends React.Component {
   }
 
   getStatusContent = () => {
-    const connectionStatus = '';
-    const numFilesSaved = '';
-    const progress = '';
-    const totalContent = ''
-    return (totalContent);
+    return (
+      <div>
+        <pre>Connection Status</pre>
+        <pre id='camera_status_p'>Server not online</pre>
+        <pre id='num_files_saved'></pre>
+        {this.comp_progressBar(this.state.curr_sentence_index, this.state.data.length - 1, 'left')}
+      </div>
+    );
   }
 
   comp_modals = () => {

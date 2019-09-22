@@ -44,12 +44,12 @@ export default function Modal(props) {
 }
 
 Modal.propTypes = {
-  socket: PropTypes.object.isRequired,
-  title: PropTypes.string.isRequired,
-  message: PropTypes.string.isRequired,
-  buttonCancel: PropTypes.string.isRequired,
-  buttonConfirm: PropTypes.string.isRequired,
-  toast: PropTypes.string.isRequired,
-  confirmFunc: PropTypes.func.isRequired,
-  modalID: PropTypes.string.isRequired
+  socket: PropTypes.object,
+  title: PropTypes.string,
+  message: PropTypes.string,
+  buttonCancel: PropTypes.string,
+  buttonConfirm: PropTypes.string,
+  toast: PropTypes.string,
+  confirmFunc: PropTypes.func,
+  modalID: PropTypes.string
 };

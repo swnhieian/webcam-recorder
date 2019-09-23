@@ -5,7 +5,6 @@ import Webcam from '../Webcam/Webcam.js';
 import RecordRTC, { MediaStreamRecorder } from 'recordrtc';
 import qs from '../../utils/qs'
 
-import './CameraList.scss';
 const matchedDeviceList = {
   'e202102a3710910e7bec39e5617309c7cd746457bad4cefb974db56703f624be' : '5704662d325421d22cd6ac36a34b0f3bbc122b72826381a3e6963f3ca66021ab',
   '53e6d1ce5c5155dc835b0670f16924f80b83ef8ab924d56594e743fe8fef9707' : '7ea3a51c084b6ef70972173aec1d541feaa191c1e17410de719d16450137b5b0',

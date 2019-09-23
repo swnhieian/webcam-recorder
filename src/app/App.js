@@ -576,17 +576,21 @@ class App extends React.Component {
   downHandler(event) {
     let key = event.key;
     if ([' ', 'ArrowLeft', 'ArrowRight', 'Escape'].includes(key)) {
-      if (key === ' ') {
-        document.getElementById('testerRecordBtn').click();
-      } else if (key === 'ArrowLeft') {
-        document.getElementById('testerPrevBtn').click();
-      } else if (key === 'ArrowRight') {
-        console.log('detected right arrow key');
-        document.getElementById('testerNextBtn').click();
-      } else if (key === 'Escape') {
-        document.getElementById('resetCamsBtn').click();
+      try {
+        if (key === ' ') {
+          document.getElementById('testerRecordBtn').click();
+        } else if (key === 'ArrowLeft') {
+          document.getElementById('testerPrevBtn').click();
+        } else if (key === 'ArrowRight') {
+          console.log('detected right arrow key');
+          document.getElementById('testerNextBtn').click();
+        } else if (key === 'Escape') {
+          document.getElementById('resetCamsBtn').click();
+        }
+        event.preventDefault();
+      } catch (NotYetLoadedException) {
+        console.error(NotYetLoadedException);
       }
-      event.preventDefault();
     }
   }
 

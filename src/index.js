@@ -4,8 +4,7 @@ import './index.css';
 import App from './app/App.js';
 import io from 'socket.io-client'; 
 
-// const socket = io('http://192.168.43.36:5000');
-const socket = io('www.webcamrecorderserver.net');
-
+const socket = io('http://192.168.43.36:5000');
+// const socket = io('www.webcamrecorderserver.net');
 
 ReactDOM.render(<App socket={socket} />, document.getElementById('root'));

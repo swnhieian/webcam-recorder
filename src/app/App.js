@@ -593,9 +593,10 @@ class App extends React.Component {
   render() {
     return (
       <Router>
-        <Route path='/webcam-recorder/' exact component={this.desktopView} />
+        <Route path='/' exact component={this.desktopView} />
         <Route path='/mobile' exact component={this.mobileView} />
         {this.comp_modals()}
+        <h1>Page loaded</h1>
       </Router>
     );
   }

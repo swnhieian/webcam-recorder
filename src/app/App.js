@@ -596,7 +596,7 @@ class App extends React.Component {
         <Route path='/' exact component={this.desktopView} />
         <Route path='/mobile' exact component={this.mobileView} />
         {this.comp_modals()}
-        <h1>Page loaded</h1>
+        <h1>Page loaded {JSON.stringify(new Date())}</h1>
       </Router>
     );
   }

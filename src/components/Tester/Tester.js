@@ -92,7 +92,7 @@ function Tester(props) {
         <div className='inner'>{comp_inProcessScreen(props)}</div>
         {comp_timer()}
       </div>
-      <pre hidden={props.recordGreenLight || props.curr_sentence_index === 0 || !qs('name')} className='warning_message'>
+      <pre hidden={(props.recordGreenLight || props.curr_sentence_index === 0) || !qs('name')} className='warning_message'>
         There may be an issue with file saves. Please notify research facilitator.
       </pre>
     </div>

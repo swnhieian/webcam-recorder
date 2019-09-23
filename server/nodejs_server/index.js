@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const app = require('express')();
 const http = require('http').createServer(app);
-const io = require('socket.io')(http, {origins: '*:*'});
+const io = require('socket.io')(https, {origins: '*:*'});
 const fs = require('fs');
 
 app.get('/', function(req, res) {

@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const app = require('express')();
-const https = require('https').createServer(app);
-const io = require('socket.io')(https, {origins: '*:*'});
+const http = require('http').createServer(app);
+const io = require('socket.io')(http, {origins: '*:*'});
 const fs = require('fs');
 
 app.get('/', function(req, res) {
@@ -210,6 +210,6 @@ io.on('connection', function(socket) {
   })
 });
 
-https.listen(5000, function() {
+http.listen(5000, function() {
   console.log('listening on *:5000');
 });

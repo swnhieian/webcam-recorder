@@ -104,12 +104,12 @@ io.on('connection', function(socket) {
   socket.on('client: update recording progress', function(progress) {
     saveData(progress, PROGRESS_PATH);
     sendProgressUpdate();
-    console.log('updating progress', progress);
+    // console.log('updating progress', progress);
   });
 
   socket.on('client: check for progress', function() {
     sendProgressUpdate();
-    console.log('check progress');
+    // console.log('check progress');
   });
 
   socket.on('client: ping for connection status', function() {

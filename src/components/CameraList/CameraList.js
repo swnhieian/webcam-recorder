@@ -60,9 +60,9 @@ export default function CameraList(props) {
             // console.log('%c ' + device.kind,
             // 'background: #222; color: #bada55',
             // device);
-            // console.log(
-            //   device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
-            // );
+            console.log(
+              device.kind + ': ' + device.label + ' id = ' + device.deviceId + ' group id = ' + device.groupId
+            );
             // console.log(device);
             if (device.kind === 'videoinput') {
               helper_addToVideoDevices(device, videodevices);

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Webcam from '../Webcam/Webcam.js';
 import RecordRTC, { MediaStreamRecorder } from 'recordrtc';
 import qs from '../../utils/qs'
+// import PropTypes from 'prop-types';
 
 // const matchedDeviceList = {
 //   'e202102a3710910e7bec39e5617309c7cd746457bad4cefb974db56703f624be' : '5704662d325421d22cd6ac36a34b0f3bbc122b72826381a3e6963f3ca66021ab',
@@ -29,8 +30,8 @@ export default function CameraList(props) {
   const [recordingStatus, setRecordingStatus] = useState("recording-status-loading...");
   const [availableMics, setAvailableMics] = useState([]);
 
-  const helper_addToVideoDevices = (device, videodevices) => {
-    let videoDevice = {
+  const helper_extractRelevantCamInfo = device => {
+    return {
       camera_info: {
         id: device.deviceId,
         label: device.label,
@@ -39,16 +40,19 @@ export default function CameraList(props) {
       ref: React.createRef(),
       recorder: null
     };
+  }
+  const helper_addToVideoDevices = (device, videodevices) => {
+    
     // videoDevice.mic_info = 
     // if (device.deviceId in matchedDeviceList) {
     //   videoDevice.mic_info = {
     //     id: matchedDeviceList[device.deviceId]
     //   };
     // } else {
-    //   // alert("device not match!!!");
+    // alert("device not match!!!");
     //   console.error('device not match!!!');
     // }
-    videodevices.push(videoDevice);
+    videodevices.push(helper_extractRelevantCamInfo(device));
   }
 
   const helper_addToMicDevices = (device, micDevices) => {
@@ -132,12 +136,70 @@ export default function CameraList(props) {
     });
 
   }
+
+  const getNewCamMic = () => {
+    let newCamDevice = undefined;
+    let newMicID = undefined;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+      console.log('enumerateDevices() not supported.');
+    } else {
+      navigator.mediaDevices.enumerateDevices().then(devices => {
+        devices.map(device => {
+          helper_extractRelevantCamInfo(device);
+          if (device.kind === "videoinput") {
+            availableCams.map(cam => {
+              if (device.deviceId !== cam.camera_info.id) {
+                newCamDevice = device;
+              }
+            });
+          }
+          if (
+            device.kind === 'audioinput' &&
+            (!device.label.toLowerCase().includes('default') &&
+              !device.label.toLowerCase().includes('communications'))
+          ) {
+            // 
+            availableMics.map(mic => {
+              if (device.deviceId !== mic.deviceId) {
+                newMicID = device.deviceId;
+              }
+            })
+          }
+        });
+      });
+    }
+    return [newCamDevice, newMicID]
+  }
+
+  const addCam = () => {
+    console.log('-------orig-------')
+    console.log(availableCams);
+    console.log('-------orig-------');
+    const [newCamDevice, newMicID] = getNewCamMic();
+    if (!newCamDevice && newMicID) {
+      newCamDevice.mic_info = newMicID;
+      let temp = availableCams;
+      temp.push(newCamDevice);
+      setAvailableCams(temp);
+      props.toggleCamState();
+      console.log('-------new-------');
+      console.log(availableCams);
+      console.log('-------new-------');
+    }
+    console.log('did not detect new cams plugged in');
+  }
+
+
   function useAvailableWebCams() {
     //  runs once
     useEffect(() => {
       props.updateConnectionStatus();
       initCams();
-    }, []);
+      // console.log(props.addCamState);
+      if (props.addCamState) {
+        addCam();
+      }
+    }, [props.addCamState]);
   }
 
   const initCamsDummy = () => {
@@ -149,7 +211,7 @@ export default function CameraList(props) {
     recordingStatus === 'recording-status-loading...' ? {} : recordingStatus;
     // goes through all cams array and through each ID, accesses and opens it using navigator
     availableCams.map(cam => {
-      console.log(cam.mic_info);
+      // console.log(cam.mic_info);
       navigator.mediaDevices
         .getUserMedia({
           audio: {
@@ -284,12 +346,9 @@ export default function CameraList(props) {
     }
   }
 
-
-
   const renderCams = () => {
 
     initMics();
-    console.log(availableCams);
 
     const debug = true;
     const comp_camsList = availableCams.map(cam => {

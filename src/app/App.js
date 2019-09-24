@@ -38,7 +38,8 @@ class App extends React.Component {
       numFilesSavedInd: 0,
       connectedOrderMap: {},
       numCams: 1,
-      recordedProgress: {}
+      recordedProgress: {},
+      addCamState: false
     };
     if (!this.helper_checkIfMobileView) {
       this.props.socket.emit('client: update sentence_index', {
@@ -115,8 +116,8 @@ class App extends React.Component {
       }
     });
 
-    this.props.socket.on('server: response for recording status', status => {
-      console.log('beeppppps' + JSON.stringify(status));
+    this.props.socket.on('server: response for recording status', () => {
+      // console.log('beeppppps' + JSON.stringify(status));
     });
 
     this.props.socket.on('server: response for progress', progress => {
@@ -347,7 +348,7 @@ class App extends React.Component {
       const status = {};
       status[this.state.computerID] = recordingStatus;
       this.setState({ computerStatus: status }, () => {
-        console.log(this.state.computerStatus);
+        // console.log(this.state.computerStatus);
       });
       this.props.socket.emit('client: update recording status', status);
     }
@@ -433,6 +434,8 @@ class App extends React.Component {
         computerID={this.state.computerID}
         computerStatus={this.state.computerStatus}
         updateConnectionStatus={this.updateConnectionStatus}
+        addCamState={this.state.addCamState}
+        toggleCamState={this.toggleCamState}
       />
     );
   };
@@ -497,9 +500,13 @@ class App extends React.Component {
     );
   };
 
+  toggleCamState = () => {
+    this.setState({ addCamState: !this.state.addCamState });
+  }
+
   comp_debug = () => {
     return (
-      <div style={{margin: 'auto', textAlign: 'center'}}>
+      <div style={{ margin: 'auto', textAlign: 'center' }}>
         <button
           onClick={() => {
             this.toggleModal('overallStatus');
@@ -526,6 +533,9 @@ class App extends React.Component {
         </button>
         <button className='debug_button' onClick={this.refreshAll}>
           Refresh All
+        </button>
+        <button className='debug_button' onClick={this.toggleCamState}>
+          Add Cam
         </button>
 
         <button

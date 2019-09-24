@@ -184,6 +184,9 @@ export default function CameraList(props) {
           document.getElementById('startBtn').disabled = false;
           initCams();
         }
+        else {
+          console.log('no new cams detected');
+        }
       });
     }    
 

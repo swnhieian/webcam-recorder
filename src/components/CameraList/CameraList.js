@@ -153,7 +153,7 @@ export default function CameraList(props) {
       navigator.mediaDevices
         .getUserMedia({
           audio: {
-            deviceId: {exact: (cam.mic_info) ? cam.mic_info.id : 'default'}
+            deviceId: {exact: (cam.mic_info) ? cam.mic_info : 'default'}
           },
           video: {
             frameRate: {exact: 30, ideal: 30},

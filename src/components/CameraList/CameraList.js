@@ -85,7 +85,9 @@ export default function CameraList(props) {
                 'background: green'
               );
               console.log(device);
-              helper_addToMicDevices(device, micDevices);
+              if (device.id !== 'default' || device.id !== 'communications') {
+                helper_addToMicDevices(device, micDevices);
+              }
             }            
             // console.log(device);
             if (device.kind === 'videoinput') {

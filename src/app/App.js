@@ -416,10 +416,10 @@ class App extends React.Component {
 
   resetCams = () => {
     // this.props.socket.emit('client: stop cams');
-    this.props.socket.emit('client: dummy vid, do not save');
     this.updateGreenLightStatus(true);
     this.props.socket.emit('client: reset cams');
     document.getElementById('addCamBtn').click();
+    this.props.socket.emit('client: dummy vid, do not save');
     cogoToast.info('Cams are reset', {hideAfter: 0.75});
   };
 

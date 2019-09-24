@@ -144,10 +144,10 @@ export default function CameraList(props) {
     } else {// mics 
       devices = availableMics;
     }
-    console.log(devices);
+    // console.log(devices);
     for (const d of devices) {
       const id = (devicesName === 'cams') ? d.camera_info.id : d.deviceId;
-      console.log(devicesName + ': ' + device.deviceId)
+      // console.log(devicesName + ': ' + device.deviceId)
       if (device.deviceId === id) {
         return true;
       } 
@@ -162,14 +162,14 @@ export default function CameraList(props) {
       console.log('enumerateDevices() not supported.');
     } else {
       navigator.mediaDevices.enumerateDevices().then(devices => {
-        console.log(devices);
+        // console.log(devices);
         for (const device of devices) {
           if (device.kind === "videoinput" && !newCamDevice) {
             newCamDevice = helper_checkIfDeviceExistsAlready(device, 'cams')
               ? undefined
               : helper_extractRelevantCamInfo(device);
             if (newCamDevice) {
-              console.log('new cam detected');
+              // console.log('new cam detected');
             }
           }
           if (
@@ -181,31 +181,34 @@ export default function CameraList(props) {
               ? undefined
               : device.deviceId;
             if (newMicID) {
-              console.log('new mic detected');
+              // console.log('new mic detected');
             }
           }    
         }
       }).then(()=> {
-        console.log(newCamDevice)
-        console.log(newMicID);
+
 
         if (newCamDevice && newMicID) {
-          console.log('new cams or mics detected');
+          // console.log('new cams or mics detected');
 
           newCamDevice.mic_info = newMicID;
           let temp = availableCams;
           temp.push(newCamDevice);
           setAvailableCams(temp);
-          console.log(availableCams)
+          // console.log(availableCams)
           cogoToast.success('New camera: ' + newCamDevice.camera_info.id + ' added.');
-          document.getElementById('dummyBtn').disabled = false;
-          document.getElementById('dummyBtn').click();
-          document.getElementById('dummyBtn').disabled = true;
+          document.getElementById('startBtn').disabled = false;
+          initCams();
         }
         else {
-          console.log('no new cams or mics detected');
+          // console.log('no new cams or mics detected');
         }
-      });
+      }).then(() => {
+        document.getElementById('dummyBtn').disabled = false;
+        document.getElementById('dummyBtn').click();
+      }).then(() => {
+        // document.getElementById('resetCamsBtn').click();
+      })
     }    
 
   }

@@ -207,7 +207,7 @@ export default function CameraList(props) {
       if (props.addCamState) {
         addCam();
       }
-    }, [props.addCamState]);
+    }, []);
   }
 
   const initCamsDummy = () => {

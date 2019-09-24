@@ -351,7 +351,6 @@ class App extends React.Component {
       });
       this.props.socket.emit('client: update recording status', status);
     }
-    console.log(recordingStatus);
     this.getStatus();
   };
 

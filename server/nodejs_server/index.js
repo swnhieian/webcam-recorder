@@ -202,7 +202,7 @@ io.on('connection', function(socket) {
       if (err) {
         return console.log(err)
       }
-      console.log(sentence_index + ': saved, ' + blob);
+      console.log(sentence_index + ': saved, ' + 'numSaved: ' + numSaved);
     });
     // console.log("files saved: " + numSaved);
     // setTimeout(()=> {

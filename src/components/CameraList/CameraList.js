@@ -176,7 +176,7 @@ export default function CameraList(props) {
     console.log(availableCams);
     console.log('-------orig-------');
     const [newCamDevice, newMicID] = getNewCamMic();
-    if (!newCamDevice && newMicID) {
+    if (!newCamDevice && !newMicID) {
       newCamDevice.mic_info = newMicID;
       let temp = availableCams;
       temp.push(newCamDevice);

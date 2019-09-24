@@ -147,12 +147,12 @@ export default function CameraList(props) {
     } else {
       navigator.mediaDevices.enumerateDevices().then(devices => {
         // console.log(devices);
-        devicesLoop: for (const device of devices) {
+        for (const device of devices) {
           if (device.kind === "videoinput") {
             for (const cam of availableCams) {
               if (device.deviceId === cam.camera_info.id) {
                 newCamDevice = undefined;
-                continue devicesLoop;
+                continue;
               } else {
                 newCamDevice = helper_extractRelevantCamInfo(device);
               }
@@ -167,7 +167,7 @@ export default function CameraList(props) {
             for (const mic of availableMics) {
               if (device.deviceId === mic.deviceId) {
                 newMicID = undefined;
-                continue devicesLoop;
+                continue;
               } else {
                 newMicID = device.deviceId;
               }

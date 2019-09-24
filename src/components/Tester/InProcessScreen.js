@@ -62,10 +62,10 @@ export default function InProcessScreen(props) {
 
   
   function disableNextButtonIfCurrNotRead() {
-    console.log(props.recordedProgress)
-    console.log(props.curr_sentence_index);
+    // console.log(props.recordedProgress)
+    // console.log(props.curr_sentence_index);
     const recordedYet = (props.recordedProgress[props.curr_sentence_index]) ? props.recordedProgress[props.curr_sentence_index] : false;
-    console.log(recordedYet);
+    // console.log(recordedYet);
     try {
       if (recordedYet) {
         document.getElementById('testerNextBtn').disabled = false;

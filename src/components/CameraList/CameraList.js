@@ -176,17 +176,25 @@ export default function CameraList(props) {
     console.log(availableCams);
     console.log('-------orig-------');
     const [newCamDevice, newMicID] = getNewCamMic();
-    if (!newCamDevice && !newMicID) {
-      newCamDevice.mic_info = newMicID;
-      let temp = availableCams;
-      temp.push(newCamDevice);
-      setAvailableCams(temp);
-      props.toggleCamState();
-      console.log('-------new-------');
-      console.log(availableCams);
-      console.log('-------new-------');
-    }
-    console.log('did not detect new cams plugged in');
+    console.log('-------new cam device-------');
+    console.log(newCamDevice);
+    console.log('-------new cam device-------');
+
+    console.log('-------new mic -------');
+    console.log(newMicID);
+    console.log('-------new mic -------');
+
+    // if (!newCamDevice && !newMicID) {
+    //   newCamDevice.mic_info = newMicID;
+    //   let temp = availableCams;
+    //   temp.push(newCamDevice);
+    //   setAvailableCams(temp);
+    //   props.toggleCamState();
+    //   console.log('-------new-------');
+    //   console.log(availableCams);
+    //   console.log('-------new-------');
+    // }
+    // console.log('did not detect new cams plugged in');
   }
 
 

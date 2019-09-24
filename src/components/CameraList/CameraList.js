@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Webcam from '../Webcam/Webcam.js';
 import RecordRTC, { MediaStreamRecorder } from 'recordrtc';
 import qs from '../../utils/qs'
+import cogoToast from 'cogo-toast';
 // import PropTypes from 'prop-types';
 
 // const matchedDeviceList = {
@@ -72,7 +73,6 @@ export default function CameraList(props) {
             return device.kind === 'videoinput' ? accumulator + 1 : accumulator;
           }, 0);
           console.log("number of cams detected: " + numCams);
-          console.log(devices);
           devices.map(function(device) {
             // console.log('%c ' + device.kind,
             // 'background: #222; color: #bada55',
@@ -132,26 +132,30 @@ export default function CameraList(props) {
   const initMics = () => {
     let id = 0;
     availableCams.map(cam => {
-      cam.mic_info = availableMics[id++].deviceId;
+      if (availableMics[id]) cam.mic_info = availableMics[id++].deviceId;
     });
 
   }
 
-  const getNewCamMic = () => {
+  const addNewCamMic = () => {
     let newCamDevice = undefined;
     let newMicID = undefined;
+
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       console.log('enumerateDevices() not supported.');
     } else {
       navigator.mediaDevices.enumerateDevices().then(devices => {
+        // console.log(devices);
         devices.map(device => {
-          helper_extractRelevantCamInfo(device);
           if (device.kind === "videoinput") {
-            availableCams.map(cam => {
-              if (device.deviceId !== cam.camera_info.id) {
-                newCamDevice = device;
+            for (const cam of availableCams) {
+              if (device.deviceId === cam.camera_info.id) {
+                newCamDevice = undefined;
+                break;
+              } else {
+                newCamDevice = helper_extractRelevantCamInfo(device);
               }
-            });
+            }
           }
           if (
             device.kind === 'audioinput' &&
@@ -159,49 +163,31 @@ export default function CameraList(props) {
               !device.label.toLowerCase().includes('communications'))
           ) {
             // 
-            availableMics.map(mic => {
-              if (device.deviceId !== mic.deviceId) {
+            for (const mic of availableMics) {
+              if (device.deviceId === mic.deviceId) {
+                newMicID = undefined;
+                break;
+              } else {
                 newMicID = device.deviceId;
               }
-            })
-          }
-        });
+            }
+          }    
+        })
+      }).then(()=> {
+        if (newCamDevice && newMicID) {
+          newCamDevice.mic_info = newMicID;
+          let temp = availableCams;
+          temp.push(newCamDevice);
+          setAvailableCams(temp);
+          cogoToast.success('New camera: ' + newCamDevice.camera_info.id + ' added.');
+          document.getElementById('startBtn').disabled = false;
+          initCams();
+        }
       });
-    }
-    return [newCamDevice, newMicID]
-  }
-
-  const addCam = () => {
-    console.log('-------orig-------')
-    console.log(availableCams);
-    console.log('-------orig-------');
-    const [newCamDevice, newMicID] = getNewCamMic();
-    console.log('-------new cam device-------');
-    console.log(newCamDevice);
-    console.log('-------new cam device-------');
-
-    console.log('-------new mic -------');
-    console.log(newMicID);
-    console.log('-------new mic -------');
-
-    // if (!newCamDevice && !newMicID) {
-    //   newCamDevice.mic_info = newMicID;
-    //   let temp = availableCams;
-    //   temp.push(newCamDevice);
-    //   setAvailableCams(temp);
-    //   props.toggleCamState();
-    //   console.log('-------new-------');
-    //   console.log(availableCams);
-    //   console.log('-------new-------');
-    // }
-    // console.log('did not detect new cams plugged in');
-
-    stopAllCams();
-    console.log("add cams: STOPPED CAMS");
-    startAllCams();
-    console.log('add cams: STARTED CAMS');
+    }    
 
   }
+
 
 
   function useAvailableWebCams() {
@@ -210,7 +196,7 @@ export default function CameraList(props) {
       props.updateConnectionStatus();
       initCams();
       // console.log(props.addCamState);
-      addCam();
+      addNewCamMic();
     }, [props.addCamState]);
   }
 
@@ -363,10 +349,11 @@ export default function CameraList(props) {
     initMics();
 
     const debug = true;
+    let i = 0; 
     const comp_camsList = availableCams.map(cam => {
       return (
         <Webcam
-          key={cam['camera_info'].id}
+          key={i++}
           name={'ID: ' + cam['camera_info'].id.substring(0, 15)}
           videoRef={cam['ref']}
         />

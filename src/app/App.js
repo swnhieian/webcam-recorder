@@ -75,7 +75,7 @@ class App extends React.Component {
     this.setState({ computerID: id });
     status[this.state.computerID] = [];
     this.setState({ computerStatus: status }, () => {
-      console.log("init computer status", this.state.computerStatus);
+      // console.log("init computer status", this.state.computerStatus);
     });
   };
 
@@ -215,7 +215,7 @@ class App extends React.Component {
   componentDidMount() {
     this.readTextFile(sentences);
     this.initSocketListeners();
-    this.pingServer();
+    // this.pingServer();
     window.addEventListener('keydown', this.downHandler);
     
   }
@@ -419,7 +419,7 @@ class App extends React.Component {
     this.props.socket.emit('client: dummy vid, do not save');
     this.updateGreenLightStatus(true);
     this.props.socket.emit('client: reset cams');
-
+    document.getElementById('addCamBtn').click();
     cogoToast.info('Cams are reset');
   };
 
@@ -534,7 +534,7 @@ class App extends React.Component {
         <button className='debug_button' onClick={this.refreshAll}>
           Refresh All
         </button>
-        <button className='debug_button' onClick={this.toggleCamState}>
+        <button id="addCamBtn" className='hidden_button' onClick={this.toggleCamState}>
           Add Cam
         </button>
 
@@ -604,7 +604,6 @@ class App extends React.Component {
         <Route path='/' exact component={this.desktopView} />
         <Route path='/mobile' exact component={this.mobileView} />
         {this.comp_modals()}
-        <h1>Page loaded {JSON.stringify(new Date())}</h1>
       </Router>
     );
   }

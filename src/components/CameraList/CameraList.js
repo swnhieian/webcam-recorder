@@ -115,8 +115,6 @@ export default function CameraList(props) {
           setAvailableMics(micDevices);
           setAvailableCams(videoDevices);
 
-          console.log()
-
           document.getElementById('startBtn').click();
           document.getElementById('startBtn').disabled = true;
           // console.log('getAvailableDevices success!');
@@ -151,6 +149,7 @@ export default function CameraList(props) {
     recordingStatus === 'recording-status-loading...' ? {} : recordingStatus;
     // goes through all cams array and through each ID, accesses and opens it using navigator
     availableCams.map(cam => {
+      console.log(cam.mic_info);
       navigator.mediaDevices
         .getUserMedia({
           audio: {

@@ -152,7 +152,7 @@ export default function CameraList(props) {
             for (const cam of availableCams) {
               if (device.deviceId === cam.camera_info.id) {
                 newCamDevice = undefined;
-                break devicesLoop;
+                continue devicesLoop;
               } else {
                 newCamDevice = helper_extractRelevantCamInfo(device);
               }
@@ -167,7 +167,7 @@ export default function CameraList(props) {
             for (const mic of availableMics) {
               if (device.deviceId === mic.deviceId) {
                 newMicID = undefined;
-                break devicesLoop;
+                continue devicesLoop;
               } else {
                 newMicID = device.deviceId;
               }

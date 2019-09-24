@@ -49,7 +49,7 @@ const sendProgressUpdate = () => {
       io.emit('server: response for progress', JSON.parse(content));
     } catch (SyntaxErrorException) {
       saveData({}, PROGRESS_PATH)
-      console.error("file DNE at " + PROGRESS_PATH + ", so created anew.");
+      // console.error("file DNE at " + PROGRESS_PATH + ", so created anew.");
     }
   }); 
 }

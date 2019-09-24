@@ -121,11 +121,6 @@ class App extends React.Component {
 
     this.props.socket.on('server: response for progress', progress => {
       this.setState({ recordedProgress: progress });
-      try {
-        this.setState({ curr_sentence_index: Object.keys(progress).length })
-      } catch (NotYetLoadedException) {
-        console.error(NotYetLoadedException);
-      }
     });
 
     this.props.socket.on('server: response for numFilesSaved', numFiles => {

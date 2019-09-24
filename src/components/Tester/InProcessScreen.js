@@ -62,7 +62,10 @@ export default function InProcessScreen(props) {
 
   
   function disableNextButtonIfCurrNotRead() {
+    console.log(props.recordedProgress)
+    console.log(props.curr_sentence_index);
     const recordedYet = (props.recordedProgress[props.curr_sentence_index]) ? props.recordedProgress[props.curr_sentence_index] : false;
+    console.log(recordedYet);
     try {
       if (recordedYet) {
         document.getElementById('testerNextBtn').disabled = false;
@@ -78,10 +81,17 @@ export default function InProcessScreen(props) {
     disableNextButtonIfCurrNotRead();
     const recordedYet = (props.recordedProgress[props.curr_sentence_index]) ? props.recordedProgress[props.curr_sentence_index] : false;
     const recordedMessage = (recordedYet) ? '(录过)' : ''
-    const sentence = props.curr_sentence + ' ' + recordedMessage;
+    const sentence = props.data[props.curr_sentence_index] + ' ' + recordedMessage;
+    const recordedClassName = recordedYet ? 'recorded_sentence_highlight sentence_to_be_read' : 'sentence_to_be_read'
     return (
-      <div className={(recordedYet) ? "recorded_sentence_highlight" : ""}>{sentence}</div>
-    )
+      <div>
+        [{props.curr_sentence_index}]
+        <br />
+        <div className={recordedClassName}>
+          {sentence}
+        </div>
+      </div>
+    );
   }
 
   
@@ -120,7 +130,7 @@ export default function InProcessScreen(props) {
           <div className='recording_hint'>
             {getRecordState() === 'Done' ? '录制中...' : ''}
           </div>
-          <div className='sentence_to_be_read'>{displaySentenceToBeRead()}</div>
+          <div>{displaySentenceToBeRead()}</div>
           <button
             id='testerRecordBtn'
             className={getRecordState() === 'Done' ? 'btn btn-danger' : 'btn'}

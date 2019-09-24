@@ -103,7 +103,7 @@ io.on('connection', function(socket) {
   socket.on('client: update recording progress', function(progress) {
     saveData(progress, PROGRESS_PATH);
     sendProgressUpdate();
-    console.log('updating progress');
+    console.log('updating progress', progress);
   });
 
   socket.on('client: check for progress', function() {

@@ -87,9 +87,9 @@ function Tester(props) {
   return (
     <div className='testing_screen'>
       {comp_totalTimer()}
-      {props.comp_progressBar(props.curr_sentence_index, props.data_length, 'center', 2)}
+      {props.comp_progressBar(Object.keys(props.recordedProgress).length, props.data_length, 'center', 2)}
       <div className='middle'>
-        <div className='inner'>{comp_inProcessScreen(props)}</div>
+        <div className='inner'>{comp_inProcessScreen()}</div>
         {comp_timer()}
       </div>
       <pre hidden={(props.recordGreenLight || props.curr_sentence_index === 0) || !qs('name')} className='warning_message'>

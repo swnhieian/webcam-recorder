@@ -116,7 +116,6 @@ io.on('connection', function(socket) {
     readContent(CONNECTION_STATUS_PATH, function(err, content) {
       try {
         io.emit('server: response for connection status', JSON.parse(content));
-        console.log('ping for connection status')
       } catch(SyntaxErrorException) {
         console.error(SyntaxErrorException);
       }
@@ -126,7 +125,7 @@ io.on('connection', function(socket) {
 
   socket.on('client: update recording status', function(status) {
     saveConnection(socket, status[socket.id])
-    console.log('server: updated recording status', JSON.stringify(status));
+    // console.log('server: updated recording status', JSON.stringify(status));
   });
   
 
@@ -202,9 +201,9 @@ io.on('connection', function(socket) {
       if (err) {
         return console.log(err)
       }
-      console.log('the file was saved!');
+      console.log(sentence_index + ': saved, ' + blob);
     });
-    console.log("files saved: " + numSaved);
+    // console.log("files saved: " + numSaved);
     // setTimeout(()=> {
     io.emit('server: save files successful', numSaved);
     // }, 5000)

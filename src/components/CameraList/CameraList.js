@@ -69,10 +69,10 @@ export default function CameraList(props) {
                   ' id = ' +
                   device.deviceId +
                   ' group id = ' +
-                  device.groupId + 
-                  ' device ' + device,
+                  device.groupId,
                 'background: green'
               );
+              console.log(device);
             }            
             // console.log(device);
             if (device.kind === 'videoinput') {
@@ -90,6 +90,7 @@ export default function CameraList(props) {
                   device,
                 'background: red'
               );
+              console.log(device);
             }
             return null;
           });

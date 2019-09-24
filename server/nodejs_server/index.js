@@ -117,7 +117,8 @@ io.on('connection', function(socket) {
       try {
         io.emit('server: response for connection status', JSON.parse(content));
       } catch(SyntaxErrorException) {
-        console.error(SyntaxErrorException);
+        saveData({}, CONNECTION_STATUS_PATH)
+        // console.error(SyntaxErrorException);
       }
     });
   });
@@ -154,7 +155,7 @@ io.on('connection', function(socket) {
       try {
         io.emit('server: response for recording status', JSON.parse(content));
       } catch (SyntaxErrorException) {
-        console.error(SyntaxErrorException);
+        saveData({}, RECORDING_STATUS_PATH);
       }
     });
   });

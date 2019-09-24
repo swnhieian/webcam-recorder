@@ -420,7 +420,7 @@ class App extends React.Component {
     this.updateGreenLightStatus(true);
     this.props.socket.emit('client: reset cams');
     document.getElementById('addCamBtn').click();
-    cogoToast.info('Cams are reset');
+    cogoToast.info('Cams are reset', {hideAfter: 0.75});
   };
 
   refreshAll = () => {
@@ -534,9 +534,7 @@ class App extends React.Component {
         <button className='debug_button' onClick={this.refreshAll}>
           Refresh All
         </button>
-        <button id="addCamBtn" className='hidden_button' onClick={this.toggleCamState}>
-          Add Cam
-        </button>
+        
 
         <button
           onClick={this.showFileSavedMessage}

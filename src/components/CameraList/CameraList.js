@@ -137,62 +137,77 @@ export default function CameraList(props) {
 
   }
 
+  const helper_checkIfDeviceExistsAlready = (device, devicesName) => {
+    let devices = undefined;
+    if (devicesName === 'cams') {
+      devices = availableCams;
+    } else {// mics 
+      devices = availableMics;
+    }
+    console.log(devices);
+    for (const d of devices) {
+      const id = (devicesName === 'cams') ? d.camera_info.id : d.deviceId;
+      console.log(devicesName + ': ' + device.deviceId)
+      if (device.deviceId === id) {
+        return true;
+      } 
+    }
+  }
+
   const addNewCamMic = () => {
     let newCamDevice = undefined;
     let newMicID = undefined;
-
 
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       console.log('enumerateDevices() not supported.');
     } else {
       navigator.mediaDevices.enumerateDevices().then(devices => {
-        // console.log(devices);
+        console.log(devices);
         for (const device of devices) {
-          if (device.kind === "videoinput") {
-            for (const cam of availableCams) {
-              if (device.deviceId === cam.camera_info.id) {
-                newCamDevice = undefined;
-                continue;
-              } else {
-                newCamDevice = helper_extractRelevantCamInfo(device);
-              }
+          if (device.kind === "videoinput" && !newCamDevice) {
+            newCamDevice = helper_checkIfDeviceExistsAlready(device, 'cams')
+              ? undefined
+              : helper_extractRelevantCamInfo(device);
+            if (newCamDevice) {
+              console.log('new cam detected');
             }
           }
           if (
-            device.kind === 'audioinput' &&
+            device.kind === 'audioinput' && !newMicID &&
             (!device.label.toLowerCase().includes('default') &&
               !device.label.toLowerCase().includes('communications'))
           ) {
-            // 
-            for (const mic of availableMics) {
-              if (device.deviceId === mic.deviceId) {
-                newMicID = undefined;
-                continue;
-              } else {
-                newMicID = device.deviceId;
-              }
+            newMicID = helper_checkIfDeviceExistsAlready(device, 'mic') 
+              ? undefined
+              : device.deviceId;
+            if (newMicID) {
+              console.log('new mic detected');
             }
           }    
         }
       }).then(()=> {
+        console.log(newCamDevice)
+        console.log(newMicID);
+
         if (newCamDevice && newMicID) {
+          console.log('new cams or mics detected');
+
           newCamDevice.mic_info = newMicID;
           let temp = availableCams;
           temp.push(newCamDevice);
           setAvailableCams(temp);
+          console.log(availableCams)
           cogoToast.success('New camera: ' + newCamDevice.camera_info.id + ' added.');
           document.getElementById('startBtn').disabled = false;
           initCams();
         }
         else {
-          console.log('no new cams detected');
+          console.log('no new cams or mics detected');
         }
       });
     }    
 
   }
-
-
 
   function useAvailableWebCams() {
     //  runs once
@@ -200,7 +215,7 @@ export default function CameraList(props) {
       props.updateConnectionStatus();
       initCams();
       // console.log(props.addCamState);
-      addNewCamMic();
+      cogoToast.info('cams loaded')
     }, [props.addCamState]);
   }
 
@@ -269,7 +284,6 @@ export default function CameraList(props) {
             'background: #222; color: #bada55',
             blob
           );
-          console.log('beep beep boop boop', dummy)
           if (dummy !== true) {
             props.socket.emit('client: save data', {
               name: qs("name"),
@@ -338,13 +352,28 @@ export default function CameraList(props) {
       return (
         <div>
           {/* <p>Don't click these while actual testing</p> */}
-          <button id="dummyBtn" onClick={initCamsDummy}>dummy reset</button>
-          <button id="startBtn" onClick={startAllCams}>start and pause all cams</button>
-          <button id="resumeBtn" onClick={resumeAllCams}>resume all cams</button>
-          <button id="stopBtn" onClick={stopAllCams}>stop all cams</button>
+          <button id='dummyBtn' onClick={initCamsDummy}>
+            dummy reset
+          </button>
+          <button id='startBtn' onClick={startAllCams}>
+            start and pause all cams
+          </button>
+          <button id='resumeBtn' onClick={resumeAllCams}>
+            resume all cams
+          </button>
+          <button id='stopBtn' onClick={stopAllCams}>
+            stop all cams
+          </button>
+          <button
+            id='addCamBtn'
+            className='hidden_button'
+            onClick={addNewCamMic}
+          >
+            Add Cam
+          </button>
           {/* <button id="setCompID" onClick={getSetCompID}>get set computer ID</button> */}
         </div>
-      )
+      );
     }
   }
 

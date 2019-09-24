@@ -56,6 +56,7 @@ export default function CameraList(props) {
         .enumerateDevices()
         .then(devices => {
           let videodevices = [];
+          console.log(devices);
           devices.map(function(device) {
             // console.log('%c ' + device.kind,
             // 'background: #222; color: #bada55',

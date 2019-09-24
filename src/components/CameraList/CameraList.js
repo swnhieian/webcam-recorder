@@ -69,7 +69,8 @@ export default function CameraList(props) {
                   ' id = ' +
                   device.deviceId +
                   ' group id = ' +
-                  device.groupId,
+                  device.groupId + 
+                  ' device ' + device,
                 'background: green'
               );
             }            
@@ -77,14 +78,18 @@ export default function CameraList(props) {
             if (device.kind === 'videoinput') {
               helper_addToVideoDevices(device, videodevices);
               console.log(
-                '%c' + device.kind +
+                '%c' +
+                  device.kind +
                   ': ' +
                   device.label +
                   ' id = ' +
                   device.deviceId +
                   ' group id = ' +
-                  device.groupId
-              , 'background: red');
+                  device.groupId +
+                  ' device ' +
+                  device,
+                'background: red'
+              );
             }
             return null;
           });

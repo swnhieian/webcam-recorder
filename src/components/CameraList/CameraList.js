@@ -141,17 +141,18 @@ export default function CameraList(props) {
     let newCamDevice = undefined;
     let newMicID = undefined;
 
+
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       console.log('enumerateDevices() not supported.');
     } else {
       navigator.mediaDevices.enumerateDevices().then(devices => {
         // console.log(devices);
-        devices.map(device => {
+        devicesLoop: for (const device of devices) {
           if (device.kind === "videoinput") {
             for (const cam of availableCams) {
               if (device.deviceId === cam.camera_info.id) {
                 newCamDevice = undefined;
-                break;
+                break devicesLoop;
               } else {
                 newCamDevice = helper_extractRelevantCamInfo(device);
               }
@@ -166,13 +167,13 @@ export default function CameraList(props) {
             for (const mic of availableMics) {
               if (device.deviceId === mic.deviceId) {
                 newMicID = undefined;
-                break;
+                break devicesLoop;
               } else {
                 newMicID = device.deviceId;
               }
             }
           }    
-        })
+        }
       }).then(()=> {
         if (newCamDevice && newMicID) {
           newCamDevice.mic_info = newMicID;

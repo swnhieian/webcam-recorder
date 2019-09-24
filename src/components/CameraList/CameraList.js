@@ -68,6 +68,7 @@ export default function CameraList(props) {
             return device.kind === 'videoinput' ? accumulator + 1 : accumulator;
           }, 0);
           console.log("number of cams detected: " + numCams);
+          console.log(devices);
           devices.map(function(device) {
             // console.log('%c ' + device.kind,
             // 'background: #222; color: #bada55',

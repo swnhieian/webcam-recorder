@@ -204,10 +204,8 @@ export default function CameraList(props) {
       props.updateConnectionStatus();
       initCams();
       // console.log(props.addCamState);
-      if (props.addCamState) {
-        addCam();
-      }
-    }, []);
+      addCam();
+    }, [props.addCamState]);
   }
 
   const initCamsDummy = () => {

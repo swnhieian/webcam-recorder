@@ -195,6 +195,9 @@ export default function CameraList(props) {
     //   console.log('-------new-------');
     // }
     // console.log('did not detect new cams plugged in');
+
+    stopAllCams();
+    startAllCams();
   }
 
 

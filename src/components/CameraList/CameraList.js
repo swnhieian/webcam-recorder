@@ -198,8 +198,9 @@ export default function CameraList(props) {
           setAvailableCams(temp);
           console.log(availableCams)
           cogoToast.success('New camera: ' + newCamDevice.camera_info.id + ' added.');
-          document.getElementById('startBtn').disabled = false;
-          initCams();
+          document.getElementById('dummyBtn').disabled = false;
+          document.getElementById('dummyBtn').click();
+          document.getElementById('dummyBtn').disabled = true;
         }
         else {
           console.log('no new cams or mics detected');

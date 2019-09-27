@@ -31,6 +31,9 @@ export default function Timer(props) {
 
   function createInterval(timeSaved) {
     let time = (timeSaved) ? timeSaved : [0, 0, 0];
+    time = time.map(t => {
+      return t ? t : 0;
+    });
     // console.log(timeSaved);
     return setInterval(() => {
       let hour = time[0];
@@ -73,7 +76,6 @@ export default function Timer(props) {
       if (!timeSaved && !intervalID) {
         setIntervalID(createInterval());
       }
-      console.log(timeSaved);
       stopTimer();
       setIntervalID(createInterval(timeSaved));
     });

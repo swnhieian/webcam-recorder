@@ -29,7 +29,7 @@ import cogoToast from 'cogo-toast';
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
   const [recordingStatus, setRecordingStatus] = useState("recording-status-loading...");
-  const [availableMics, setAvailableMics] = useState([]);
+  // const [availableMics, setAvailableMics] = useState([]);
   const [pluggedInDevices, setPluggedInDevices] = useState([]);
 
   const helper_extractRelevantCamInfo = device => {
@@ -54,7 +54,10 @@ export default function CameraList(props) {
     // alert("device not match!!!");
     //   console.error('device not match!!!');
     // }
-    videodevices.push(helper_extractRelevantCamInfo(device));
+    availableCams.map
+    device = helper_extractRelevantCamInfo(device);
+    videodevices.push(device);
+
   }
   const helper_addToMicDevices = (device, micDevices) => {
     micDevices.push(device);
@@ -68,46 +71,45 @@ export default function CameraList(props) {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       console.log('enumerateDevices() not supported.');
     } else {
-      navigator.mediaDevices
-        .enumerateDevices()
-        .then(devices => {
-          let videoDevices = [];
-          let micDevices = [];
-          const numCams = helper_getNumCams(devices);
-          console.log("number of cams detected: " + numCams);
-          devices.map(function(device) {
-            if (device.kind === 'audioinput') {
-              if (
-                !device.label.toLowerCase().includes('default') &&
-                !device.label.toLowerCase().includes('communications')
-              ) {
-                helper_addToMicDevices(device, micDevices);
-              }
-            }            
-            if (device.kind === 'videoinput') {
-              helper_addToVideoDevices(device, videoDevices);
+      navigator.mediaDevices.enumerateDevices().then(devices => {
+        let videoDevices = [];
+        let micDevices = [];
+        const numCams = helper_getNumCams(devices);
+        console.log("number of cams detected: " + numCams);
+        devices.map(function(device) {
+          if (device.kind === 'audioinput') {
+            if (
+              !device.label.toLowerCase().includes('default') &&
+              !device.label.toLowerCase().includes('communications') && 
+              !device.label.toLowerCase().includes('built-in')
+            ) {
+              helper_addToMicDevices(device, micDevices);
             }
-            return null;
-          });
-          setAvailableMics(micDevices);
-          setAvailableCams(videoDevices);
-
-          document.getElementById('startBtn').click();
-          document.getElementById('startBtn').disabled = true;
-          // console.log('getAvailableDevices success!');
-        })
-        .catch(function(err) {
-          console.log(err.name + ': ' + err.message);
+          }            
+          if (device.kind === 'videoinput') {
+            helper_addToVideoDevices(device, videoDevices);
+          }
+          return null;
         });
+        // setAvailableMics(micDevices);
+        setAvailableCams(videoDevices);
+
+        document.getElementById('startBtn').click();
+        document.getElementById('startBtn').disabled = true;
+        // console.log('getAvailableDevices success!');
+      })
+      .catch(function(err) {
+        console.log(err.name + ': ' + err.message);
+      });
     }
   }
-  const initMics = () => {
-    let id = 0;
-    availableCams.map(cam => {
-      if (availableMics[id]) cam.mic_info = availableMics[id++].deviceId;
-    });
+  // const initMics = () => {
+  //   let id = 0;
+  //   availableCams.map(cam => {
+  //     if (availableMics[id]) cam.mic_info = availableMics[id++].deviceId;
+  //   });
 
-  }
+  // }
 
   Array.prototype.diff = function(a) {
     return this.filter(function(i) {
@@ -172,6 +174,7 @@ export default function CameraList(props) {
         let temp = availableCams;
         temp.push(newCamDevice);
         setAvailableCams(temp);
+        console.log(availableCams);
         cogoToast.success(
           'New camera: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.'
         );
@@ -205,6 +208,9 @@ export default function CameraList(props) {
     // goes through all cams array and through each ID, accesses and opens it using navigator
     availableCams.map(cam => {
       // console.log(cam.mic_info);
+      if (!cam.mic_info) {
+        console.error('using default microphone...');
+      }
       navigator.mediaDevices
         .getUserMedia({
           audio: {
@@ -355,7 +361,7 @@ export default function CameraList(props) {
 
   const renderCams = () => {
 
-    initMics();
+    // initMics();
 
     const debug = true;
     let i = 0; 

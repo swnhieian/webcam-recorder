@@ -12,7 +12,6 @@ export default function InProcessScreen(props) {
   const [nameSet, setName] = useState(qs('name'));
 
   function updateSentence(data) {
-    console.log('update sentence from in process screen')
     reset(true);
     props.updateSentence(data);
   }

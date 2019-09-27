@@ -37,7 +37,7 @@ class App extends React.Component {
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
       connectedOrderMap: {},
-      numCams: 3,
+      numCams: 1,
       recordedProgress: {},
       addCamState: false
     };
@@ -165,7 +165,6 @@ class App extends React.Component {
                 console.log('here here??');
                 cogoToast.info('Completed @ Sentence [' + this.state.curr_sentence_index + ']', {hideAfter: 0.75});
               }
-              console.log('clicked??');
             } catch (NotYetLoadedException) {
               console.error(NotYetLoadedException);
             }
@@ -260,7 +259,6 @@ class App extends React.Component {
   };
 
   updateSentence = curr_sentence => {
-    console.log('update sentence called here beep')
     //console.log("in updateSentence(" + curr_sentence + "):" + qs('name'));
     if (curr_sentence === '$next') {
       if (this.state.curr_sentence_index + 1 === this.state.data.length) {

@@ -59,6 +59,7 @@ export default function CameraList(props) {
     const devicePrior = availableCams.filter(cam => {
       return cam.camera_info.id === device.camera_info.id
     })[0];
+    console.log(devicePrior);
     if (devicePrior) {
       console.log('found prior device');
       device.mic_info = devicePrior.mic_info;

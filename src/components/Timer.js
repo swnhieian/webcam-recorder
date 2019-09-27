@@ -19,7 +19,7 @@ export default function Timer(props) {
       'client: save total time',
       totalTime
     );
-    console.log(totalTime);
+    // console.log(totalTime);
     // Chrome requires returnValue to be set.
     event.returnValue = '';
   }
@@ -31,7 +31,7 @@ export default function Timer(props) {
 
   function createInterval(timeSaved) {
     let time = (timeSaved) ? timeSaved : [0, 0, 0];
-    console.log(timeSaved);
+    // console.log(timeSaved);
     return setInterval(() => {
       let hour = time[0];
       let min = time[1];

@@ -56,7 +56,6 @@ export default function CameraList(props) {
     // }
     videodevices.push(helper_extractRelevantCamInfo(device));
   }
-
   const helper_addToMicDevices = (device, micDevices) => {
     micDevices.push(device);
   }
@@ -65,7 +64,6 @@ export default function CameraList(props) {
       return device.kind === 'videoinput' ? accumulator + 1 : accumulator;
     }, 0);
   }
-
   const initCams = () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       console.log('enumerateDevices() not supported.');
@@ -132,7 +130,6 @@ export default function CameraList(props) {
         });
     }
   }
-
   const initMics = () => {
     let id = 0;
     availableCams.map(cam => {
@@ -141,101 +138,81 @@ export default function CameraList(props) {
 
   }
 
-  const helper_checkIfDeviceExistsAlready = (device, devicesName) => {
-    let devices = undefined;
-    if (devicesName === 'cams') {
-      devices = availableCams;
-    } else {// mics 
-      devices = availableMics;
-    }
-    // console.log(devices);
-    for (const d of devices) {
-      const id = (devicesName === 'cams') ? d.camera_info.id : d.deviceId;
-      // console.log(devicesName + ': ' + device.deviceId)
-      if (device.deviceId === id) {
-        return true;
-      } 
-    }
-  }
-
   Array.prototype.diff = function(a) {
     return this.filter(function(i) {
       return a.indexOf(i) < 0;
     });
   };
 
+  const getNewMicCam = (newPluggedInID, allDevices) => {
+    const newCam = allDevices.filter(device => {
+      return (
+        newPluggedInID.indexOf(device.deviceId) >= 0 &&
+        device.kind === 'videoinput'
+      );
+    });
+    // should only contain one 
+    const newMic = allDevices.filter(device => {
+      return (
+        newPluggedInID.indexOf(device.deviceId) >= 0 &&
+        device.kind === 'audioinput'
+      ); 
+    });
+    if (newMic.length > 1) {
+      console.error('multiple new mics detected')
+    }
+    if (newCam.length > 1) {
+      console.error('multiple new cams detected');
+    }
+    const newMicID = newMic[0].deviceId;
+
+    return [newMicID, newCam[0]];
+  }
+
   const addNewCamMic = () => {
     navigator.mediaDevices.enumerateDevices().then(devices => {
-      const filtered = devices.filter(device => {
+      const allDevices = devices.filter(device => {
         return (
           device.label.toLowerCase().includes('aoni') &&
           !device.label.toLowerCase().includes('communication') &&
           !device.label.toLowerCase().includes('default')
         );
       });
-      const idAoni = filtered.map(device => {
-        return device.deviceId.substring(0, 10);
+      let detectedTwoDevices = false;
+
+      const idAoni = allDevices.map(device => {
+        return device.deviceId;
       });
-      const newPluggedIn = idAoni.diff(pluggedInDevices);
-      console.log('new devices: ' + newPluggedIn);
-      setPluggedInDevices(idAoni);
-      console.log(idAoni);
-    });
 
+      const newPluggedInID = idAoni.diff(pluggedInDevices);
+      if (newPluggedInID.length === 0) {
+        console.log('no new devices detected');
+      } else if (newPluggedInID.length === 2) {
+        detectedTwoDevices = true;
+        console.log(
+          'new devices: ' + newPluggedInID.map(d => d.substring(0, 5))
+        );
+      }
 
-    let newCamDevice = undefined;
-    let newMicID = undefined;
-
-    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
-      console.log('enumerateDevices() not supported.');
-    } else {
-      navigator.mediaDevices.enumerateDevices().then(devices => {
-        // console.log(devices);
-        for (const device of devices) {
-          if (device.kind === "videoinput" && !newCamDevice) {
-            newCamDevice = helper_checkIfDeviceExistsAlready(device, 'cams')
-              ? undefined
-              : helper_extractRelevantCamInfo(device);
-            if (newCamDevice) {
-              // console.log('new cam detected');
-            }
-          }
-          if (
-            device.kind === 'audioinput' && !newMicID &&
-            (!device.label.toLowerCase().includes('default') &&
-              !device.label.toLowerCase().includes('communications'))
-          ) {
-            newMicID = helper_checkIfDeviceExistsAlready(device, 'mic') 
-              ? undefined
-              : device.deviceId;
-            if (newMicID) {
-              // console.log('new mic detected');
-            }
-          }    
-        }
-      }).then(()=> {
-        if (newCamDevice && newMicID) {
-          // console.log('new cams or mics detected');
-          newCamDevice.mic_info = newMicID;
-          let temp = availableCams;
-          temp.push(newCamDevice);
-          setAvailableCams(temp);
-          // console.log(availableCams)
-          cogoToast.success('New camera: ' + newCamDevice.camera_info.id + ' added.');
-          document.getElementById('startBtn').disabled = false;
-          initCams();
-        }
-        else {
-          // console.log('no new cams or mics detected');
-        }
-      }).then(() => {
+      if (detectedTwoDevices) {
+        let [newMicID, newCamDevice] = getNewMicCam(newPluggedInID, allDevices);
+        newCamDevice = helper_extractRelevantCamInfo(newCamDevice);
+        newCamDevice.mic_info = newMicID;
+        let temp = availableCams;
+        temp.push(newCamDevice);
+        setAvailableCams(temp);
+        cogoToast.success(
+          'New camera: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.'
+        );
+        document.getElementById('startBtn').disabled = false;
+        initCams();
+        setPluggedInDevices(idAoni);
+        console.log(availableCams);
+      }      
+    }).then(() => {
         document.getElementById('dummyBtn').disabled = false;
         document.getElementById('dummyBtn').click();
-      }).then(() => {
-        // document.getElementById('resetCamsBtn').click();
-      })
-    }    
-
+    });
   }
 
   function useAvailableWebCams() {

@@ -17,8 +17,8 @@ import DataCollection from '../components/Table/DataCollection';
 import Modal from '../components/Modal'
 
 // data
-// import sentences from '../assets/data/sentences.txt';
-import sentences from '../assets/data/sentences-english-test.txt';
+import sentences from '../assets/data/sentences.txt';
+// import sentences from '../assets/data/sentences-english-test.txt';
 
 class App extends React.Component {
   constructor(props) {
@@ -464,7 +464,7 @@ class App extends React.Component {
         </pre>
         {this.comp_progressBar(
           Object.keys(this.state.recordedProgress).length,
-          this.state.data.length - 1,
+          this.state.data.length,
           'left', 3
         )}
       </div>

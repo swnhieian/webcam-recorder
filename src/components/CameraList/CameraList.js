@@ -76,21 +76,7 @@ export default function CameraList(props) {
           const numCams = helper_getNumCams(devices);
           console.log("number of cams detected: " + numCams);
           devices.map(function(device) {
-            // console.log('%c ' + device.kind,
-            // 'background: #222; color: #bada55',
-            // device);
             if (device.kind === 'audioinput') {
-              // console.log(
-              //   '%c' +
-              //     device.kind +
-              //     ': ' +
-              //     device.label +
-              //     ' id = ' +
-              //     device.deviceId +
-              //     ' group id = ' +
-              //     device.groupId,
-              //   'background: green'
-              // );
               if (
                 !device.label.toLowerCase().includes('default') &&
                 !device.label.toLowerCase().includes('communications')
@@ -98,23 +84,8 @@ export default function CameraList(props) {
                 helper_addToMicDevices(device, micDevices);
               }
             }            
-            // console.log(device);
             if (device.kind === 'videoinput') {
               helper_addToVideoDevices(device, videoDevices);
-              // console.log(
-              //   '%c' +
-              //     device.kind +
-              //     ': ' +
-              //     device.label +
-              //     ' id = ' +
-              //     device.deviceId +
-              //     ' group id = ' +
-              //     device.groupId +
-              //     ' device ' +
-              //     device,
-              //   'background: red'
-              // );
-              // console.log(device);
             }
             return null;
           });

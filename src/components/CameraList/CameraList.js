@@ -59,6 +59,11 @@ export default function CameraList(props) {
   const helper_addToMicDevices = (device, micDevices) => {
     micDevices.push(device);
   }
+  const helper_getNumCams = devices => {
+    return devices.reduce((accumulator, device) => {
+      return device.kind === 'videoinput' ? accumulator + 1 : accumulator;
+    }, 0);
+  }
 
   const initCams = () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -69,9 +74,7 @@ export default function CameraList(props) {
         .then(devices => {
           let videoDevices = [];
           let micDevices = [];
-          const numCams = devices.reduce((accumulator, device) => {
-            return device.kind === 'videoinput' ? accumulator + 1 : accumulator;
-          }, 0);
+          const numCams = helper_getNumCams(devices);
           console.log("number of cams detected: " + numCams);
           devices.map(function(device) {
             // console.log('%c ' + device.kind,
@@ -155,6 +158,16 @@ export default function CameraList(props) {
   }
 
   const addNewCamMic = () => {
+    navigator.mediaDevices.enumerateDevices().then(devices => {
+      const filtered = devices.filter(device => {
+        return device.label.toLowerCase().includes('aoni');
+      })
+      const idAoni = filtered.map(device => {
+        return device.deviceId.substring(0, 10);
+      })
+      console.log(idAoni);
+    });
+
     let newCamDevice = undefined;
     let newMicID = undefined;
 
@@ -186,11 +199,8 @@ export default function CameraList(props) {
           }    
         }
       }).then(()=> {
-
-
         if (newCamDevice && newMicID) {
           // console.log('new cams or mics detected');
-
           newCamDevice.mic_info = newMicID;
           let temp = availableCams;
           temp.push(newCamDevice);
@@ -218,7 +228,6 @@ export default function CameraList(props) {
     useEffect(() => {
       props.updateConnectionStatus();
       initCams();
-      // console.log(props.addCamState);
       cogoToast.info('cams loaded')
     }, [props.addCamState]);
   }

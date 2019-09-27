@@ -474,6 +474,7 @@ class App extends React.Component {
   resetProgress = () => {
     this.props.socket.emit('client: update recording progress', {});
     this.props.socket.emit('client: save total time', {});
+    this.props.socket.emit('client: reset total files')
     window.location = window.location.origin;
   }
 

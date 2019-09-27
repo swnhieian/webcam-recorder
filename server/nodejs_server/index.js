@@ -111,6 +111,10 @@ io.on('connection', function(socket) {
     io.emit('server: refresh all');
   });
 
+  socket.on('client: reset total files', function() {
+    numSaved = 0;
+  });
+
   socket.on('client: update recording progress', function(progress) {
     saveData(progress, PROGRESS_PATH);
     sendProgressUpdate();
@@ -136,7 +140,7 @@ io.on('connection', function(socket) {
 
   socket.on('client: update recording status', function(status) {
     saveConnection(socket, status[socket.id])
-    
+
     // console.log('server: updated recording status', JSON.stringify(status));
   });
   

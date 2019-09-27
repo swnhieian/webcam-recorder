@@ -60,8 +60,10 @@ export default function CameraList(props) {
       return cam.camera_info.id === device.camera_info.id
     })[0];
     if (devicePrior) {
+      console.log('found prior device');
       device.mic_info = devicePrior.mic_info;
     } else {
+      console.log('using first cam mic!!!')
       device.mic_info = availableMics[0];
     }
     videodevices.push(device);

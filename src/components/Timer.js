@@ -31,9 +31,13 @@ export default function Timer(props) {
 
   function createInterval(timeSaved) {
     let time = (timeSaved) ? timeSaved : [0, 0, 0];
-    time = time.map(t => {
-      return t ? t : 0;
-    });
+    try {
+      time = time.map(t => {
+        return t ? t : 0;
+      });
+    } catch (SyntaxError) {
+      console.error('some issue with this: ' + time);
+    }
     // console.log(timeSaved);
     return setInterval(() => {
       let hour = time[0];

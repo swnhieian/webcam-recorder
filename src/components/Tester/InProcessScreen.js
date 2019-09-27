@@ -39,9 +39,7 @@ export default function InProcessScreen(props) {
   }
 
   function markSentenceAsDone(curr_sentence_index) {
-    const temp = {}
-    temp[curr_sentence_index] = true;
-    props.updateRecordProgress(temp);
+    props.updateRecordProgress(curr_sentence_index);
   }
 
   function startRecording() {
@@ -78,7 +76,10 @@ export default function InProcessScreen(props) {
 
   function displaySentenceToBeRead() {
     disableNextButtonIfCurrNotRead();
-    const recordedYet = (props.recordedProgress[props.curr_sentence_index]) ? props.recordedProgress[props.curr_sentence_index] : false;
+    // const recordedYet = (props.recordedProgress[props.curr_sentence_index]) ? props.recordedProgress[props.curr_sentence_index] : false;
+    const recordedYet = props.recordedProgress.indexOf(
+      props.curr_sentence_index
+    ) > 0; 
     const recordedMessage = (recordedYet) ? '(录过)' : ''
     const sentence = props.data[props.curr_sentence_index] + ' ' + recordedMessage;
     const recordedClassName = recordedYet ? 'recorded_sentence_highlight sentence_to_be_read' : 'sentence_to_be_read'
@@ -193,6 +194,6 @@ InProcessScreen.propTypes = {
   numCams: PropTypes.number.isRequired,
   stopTimer: PropTypes.func.isRequired,
   startTimer: PropTypes.func.isRequired,
-  recordedProgress: PropTypes.object.isRequired,
+  recordedProgress: PropTypes.array.isRequired,
   updateRecordProgress: PropTypes.func.isRequired
 };

@@ -46,7 +46,7 @@ const saveConnection = (socket, status) => {
 const sendProgressUpdate = () => {
   readContent(PROGRESS_PATH, function (err, content) {
     try {
-      io.emit('server: response for progress', JSON.parse(content));
+      io.emit('server: response for progress', JSON.parse(content).progress);
     } catch (SyntaxErrorException) {
       saveData({}, PROGRESS_PATH)
       // console.error("file DNE at " + PROGRESS_PATH + ", so created anew.");
@@ -82,11 +82,17 @@ io.on('connection', function(socket) {
       try {
         io.emit('server: response for total time', JSON.parse(content).time);
       } catch (FileDNEError) {
-        saveData({}, TOTAL_TIME_PATH);
+        saveData({time: [0, 0, 0]}, TOTAL_TIME_PATH);
+        io.emit('server: response for total time', [0,0,0]);
       }
     })
-
   })
+  socket.on('client: delete total time', function() {
+    fs.unlinkSync(TOTAL_TIME_PATH, err => {
+      if (err) throw err;
+      console.log('total time path deleted');
+    });
+  });
 
   socket.on('disconnect', function() {
     console.log('computer disconnected at ' + socket.id);
@@ -116,7 +122,8 @@ io.on('connection', function(socket) {
   });
 
   socket.on('client: update recording progress', function(progress) {
-    saveData(progress, PROGRESS_PATH);
+    // console.log({progress});
+    saveData({progress}, PROGRESS_PATH);
     sendProgressUpdate();
     // console.log('updating progress', progress);
   });
@@ -183,12 +190,20 @@ io.on('connection', function(socket) {
     saveData(newStatus, RECORDING_STATUS_PATH);
   });
 
+  let resetTime = false;
   socket.on('client: save total time', function(time) {
     console.log('received save total time command');
-    console.log(time);
-    time = {time}
-    console.log(time);
-    saveData(time, TOTAL_TIME_PATH);
+    if (resetTime) {
+      saveData({ time: [0, 0, 0]}, TOTAL_TIME_PATH);
+      resetTime = false;
+    } else {
+      time = {time}
+      saveData(time, TOTAL_TIME_PATH);
+    }
+    if (time === 'reset') {
+      console.log('detected reset command, will reset next one');
+      resetTime = true;
+    } 
   });
 
   socket.on('client: save data', function(data) {

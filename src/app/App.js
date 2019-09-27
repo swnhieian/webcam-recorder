@@ -38,8 +38,9 @@ class App extends React.Component {
       numFilesSavedInd: 0,
       connectedOrderMap: {},
       numCams: 8,
-      recordedProgress: {},
-      addCamState: false
+      recordedProgress: [],
+      addCamState: false,
+      totalTime: [],
     };
     if (!this.helper_checkIfMobileView) {
       this.props.socket.emit('client: update sentence_index', {
@@ -121,7 +122,7 @@ class App extends React.Component {
     });
 
     this.props.socket.on('server: response for progress', progress => {
-      this.setState({ recordedProgress: progress });
+      this.setState({ recordedProgress: progress ? progress : [] });
     });
 
     this.props.socket.on('server: response for numFilesSaved', numFiles => {
@@ -163,7 +164,7 @@ class App extends React.Component {
             try {
               if (this.helper_checkIfMobileView()) {
                 // console.log('here here??');
-                cogoToast.info('Completed @ Sentence [' + Object.keys(this.state.recordedProgress).length + ']', {hideAfter: 0.75});
+                cogoToast.info('Completed @ Sentence [' + this.state.recordedProgress.length + ']', {hideAfter: 0.75});
               }
             } catch (NotYetLoadedException) {
               console.error(NotYetLoadedException);
@@ -209,7 +210,6 @@ class App extends React.Component {
       console.error(ServerPingFailedException);
     }
   }
-  
 
   componentDidMount() {
     this.readTextFile(sentences);
@@ -322,22 +322,23 @@ class App extends React.Component {
     });
   };
 
-  updateRecordProgress = sentence_obj => {
+  updateRecordProgress = curr_sentence_index => {
     // { <sentence_index> : <bool: recorded/not> }
-    console.log('added to progress ', JSON.stringify(sentence_obj));
-    this.setState(
-      {
-        recordedProgress: update(this.state.recordedProgress, {
-          $merge: sentence_obj
-        })
-      },
-      () => {
-        this.props.socket.emit(
-          'client: update recording progress',
-          this.state.recordedProgress
-        );
-      }
-    );
+    let temp = this.state.recordedProgress;
+    if (temp.indexOf(curr_sentence_index) < 0) {
+      temp.push(curr_sentence_index);
+      this.setState(
+        {
+          recordedProgress: temp
+        },
+        () => {
+          this.props.socket.emit(
+            'client: update recording progress',
+            this.state.recordedProgress
+          );
+        }
+      );
+    }
     
   };
 
@@ -371,6 +372,10 @@ class App extends React.Component {
     this.setState({ recordGreenLight: bool });
   };
 
+  updateTotalTime = time => {
+    this.setState({ totalTime: time });
+  }
+
   comp_tester = () => {
     return (
       <Tester
@@ -391,6 +396,8 @@ class App extends React.Component {
         recordedProgress={this.state.recordedProgress}
         updateRecordProgress={this.updateRecordProgress}
         comp_progressBar={this.comp_progressBar}
+        totalTime={this.state.totalTime}
+        updateTotalTime={this.updateTotalTime}
       />
     );
   };
@@ -472,10 +479,14 @@ class App extends React.Component {
   };
 
   resetProgress = () => {
-    this.props.socket.emit('client: update recording progress', {});
-    this.props.socket.emit('client: save total time', {});
+    this.props.socket.emit('client: update recording progress', []);
+    this.props.socket.emit('client: delete total time');
     this.props.socket.emit('client: reset total files')
     window.location = window.location.origin;
+    this.props.socket.emit(
+      'client: save total time',
+      [0,0,0]
+    );
   }
 
   comp_modals = () => {

@@ -4,25 +4,26 @@ import PropTypes from 'prop-types';
 
 export default function Timer(props) {
   const [intervalID, setIntervalID] = useState(undefined);
-  let totalTime = [];
-
-  function saveTotalTime (event) {
+  let totalTime = []
+  function saveTotalTime(event) {
     // Cancel the event as stated by the standard.
     event.preventDefault();
 
     // console.log(totalTime);
-    totalTime = totalTime.map(time => {
-      return time ? time : 0;
-    });
+    // totalTime = totalTime.map(time => {
+    //   return time ? time : 0;
+    // });
 
     props.socket.emit(
       'client: save total time',
       totalTime
     );
+    // console.log('emitted from timer')
     // console.log(totalTime);
     // Chrome requires returnValue to be set.
     event.returnValue = '';
   }
+
 
   function stopTimer() {
     clearInterval(intervalID);
@@ -69,12 +70,12 @@ export default function Timer(props) {
       } catch (SomeError) {
         console.error(SomeError);
       }
+      props.updateTotalTime(time);
     }, 1000);
   }
 
   useEffect(() => {
     window.addEventListener('beforeunload', saveTotalTime);
-    
     props.socket.emit('client: get total time');
     props.socket.on('server: response for total time', timeSaved => {
       if (!timeSaved && !intervalID) {
@@ -83,7 +84,10 @@ export default function Timer(props) {
       stopTimer();
       setIntervalID(createInterval(timeSaved));
     });
-    
+    props.socket.on('server: reset total timer', () => {
+      stopTimer();
+      setIntervalID(createInterval());
+    });
   }, []);
   return (
     <div>
@@ -95,5 +99,7 @@ export default function Timer(props) {
 
 Timer.propTypes = {
   name: PropTypes.string.isRequired,
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object.isRequired,
+  totalTime: PropTypes.array.isRequired,
+  updateTotalTime: PropTypes.func.isRequired
 };

@@ -7,7 +7,6 @@ import qs from '../../utils/qs'
 
 function Tester(props) {
   const [intervalID, setIntervalID] = useState(undefined);
-  
 
   
   function comp_inProcessScreen() {
@@ -80,7 +79,14 @@ function Tester(props) {
 
   function comp_totalTimer() {
     if (qs('name')) {
-      return <Timer name={'total_timer'} socket={props.socket} />;
+      return (
+        <Timer
+          name={'total_timer'}
+          socket={props.socket}
+          totalTime={props.totalTime}
+          updateTotalTime={props.updateTotalTime}
+        />
+      );
     }
   }
 
@@ -110,9 +116,11 @@ Tester.propTypes = {
   updateGreenLightStatus: PropTypes.func.isRequired,
   numFilesSaved: PropTypes.number.isRequired,
   numCams: PropTypes.number.isRequired,
-  recordedProgress: PropTypes.object.isRequired,
+  recordedProgress: PropTypes.array.isRequired,
   updateRecordProgress: PropTypes.func.isRequired,
   comp_progressBar: PropTypes.func.isRequired,
+  totalTime: PropTypes.array.isRequired,
+  updateTotalTime: PropTypes.func.isRequired
 };
 
 export default Tester;

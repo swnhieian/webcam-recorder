@@ -19,7 +19,7 @@ export default class NameField extends Component {
       sentence_index: 0
     })
     this.props.socket.emit('client: dummy vid, do not save');
-    this.props.socket.emit('client: update recording progress', {});
+    this.props.socket.emit('client: update recording progress', []);
     this.props.updateTesterContents();
     this.props.updateGreenLightStatus(true);
     

@@ -29,7 +29,7 @@ import cogoToast from 'cogo-toast';
 export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
   const [recordingStatus, setRecordingStatus] = useState("recording-status-loading...");
-  // const [availableMics, setAvailableMics] = useState([]);
+  const [availableMics, setAvailableMics] = useState([]);
   const [pluggedInDevices, setPluggedInDevices] = useState([]);
 
   const helper_extractRelevantCamInfo = device => {
@@ -54,10 +54,17 @@ export default function CameraList(props) {
     // alert("device not match!!!");
     //   console.error('device not match!!!');
     // }
-    availableCams.map
     device = helper_extractRelevantCamInfo(device);
+    console.log(availableCams);
+    const devicePrior = availableCams.filter(cam => {
+      return cam.camera_info.id === device.camera_info.id
+    })[0];
+    if (devicePrior) {
+      device.mic_info = devicePrior.mic_info;
+    } else {
+      device.mic_info = availableMics[0];
+    }
     videodevices.push(device);
-
   }
   const helper_addToMicDevices = (device, micDevices) => {
     micDevices.push(device);
@@ -91,7 +98,7 @@ export default function CameraList(props) {
           }
           return null;
         });
-        // setAvailableMics(micDevices);
+        setAvailableMics(micDevices);
         setAvailableCams(videoDevices);
 
         document.getElementById('startBtn').click();
@@ -103,13 +110,13 @@ export default function CameraList(props) {
       });
     }
   }
-  // const initMics = () => {
-  //   let id = 0;
-  //   availableCams.map(cam => {
-  //     if (availableMics[id]) cam.mic_info = availableMics[id++].deviceId;
-  //   });
+  const initMics = () => {
+    let id = 0;
+    availableCams.map(cam => {
+      if (availableMics[id]) cam.mic_info = availableMics[id++].deviceId;
+    });
 
-  // }
+  }
 
   Array.prototype.diff = function(a) {
     return this.filter(function(i) {
@@ -156,6 +163,8 @@ export default function CameraList(props) {
       const idAoni = allDevices.map(device => {
         return device.deviceId;
       });
+      const newPluggedInPaired = allDevices.map(device => [device.kind, device.deviceId])
+      console.log(newPluggedInPaired);
 
       const newPluggedInID = idAoni.diff(pluggedInDevices);
       if (newPluggedInID.length === 0) {
@@ -168,20 +177,28 @@ export default function CameraList(props) {
       }
 
       if (detectedTwoDevices) {
+        console.log('detected new devices');
         let [newMicID, newCamDevice] = getNewMicCam(newPluggedInID, allDevices);
         newCamDevice = helper_extractRelevantCamInfo(newCamDevice);
-        newCamDevice.mic_info = newMicID;
-        let temp = availableCams;
-        temp.push(newCamDevice);
-        setAvailableCams(temp);
-        console.log(availableCams);
-        cogoToast.success(
-          'New camera: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.'
-        );
-        document.getElementById('startBtn').disabled = false;
-        initCams();
-        setPluggedInDevices(idAoni);
-        console.log(availableCams);
+        console.log(newCamDevice);
+        const existCamera = availableCams.filter(cam => {
+          return cam.camera_info.id === newCamDevice.camera_info.id;
+        })[0];
+        console.log(existCamera);
+        if (!existCamera) {
+          newCamDevice.mic_info = newMicID;
+          let temp = availableCams;
+          temp.push(newCamDevice);
+          setAvailableCams(temp);
+          console.log(availableCams);
+          cogoToast.success(
+            'New camera: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.'
+          );
+          document.getElementById('startBtn').disabled = false;
+          initCams();
+          setPluggedInDevices(idAoni);
+          console.log(availableCams);
+        }
       }      
     }).then(() => {
         document.getElementById('dummyBtn').disabled = false;
@@ -193,7 +210,7 @@ export default function CameraList(props) {
     //  runs once
     useEffect(() => {
       props.updateConnectionStatus();
-      initCams();
+      // initCams();
       cogoToast.info('cams loaded')
     }, [props.addCamState]);
   }
@@ -361,7 +378,7 @@ export default function CameraList(props) {
 
   const renderCams = () => {
 
-    // initMics();
+    initMics();
 
     const debug = true;
     let i = 0; 

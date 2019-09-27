@@ -136,6 +136,7 @@ io.on('connection', function(socket) {
 
   socket.on('client: update recording status', function(status) {
     saveConnection(socket, status[socket.id])
+    
     // console.log('server: updated recording status', JSON.stringify(status));
   });
   

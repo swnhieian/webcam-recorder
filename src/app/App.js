@@ -151,7 +151,7 @@ class App extends React.Component {
                   try {
                     document.getElementById('testerNextBtn').click();
                   } catch (NotOnPageError) {
-                    console.error(NotOnPageError);
+                    // console.error(NotOnPageError);
                   }
                 }
               );
@@ -162,8 +162,8 @@ class App extends React.Component {
             }
             try {
               if (this.helper_checkIfMobileView()) {
-                console.log('here here??');
-                cogoToast.info('Completed @ Sentence [' + this.state.curr_sentence_index + ']', {hideAfter: 0.75});
+                // console.log('here here??');
+                cogoToast.info('Completed @ Sentence [' + Object.keys(this.state.recordedProgress).length + ']', {hideAfter: 0.75});
               }
             } catch (NotYetLoadedException) {
               console.error(NotYetLoadedException);
@@ -463,7 +463,7 @@ class App extends React.Component {
           Please Click Reset!
         </pre>
         {this.comp_progressBar(
-          this.state.curr_sentence_index,
+          Object.keys(this.state.recordedProgress).length,
           this.state.data.length - 1,
           'left', 3
         )}
@@ -568,6 +568,7 @@ class App extends React.Component {
   };
 
   mobileView = () => {
+    
     return (
       <div onClick={() => this.getStatus()}>
         {this.comp_modals()}

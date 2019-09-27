@@ -59,10 +59,8 @@ export default function InProcessScreen(props) {
 
   
   function disableNextButtonIfCurrNotRead() {
-    // console.log(props.recordedProgress)
-    // console.log(props.curr_sentence_index);
-    const recordedYet = (props.recordedProgress[props.curr_sentence_index]) ? props.recordedProgress[props.curr_sentence_index] : false;
-    // console.log(recordedYet);
+    const recordedYet =
+      props.recordedProgress.indexOf(props.curr_sentence_index) >= 0; 
     try {
       if (recordedYet) {
         document.getElementById('testerNextBtn').disabled = false;
@@ -76,10 +74,9 @@ export default function InProcessScreen(props) {
 
   function displaySentenceToBeRead() {
     disableNextButtonIfCurrNotRead();
-    // const recordedYet = (props.recordedProgress[props.curr_sentence_index]) ? props.recordedProgress[props.curr_sentence_index] : false;
     const recordedYet = props.recordedProgress.indexOf(
       props.curr_sentence_index
-    ) > 0; 
+    ) >= 0; 
     const recordedMessage = (recordedYet) ? '(录过)' : ''
     const sentence = props.data[props.curr_sentence_index] + ' ' + recordedMessage;
     const recordedClassName = recordedYet ? 'recorded_sentence_highlight sentence_to_be_read' : 'sentence_to_be_read'

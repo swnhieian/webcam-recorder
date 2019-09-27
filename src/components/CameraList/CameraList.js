@@ -160,7 +160,11 @@ export default function CameraList(props) {
   const addNewCamMic = () => {
     navigator.mediaDevices.enumerateDevices().then(devices => {
       const filtered = devices.filter(device => {
-        return device.label.toLowerCase().includes('aoni');
+        return (
+          device.label.toLowerCase().includes('aoni') &&
+          !device.label.toLowerCase().includes('communication') &&
+          !device.label.toLowerCase().includes('default')
+        );
       })
       const idAoni = filtered.map(device => {
         return device.deviceId.substring(0, 10);

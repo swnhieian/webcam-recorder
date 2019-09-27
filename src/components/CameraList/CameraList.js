@@ -44,16 +44,6 @@ export default function CameraList(props) {
     };
   }
   const helper_addToVideoDevices = (device, videodevices) => {
-    
-    // videoDevice.mic_info = 
-    // if (device.deviceId in matchedDeviceList) {
-    //   videoDevice.mic_info = {
-    //     id: matchedDeviceList[device.deviceId]
-    //   };
-    // } else {
-    // alert("device not match!!!");
-    //   console.error('device not match!!!');
-    // }
     device = helper_extractRelevantCamInfo(device);
     console.log(availableCams);
     const devicePrior = availableCams.filter(cam => {
@@ -115,13 +105,12 @@ export default function CameraList(props) {
       });
     }
   }
-  const initMics = () => {
-    let id = 0;
-    availableCams.map(cam => {
-      if (availableMics[id]) cam.mic_info = availableMics[id++].deviceId;
-    });
-
-  }
+  // const initMics = () => {
+  //   let id = 0;
+  //   availableCams.map(cam => {
+  //     if (availableMics[id]) cam.mic_info = availableMics[id++].deviceId;
+  //   });
+  // }
 
   Array.prototype.diff = function(a) {
     return this.filter(function(i) {
@@ -383,7 +372,7 @@ export default function CameraList(props) {
 
   const renderCams = () => {
 
-    initMics();
+    // initMics();
 
     const debug = true;
     let i = 0; 

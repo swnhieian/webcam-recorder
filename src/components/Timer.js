@@ -11,16 +11,27 @@ export default function Timer(props) {
     event.preventDefault();
 
     // console.log(totalTime);
+    totalTime = totalTime.map(time => {
+      return time ? time : 0;
+    });
+
     props.socket.emit(
       'client: save total time',
       totalTime
     );
+    console.log(totalTime);
     // Chrome requires returnValue to be set.
     event.returnValue = '';
   }
 
-  function createInterval() {
-    let time = [0, 0, 0];
+  function stopTimer() {
+    clearInterval(intervalID);
+    document.getElementById(props.name).innerHTML = '';
+  }
+
+  function createInterval(timeSaved) {
+    let time = (timeSaved) ? timeSaved : [0, 0, 0];
+    console.log(timeSaved);
     return setInterval(() => {
       let hour = time[0];
       let min = time[1];
@@ -56,9 +67,17 @@ export default function Timer(props) {
 
   useEffect(() => {
     window.addEventListener('beforeunload', saveTotalTime);
-    if (!intervalID) {
-      setIntervalID(createInterval());
-    }
+    
+    props.socket.emit('client: get total time');
+    props.socket.on('server: response for total time', timeSaved => {
+      if (!timeSaved && !intervalID) {
+        setIntervalID(createInterval());
+      }
+      console.log(timeSaved);
+      stopTimer();
+      setIntervalID(createInterval(timeSaved));
+    });
+    
   }, []);
   return (
     <div>

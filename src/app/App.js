@@ -37,7 +37,7 @@ class App extends React.Component {
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
       connectedOrderMap: {},
-      numCams: 1,
+      numCams: 3,
       recordedProgress: {},
       addCamState: false
     };
@@ -473,6 +473,12 @@ class App extends React.Component {
     );
   };
 
+  resetProgress = () => {
+    this.props.socket.emit('client: update recording progress', {});
+    this.props.socket.emit('client: save total time', {});
+    window.location = window.location.origin;
+  }
+
   comp_modals = () => {
     return (
       <div>
@@ -484,9 +490,7 @@ class App extends React.Component {
           buttonCancel={'Cancel'}
           buttonConfirm={'Reset'}
           toast={'Progress reset'}
-          confirmFunc={() => {
-            this.props.socket.emit('client: update recording progress', {});
-          }}
+          confirmFunc={this.resetProgress}
         />
         <Modal
           modalID={'overallStatus'}

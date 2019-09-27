@@ -73,10 +73,20 @@ io.on('connection', function(socket) {
   socket.on('client: ask for sync id', function() {
     io.emit('server: connected sync id', socket.id);
   })
-   socket.on('client: reset cams', function() {
-     io.emit('server: reset cams');
-   });
+  socket.on('client: reset cams', function() {
+    io.emit('server: reset cams');
+  });
   
+  socket.on('client: get total time', function() {
+    readContent(TOTAL_TIME_PATH, function(err, content) {
+      try {
+        io.emit('server: response for total time', JSON.parse(content).time);
+      } catch (FileDNEError) {
+        saveData({}, TOTAL_TIME_PATH);
+      }
+    })
+
+  })
 
   socket.on('disconnect', function() {
     console.log('computer disconnected at ' + socket.id);
@@ -170,7 +180,9 @@ io.on('connection', function(socket) {
 
   socket.on('client: save total time', function(time) {
     console.log('received save total time command');
+    console.log(time);
     time = {time}
+    console.log(time);
     saveData(time, TOTAL_TIME_PATH);
   });
 

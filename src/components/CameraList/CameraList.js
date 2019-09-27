@@ -30,6 +30,7 @@ export default function CameraList(props) {
   const [availableCams, setAvailableCams] = useState([]);
   const [recordingStatus, setRecordingStatus] = useState("recording-status-loading...");
   const [availableMics, setAvailableMics] = useState([]);
+  const [pluggedInDevices, setPluggedInDevices] = useState([]);
 
   const helper_extractRelevantCamInfo = device => {
     return {
@@ -157,6 +158,12 @@ export default function CameraList(props) {
     }
   }
 
+  Array.prototype.diff = function(a) {
+    return this.filter(function(i) {
+      return a.indexOf(i) < 0;
+    });
+  };
+
   const addNewCamMic = () => {
     navigator.mediaDevices.enumerateDevices().then(devices => {
       const filtered = devices.filter(device => {
@@ -165,12 +172,16 @@ export default function CameraList(props) {
           !device.label.toLowerCase().includes('communication') &&
           !device.label.toLowerCase().includes('default')
         );
-      })
+      });
       const idAoni = filtered.map(device => {
         return device.deviceId.substring(0, 10);
-      })
+      });
+      const newPluggedIn = idAoni.diff(pluggedInDevices);
+      console.log('new devices: ' + newPluggedIn);
+      setPluggedInDevices(idAoni);
       console.log(idAoni);
     });
+
 
     let newCamDevice = undefined;
     let newMicID = undefined;

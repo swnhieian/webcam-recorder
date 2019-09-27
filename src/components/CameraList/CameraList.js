@@ -70,7 +70,8 @@ export default function CameraList(props) {
     videodevices.push(device);
   }
   const helper_addToMicDevices = (device, micDevices) => {
-    micDevices.push(device);
+    if (micDevices.indexOf(device.deviceId) < 0)
+      micDevices.push(device);
   }
   const helper_getNumCams = devices => {
     return devices.reduce((accumulator, device) => {
@@ -93,6 +94,7 @@ export default function CameraList(props) {
               !device.label.toLowerCase().includes('communications') && 
               !device.label.toLowerCase().includes('built-in')
             ) {
+
               helper_addToMicDevices(device, micDevices);
             }
           }            

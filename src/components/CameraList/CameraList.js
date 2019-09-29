@@ -65,7 +65,6 @@ export default function CameraList(props) {
               !device.label.toLowerCase().includes('communications') && 
               !device.label.toLowerCase().includes('built-in')
             ) {
-
               helper_addToMicDevices(device, micDevices);
             }
           }            
@@ -124,7 +123,42 @@ export default function CameraList(props) {
     return [newMicID, newCam[0]];
   }
 
+  const checkIfMac = (resolve) => {
+    let faceTimeDevice = undefined;
+    let defaultMic = undefined;
+    return new Promise(() => {
+      navigator.mediaDevices.enumerateDevices().then(devices => {
+        faceTimeDevice = devices.filter(device => {
+          return device.label.toLowerCase().includes('facetime');
+        });
+        defaultMic = devices.filter(device => {
+          return device.deviceId === 'default'
+        });
+      }).then(()=> {
+        resolve(faceTimeDevice[0], defaultMic[0]);
+      });
+    })
+  }
+
+  const startFaceTimeCam = (faceTimeDevice, defaultMic) => {
+    if (faceTimeDevice) {
+      const device = helper_extractRelevantCamInfo(faceTimeDevice)
+      device.mic_info = defaultMic.deviceId;
+      setAvailableCams([device]);
+      document.getElementById('startBtn').disabled = false;
+      document.getElementById('startBtn').click();
+      document.getElementById('dummyBtn').disabled = false;
+      document.getElementById('dummyBtn').click();
+      cogoToast.info('Mac FaceTime Camera started');
+    }
+  }
+
   const addNewCamMic = () => {
+    try {
+      checkIfMac(startFaceTimeCam);
+    } catch (Exception) {
+      // console.err('not a mac')
+    }
     navigator.mediaDevices.enumerateDevices().then(devices => {
       const allDevices = devices.filter(device => {
         return (

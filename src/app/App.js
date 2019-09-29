@@ -38,7 +38,7 @@ class App extends React.Component {
       numFilesSavedInd: 0,
       connectedOrderMap: {},
       numCams: 8,
-      recordedProgress: [],
+      recordedProgress: 0,
       addCamState: false,
       totalTime: [],
     };
@@ -324,21 +324,17 @@ class App extends React.Component {
 
   updateRecordProgress = curr_sentence_index => {
     // { <sentence_index> : <bool: recorded/not> }
-    let temp = this.state.recordedProgress;
-    if (temp.indexOf(curr_sentence_index) < 0) {
-      temp.push(curr_sentence_index);
-      this.setState(
-        {
-          recordedProgress: temp
-        },
-        () => {
-          this.props.socket.emit(
-            'client: update recording progress',
-            this.state.recordedProgress
-          );
-        }
-      );
-    }
+    this.setState(
+      {
+        recordedProgress: curr_sentence_index
+      },
+      () => {
+        this.props.socket.emit(
+          'client: update recording progress',
+          curr_sentence_index
+        );
+      }
+    );
     
   };
 
@@ -470,8 +466,8 @@ class App extends React.Component {
           Please Click Reset!
         </pre>
         {this.comp_progressBar(
-          Object.keys(this.state.recordedProgress).length,
-          this.state.data.length,
+          this.state.recordedProgress,
+          this.state.data.length - 1,
           'left', 3
         )}
       </div>
@@ -479,7 +475,7 @@ class App extends React.Component {
   };
 
   resetProgress = () => {
-    this.props.socket.emit('client: update recording progress', []);
+    this.props.socket.emit('client: update recording progress', 0);
     this.props.socket.emit('client: delete total time');
     this.props.socket.emit('client: reset total files')
     window.location = window.location.origin;

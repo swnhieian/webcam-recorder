@@ -93,7 +93,7 @@ function Tester(props) {
   return (
     <div className='testing_screen'>
       {comp_totalTimer()}
-      {props.comp_progressBar(Object.keys(props.recordedProgress).length, props.data_length, 'center', 2)}
+      {props.comp_progressBar(props.recordedProgress, props.data_length - 1, 'center', 2)}
       <div className='middle'>
         <div className='inner'>{comp_inProcessScreen()}</div>
         {comp_timer()}
@@ -116,7 +116,7 @@ Tester.propTypes = {
   updateGreenLightStatus: PropTypes.func.isRequired,
   numFilesSaved: PropTypes.number.isRequired,
   numCams: PropTypes.number.isRequired,
-  recordedProgress: PropTypes.array.isRequired,
+  recordedProgress: PropTypes.number.isRequired,
   updateRecordProgress: PropTypes.func.isRequired,
   comp_progressBar: PropTypes.func.isRequired,
   totalTime: PropTypes.array.isRequired,

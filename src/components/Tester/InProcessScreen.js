@@ -39,7 +39,7 @@ export default function InProcessScreen(props) {
   }
 
   function markSentenceAsDone(curr_sentence_index) {
-    if (curr_sentence_index > 0 ) props.updateRecordProgress(curr_sentence_index);
+    if (curr_sentence_index >= 0 ) props.updateRecordProgress(curr_sentence_index);
   }
 
   function startRecording() {
@@ -74,13 +74,15 @@ export default function InProcessScreen(props) {
 
   function displaySentenceToBeRead() {
     disableNextButtonIfCurrNotRead();
-    const recordedYet = props.recordedProgress >= props.curr_sentence_index;
+    const recordedYet = 
+      (props.curr_sentence_index > 0) ? 
+      props.recordedProgress >= props.curr_sentence_index : 
+      false;
     const recordedMessage = (recordedYet) ? '(录过)' : ''
     const sentence = props.data[props.curr_sentence_index] + ' ' + recordedMessage;
     const recordedClassName = recordedYet ? 'recorded_sentence_highlight sentence_to_be_read' : 'sentence_to_be_read'
     return (
       <div>
-        [{props.curr_sentence_index}]
         <br />
         <div className={recordedClassName}>
           {sentence}

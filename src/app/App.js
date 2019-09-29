@@ -37,7 +37,7 @@ class App extends React.Component {
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
       connectedOrderMap: {},
-      numCams: 8,
+      numCams: 1,
       recordedProgress: 0,
       addCamState: false,
       totalTime: [],
@@ -276,6 +276,7 @@ class App extends React.Component {
               name: qs('name'), //qs['name'],
               curr_sentence_index: this.state.curr_sentence_index
             });
+
           }
         );
       }
@@ -508,7 +509,8 @@ class App extends React.Component {
           title={'Are you sure?'}
           message={'Resetting progress will be permanent.'}
           buttonCancel={'Cancel'}
-          buttonConfirm={'Reset'}
+          buttonConfirm={'Reset Progress'}
+          buttonConfirmId={'resetProgressBtn'}
           toast={'Progress reset'}
           confirmFunc={this.resetProgress}
         />
@@ -599,7 +601,7 @@ class App extends React.Component {
 
   downHandler(event) {
     let key = event.key;
-    if ([' ', 'ArrowLeft', 'ArrowRight', 'Escape'].includes(key)) {
+    if ([' ', 'ArrowLeft', 'ArrowRight', 'Escape', 'Enter'].includes(key)) {
       try {
         if (key === ' ') {
           document.getElementById('testerRecordBtn').click();
@@ -610,6 +612,15 @@ class App extends React.Component {
           document.getElementById('testerNextBtn').click();
         } else if (key === 'Escape') {
           document.getElementById('resetCamsBtn').click();
+        } else if (key === 'Enter') {
+          console.log('detected enter key')
+          if (document.getElementById('resetProgressBtn')) {
+            console.log('reset button exists!')
+            document.getElementById('resetProgressBtn').click();
+          }
+          else {
+            return true;
+          }
         }
         event.preventDefault();
       } catch (NotYetLoadedException) {

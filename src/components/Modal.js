@@ -69,5 +69,6 @@ Modal.propTypes = {
   toast: PropTypes.string,
   confirmFunc: PropTypes.func,
   modalID: PropTypes.string,
-  onLoadFunc: PropTypes.func
+  onLoadFunc: PropTypes.func,
+  buttonConfirmId: PropTypes.string
 };

@@ -122,7 +122,7 @@ class App extends React.Component {
     });
 
     this.props.socket.on('server: response for progress', progress => {
-      this.setState({ recordedProgress: progress ? progress : [] });
+      this.setState({ recordedProgress: progress ? progress : 0 });
     });
 
     this.props.socket.on('server: response for numFilesSaved', numFiles => {
@@ -449,12 +449,26 @@ class App extends React.Component {
     return window.location.href.includes('mobile')
   }
 
+  showTime = timeArray => {
+    if (timeArray) {
+      return (
+        <div>
+          {'Total Recording Time—' + 
+            ('0' + timeArray[0]).slice(-2) + ':' + 
+            ('0' + timeArray[1]).slice(-2) + ':' + 
+            ('0' + timeArray[2]).slice(-2)}
+        </div>
+      )
+    }
+  }
+
   comp_overallStatusContent = () => {
     return (
       <div>
         <h4>Connection Status</h4>
         <pre id='connection_status'></pre>
         <pre id='num_files_saved'></pre>
+        <pre>{this.showTime(this.state.totalTime)}</pre>
         <pre
           hidden={
             this.state.recordGreenLight ||
@@ -576,11 +590,8 @@ class App extends React.Component {
   };
 
   mobileView = () => {
-    
     return (
       <div onClick={() => this.getStatus()}>
-        {this.comp_modals()}
-        {/* <button id="mobileStatusBtn" onClick={() => {this.toggleModal('overallStatus');}}>Status</button> */}
         {this.comp_debug()}
       </div>
     )

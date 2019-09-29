@@ -16,7 +16,7 @@ const saveData = (data, path) => {
   }
 }
 
-function readContent(path, callback) {
+function readData(path, callback) {
   fs.readFile(path, function(err, content) {
     if (err) return callback(err);
     callback(null, content);
@@ -44,7 +44,7 @@ const saveConnection = (socket, status) => {
 }
 
 const sendProgressUpdate = () => {
-  readContent(PROGRESS_PATH, function (err, content) {
+  readData(PROGRESS_PATH, function (err, content) {
     try {
       io.emit('server: response for progress', JSON.parse(content).progress);
     } catch (SyntaxErrorException) {
@@ -78,7 +78,7 @@ io.on('connection', function(socket) {
   });
   
   socket.on('client: get total time', function() {
-    readContent(TOTAL_TIME_PATH, function(err, content) {
+    readData(TOTAL_TIME_PATH, function(err, content) {
       try {
         io.emit('server: response for total time', JSON.parse(content).time);
       } catch (FileDNEError) {
@@ -134,7 +134,7 @@ io.on('connection', function(socket) {
   });
 
   socket.on('client: ping for connection status', function() {
-    readContent(CONNECTION_STATUS_PATH, function(err, content) {
+    readData(CONNECTION_STATUS_PATH, function(err, content) {
       try {
         io.emit('server: response for connection status', JSON.parse(content));
       } catch(SyntaxErrorException) {
@@ -173,7 +173,7 @@ io.on('connection', function(socket) {
   });
 
   socket.on('client: ask for recording status', function() {
-    readContent(RECORDING_STATUS_PATH, function (err, content) {
+    readData(RECORDING_STATUS_PATH, function (err, content) {
       try {
         io.emit('server: response for recording status', JSON.parse(content));
       } catch (SyntaxErrorException) {

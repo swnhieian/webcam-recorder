@@ -46,9 +46,10 @@ const saveConnection = (socket, status) => {
 const sendProgressUpdate = () => {
   readContent(PROGRESS_PATH, function (err, content) {
     try {
-      io.emit('server: response for progress', JSON.parse(content));
+      io.emit('server: response for progress', JSON.parse(content).progress);
     } catch (SyntaxErrorException) {
-      console.error(SyntaxErrorException);
+      saveData({}, PROGRESS_PATH)
+      // console.error("file DNE at " + PROGRESS_PATH + ", so created anew.");
     }
   }); 
 }
@@ -72,10 +73,26 @@ io.on('connection', function(socket) {
   socket.on('client: ask for sync id', function() {
     io.emit('server: connected sync id', socket.id);
   })
-   socket.on('client: reset cams', function() {
-     io.emit('server: reset cams');
-   });
+  socket.on('client: reset cams', function() {
+    io.emit('server: reset cams');
+  });
   
+  socket.on('client: get total time', function() {
+    readContent(TOTAL_TIME_PATH, function(err, content) {
+      try {
+        io.emit('server: response for total time', JSON.parse(content).time);
+      } catch (FileDNEError) {
+        saveData({time: [0, 0, 0]}, TOTAL_TIME_PATH);
+        io.emit('server: response for total time', [0,0,0]);
+      }
+    })
+  })
+  socket.on('client: delete total time', function() {
+    fs.unlinkSync(TOTAL_TIME_PATH, err => {
+      if (err) throw err;
+      console.log('total time path deleted');
+    });
+  });
 
   socket.on('disconnect', function() {
     console.log('computer disconnected at ' + socket.id);
@@ -100,24 +117,29 @@ io.on('connection', function(socket) {
     io.emit('server: refresh all');
   });
 
+  socket.on('client: reset total files', function() {
+    numSaved = 0;
+  });
+
   socket.on('client: update recording progress', function(progress) {
-    saveData(progress, PROGRESS_PATH);
+    // console.log({progress});
+    saveData({progress}, PROGRESS_PATH);
     sendProgressUpdate();
-    console.log('updating progress');
+    // console.log('updating progress', progress);
   });
 
   socket.on('client: check for progress', function() {
     sendProgressUpdate();
-    console.log('check progress');
+    // console.log('check progress');
   });
 
   socket.on('client: ping for connection status', function() {
     readContent(CONNECTION_STATUS_PATH, function(err, content) {
       try {
         io.emit('server: response for connection status', JSON.parse(content));
-        console.log('ping for connection status')
       } catch(SyntaxErrorException) {
-        console.error(SyntaxErrorException);
+        saveData({}, CONNECTION_STATUS_PATH)
+        // console.error(SyntaxErrorException);
       }
     });
   });
@@ -125,7 +147,8 @@ io.on('connection', function(socket) {
 
   socket.on('client: update recording status', function(status) {
     saveConnection(socket, status[socket.id])
-    console.log('server: updated recording status', JSON.stringify(status));
+
+    // console.log('server: updated recording status', JSON.stringify(status));
   });
   
 
@@ -154,7 +177,7 @@ io.on('connection', function(socket) {
       try {
         io.emit('server: response for recording status', JSON.parse(content));
       } catch (SyntaxErrorException) {
-        console.error(SyntaxErrorException);
+        saveData({}, RECORDING_STATUS_PATH);
       }
     });
   });
@@ -167,10 +190,20 @@ io.on('connection', function(socket) {
     saveData(newStatus, RECORDING_STATUS_PATH);
   });
 
+  let resetTime = false;
   socket.on('client: save total time', function(time) {
     console.log('received save total time command');
-    time = {time}
-    saveData(time, TOTAL_TIME_PATH);
+    if (resetTime) {
+      saveData({ time: [0, 0, 0]}, TOTAL_TIME_PATH);
+      resetTime = false;
+    } else {
+      time = {time}
+      saveData(time, TOTAL_TIME_PATH);
+    }
+    if (time === 'reset') {
+      console.log('detected reset command, will reset next one');
+      resetTime = true;
+    } 
   });
 
   socket.on('client: save data', function(data) {
@@ -201,9 +234,9 @@ io.on('connection', function(socket) {
       if (err) {
         return console.log(err)
       }
-      console.log('the file was saved!');
+      console.log(sentence_index + ': saved, ' + 'numSaved: ' + numSaved);
     });
-    console.log("files saved: " + numSaved);
+    // console.log("files saved: " + numSaved);
     // setTimeout(()=> {
     io.emit('server: save files successful', numSaved);
     // }, 5000)

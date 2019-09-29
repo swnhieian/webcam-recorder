@@ -18,20 +18,20 @@ if __name__ == '__main__':
     dirName = sys.argv[1]
     p = Path(dirName)
     dirs = list(p.glob('*'))
-    maxIndex = max(map(lambda x: int(x.name), dirs))
+    maxIndex = max(map(lambda x: (int(x.name) if x.name != '.DS_Store' else 0), dirs))
     for i in range(maxIndex + 1):
         subdir = p / str(i)
         if subdir.exists():
             files = list(subdir.glob('*.webm'))
-            fileNames = list(map(lambda x:x.name, files))
+            # fileNames = list(map(lambda x:x.name, files))
             if (len(files) != 8):
                 print(f"{i} sentence not full")
-                for webcam in webcamIds:
-                    if webcam not in fileNames:
-                        print(f"\t: {webcam} not saved!")
+                # for webcam in webcamIds:
+                #     if webcam not in fileNames:
+                #         print(f"\t: {webcam} not saved!")
             else:
-                for webcam in webcamIds:
-                    f = subdir / webcam
+                for webcam in files:
+                    f = webcam
                     if (f.stat().st_size == 0):
                         print(f"{i} sentence not complete")
                         print(f"\t: {webcam} file empty!")

@@ -7,7 +7,6 @@ import qs from '../../utils/qs'
 
 function Tester(props) {
   const [intervalID, setIntervalID] = useState(undefined);
-  
 
   
   function comp_inProcessScreen() {
@@ -80,19 +79,26 @@ function Tester(props) {
 
   function comp_totalTimer() {
     if (qs('name')) {
-      return <Timer name={'total_timer'} socket={props.socket} />;
+      return (
+        <Timer
+          name={'total_timer'}
+          socket={props.socket}
+          totalTime={props.totalTime}
+          updateTotalTime={props.updateTotalTime}
+        />
+      );
     }
   }
 
   return (
     <div className='testing_screen'>
       {comp_totalTimer()}
-      {props.comp_progressBar(props.curr_sentence_index, props.data_length, 'center', 2)}
+      {props.comp_progressBar(props.recordedProgress, props.data_length - 1, 'center', 2)}
       <div className='middle'>
-        <div className='inner'>{comp_inProcessScreen(props)}</div>
+        <div className='inner'>{comp_inProcessScreen()}</div>
         {comp_timer()}
       </div>
-      <pre hidden={props.recordGreenLight || props.curr_sentence_index === 0 || !qs('name')} className='warning_message'>
+      <pre hidden={(props.recordGreenLight || props.curr_sentence_index === 0) || !qs('name')} className='warning_message'>
         There may be an issue with file saves. Please notify research facilitator.
       </pre>
     </div>
@@ -110,9 +116,11 @@ Tester.propTypes = {
   updateGreenLightStatus: PropTypes.func.isRequired,
   numFilesSaved: PropTypes.number.isRequired,
   numCams: PropTypes.number.isRequired,
-  recordedProgress: PropTypes.object.isRequired,
+  recordedProgress: PropTypes.number.isRequired,
   updateRecordProgress: PropTypes.func.isRequired,
   comp_progressBar: PropTypes.func.isRequired,
+  totalTime: PropTypes.array.isRequired,
+  updateTotalTime: PropTypes.func.isRequired
 };
 
 export default Tester;

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 export default class NameField extends Component {
 
-  saveName = (e) => {
+  saveName = () => {
     let name = document.getElementById("name").value;
     // document.location.search = "name=" + name + "&sentence_index=0";
     let url_state = '?name=' + name + '&sentence_index=0'
@@ -19,7 +19,7 @@ export default class NameField extends Component {
       sentence_index: 0
     })
     this.props.socket.emit('client: dummy vid, do not save');
-    this.props.socket.emit('client: update recording progress', {});
+    this.props.socket.emit('client: update recording progress', 0);
     this.props.updateTesterContents();
     this.props.updateGreenLightStatus(true);
     

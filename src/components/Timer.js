@@ -1,25 +1,45 @@
+/* eslint-disable no-console */
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 export default function Timer(props) {
   const [intervalID, setIntervalID] = useState(undefined);
-  let totalTime = [];
-
-  function saveTotalTime (event) {
+  let totalTime = []
+  function saveTotalTime(event) {
     // Cancel the event as stated by the standard.
     event.preventDefault();
 
     // console.log(totalTime);
+    // totalTime = totalTime.map(time => {
+    //   return time ? time : 0;
+    // });
+
     props.socket.emit(
       'client: save total time',
       totalTime
     );
+    // console.log('emitted from timer')
+    // console.log(totalTime);
     // Chrome requires returnValue to be set.
     event.returnValue = '';
   }
 
-  function createInterval() {
-    let time = [0, 0, 0];
+
+  function stopTimer() {
+    clearInterval(intervalID);
+    document.getElementById(props.name).innerHTML = '';
+  }
+
+  function createInterval(timeSaved) {
+    let time = (timeSaved) ? timeSaved : [0, 0, 0];
+    try {
+      time = time.map(t => {
+        return t ? t : 0;
+      });
+    } catch (SyntaxError) {
+      console.error('some issue with this: ' + time);
+    }
+    // console.log(timeSaved);
     return setInterval(() => {
       let hour = time[0];
       let min = time[1];
@@ -50,14 +70,24 @@ export default function Timer(props) {
       } catch (SomeError) {
         console.error(SomeError);
       }
+      props.updateTotalTime(time);
     }, 1000);
   }
 
   useEffect(() => {
     window.addEventListener('beforeunload', saveTotalTime);
-    if (!intervalID) {
+    props.socket.emit('client: get total time');
+    props.socket.on('server: response for total time', timeSaved => {
+      if (!timeSaved && !intervalID) {
+        setIntervalID(createInterval());
+      }
+      stopTimer();
+      setIntervalID(createInterval(timeSaved));
+    });
+    props.socket.on('server: reset total timer', () => {
+      stopTimer();
       setIntervalID(createInterval());
-    }
+    });
   }, []);
   return (
     <div>
@@ -69,5 +99,7 @@ export default function Timer(props) {
 
 Timer.propTypes = {
   name: PropTypes.string.isRequired,
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object.isRequired,
+  totalTime: PropTypes.array.isRequired,
+  updateTotalTime: PropTypes.func.isRequired
 };

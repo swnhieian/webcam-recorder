@@ -37,7 +37,7 @@ class App extends React.Component {
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
       connectedOrderMap: {},
-      numCams: 1,
+      numCams: 8,
       recordedProgress: 0,
       addCamState: false,
       totalTime: [],

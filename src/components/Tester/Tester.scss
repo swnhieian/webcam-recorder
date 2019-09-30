@@ -9,8 +9,44 @@
   // position: fixed;
   // width:100%;
   display: absolute;
-  border: 1px solid black;
   // margin: 1em;
+}
+
+.btn_highlight_green {
+  background-color: #6EEB83;
+  font-size: 1.05em;
+  border: 1px solid black;
+  font-weight: 300;
+  border-radius: 1em;
+  height: 2.5em;
+  width: 125px;
+  margin: 0.5em;
+}
+
+#testerRecordBtn:disabled {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+#name {
+  width: 80%;
+  height: 56px;
+  border-radius: 4px;
+  position: relative;
+  background-color: rgba(0,0,0,0.5);
+  border: 1px rgba(255,255,255,0.3) solid;
+  font-size: 1.5em;
+}
+
+#name:hover {
+  box-shadow: 0px 5px 20px 0px rgba(45, 183, 245, 0.5);
+}
+
+#name::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+#name:focus {
+  color: rgba(255, 255, 255, 1.0);
 }
 
 .progress_bar {
@@ -27,13 +63,16 @@
   font-size: 1.05em;
   border: 1px solid black;
   font-weight: 300;
-  background-color: white;
+  background-color: lightgrey;
   border-radius: 1em;
   height: 2.5em;
   width: 125px;
   margin: 0.5em;
 }
 
+.btn:enabled:hover {
+  box-shadow: 0px 4px 20px 0px rgba(45, 183, 245, 0.5);
+}
 .btn:disabled {
   background-color: rgba(0, 0, 0, 0.4);
 }
@@ -51,12 +90,13 @@
   font-size: 3em;
   line-height: 2;
   margin-bottom: 0.5em;
+  color: white;
 }
 .recording_hint {
-  color: red;
+  color: pink;
   font-size: 2em;
   height: 5vh;
 }
 .warning_message {
-  color: red;
+  color: pink;
 }

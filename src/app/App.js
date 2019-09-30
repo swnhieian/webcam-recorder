@@ -37,7 +37,7 @@ class App extends React.Component {
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
       connectedOrderMap: {},
-      numCams: 8,
+      numCams: 1,
       recordedProgress: 0,
       addCamState: false,
       totalTime: [],
@@ -91,9 +91,36 @@ class App extends React.Component {
     this.setState({ computerStatus: status });
   };
 
+  makeEmojiToastLayout = (msg, emoji) => {
+    return (<div className='cogo-toast'>
+        <div className='cogo-toast-emoji-left'> {emoji}</div>
+        <div>
+          {msg[0]}
+          <br />
+          {msg[1]}
+        </div>
+        <div className='cogo-toast-emoji-right'> {emoji}</div>
+      </div>)
+  }
+
+  hideLoader = undefined;
+  showFileSavingLoader = () => {
+    this.hideLoader = cogoToast.loading(
+      this.makeEmojiToastLayout(['视频正在保存', '请耐心等待'], '⌛️'),
+      { hideAfter: 0 }
+    );
+    // setTimeout(hideLoader, 2000);
+    // hideLoader();
+    // this.setState({ hideLoader }, () => {
+    //   console.log(hideLoader);
+    // });
+  }
   showFileSavedMessage = () => {
-    cogoToast.success('Files successfully saved.', { hideAfter: 1.5 });
+    this.hideLoader();
   };
+  
+
+
 
   initSocketListeners = () => {
     this.props.socket.on('server: connected sync id', id => {
@@ -139,6 +166,7 @@ class App extends React.Component {
           console.log(
             'this occured: ' + this.state.numFilesSavedInd + ' times.'
           );
+          document.getElementById('testerNextBtn').disabled = true;
           if (this.state.numFilesSavedInd === this.state.numCams) {
             console.log('correct number of files saved');
             try {
@@ -149,11 +177,10 @@ class App extends React.Component {
                   numFilesSavedInd: 0
                 },
                 () => {
-                  try {
-                    document.getElementById('testerNextBtn').click();
-                  } catch (NotOnPageError) {
-                    // console.error(NotOnPageError);
-                  }
+                  cogoToast.success(
+                    this.makeEmojiToastLayout(['视频已成功保存', '可继续录'], '🔥'),
+                    { hideAfter: 2 }
+                  );
                 }
               );
               
@@ -164,7 +191,7 @@ class App extends React.Component {
             try {
               if (this.helper_checkIfMobileView()) {
                 // console.log('here here??');
-                cogoToast.info('Completed @ Sentence [' + this.state.recordedProgress.length + ']', {hideAfter: 0.75});
+                cogoToast.info('Completed @ Sentence [' + this.state.recordedProgress + ']', {hideAfter: 0.75});
               }
             } catch (NotYetLoadedException) {
               console.error(NotYetLoadedException);
@@ -237,7 +264,7 @@ class App extends React.Component {
           strokeWidth={strokeWidth}
           trailWidth={strokeWidth}
           strokeColor='#2db7f5'
-          trailColor='#D9D9D9'
+          trailColor='#363732'
         />
       </div>
     );
@@ -395,6 +422,7 @@ class App extends React.Component {
         comp_progressBar={this.comp_progressBar}
         totalTime={this.state.totalTime}
         updateTotalTime={this.updateTotalTime}
+        showFileSavingLoader={this.showFileSavingLoader}
       />
     );
   };
@@ -422,7 +450,7 @@ class App extends React.Component {
     this.props.socket.emit('client: reset cams');
     document.getElementById('addCamBtn').click();
     this.props.socket.emit('client: dummy vid, do not save');
-    cogoToast.info('Cams are reset', {hideAfter: 0.75});
+    cogoToast.info('Cams are reset', {hideAfter: 0.3});
   };
 
   refreshAll = () => {
@@ -634,7 +662,6 @@ class App extends React.Component {
       <Router>
         <Route path='/' exact component={this.desktopView} />
         <Route path='/mobile' exact component={this.mobileView} />
-        {this.comp_modals()}
       </Router>
     );
   }

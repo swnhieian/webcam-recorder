@@ -41,8 +41,9 @@ export default class NameField extends Component {
             type='text'
             name='name'
             id='name'
-            placeholder='Enter Name'
+            placeholder='输入名字（拼音）'
             onKeyPress={this.detectEnter}
+            autoFocus
           />
           <br/>
           <button className="btn btn-center" onClick={this.saveName}>Save Name</button>

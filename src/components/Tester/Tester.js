@@ -26,6 +26,7 @@ function Tester(props) {
         startTimer={startTimer}
         recordedProgress={props.recordedProgress}
         updateRecordProgress={props.updateRecordProgress}
+        showFileSavingLoader={props.showFileSavingLoader}
       />
     );
   }
@@ -99,7 +100,7 @@ function Tester(props) {
         {comp_timer()}
       </div>
       <pre hidden={(props.recordGreenLight || props.curr_sentence_index === 0) || !qs('name')} className='warning_message'>
-        There may be an issue with file saves. Please notify research facilitator.
+        如果等保存时间多余10秒钟，通知老师来从设置机器
       </pre>
     </div>
   );
@@ -120,7 +121,8 @@ Tester.propTypes = {
   updateRecordProgress: PropTypes.func.isRequired,
   comp_progressBar: PropTypes.func.isRequired,
   totalTime: PropTypes.array.isRequired,
-  updateTotalTime: PropTypes.func.isRequired
+  updateTotalTime: PropTypes.func.isRequired,
+  showFileSavingLoader: PropTypes.func.isRequired
 };
 
 export default Tester;

@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import NameField from '../NameField/NameField';
 import qs from '../../utils/qs';
-import cogoToast from 'cogo-toast';
 
 export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
@@ -31,8 +30,9 @@ export default function InProcessScreen(props) {
     setRecordState(false);
     props.socket.emit('client: stop cams', 'in process screen');
     reset(false);
-    cogoToast
-      .loading('Files are currently saving. Please wait...', { hideAfter: 2 });
+    props.showFileSavingLoader();
+    props.updateSentence('$next');
+
     props.updateGreenLightStatus(false);
     props.stopTimer();
     markSentenceAsDone(props.curr_sentence_index);
@@ -60,7 +60,7 @@ export default function InProcessScreen(props) {
   
   function disableNextButtonIfCurrNotRead() {
     const recordedYet =
-      props.recordedProgress >= props.curr_sentence_index; 
+      props.recordedProgress > props.curr_sentence_index;
     try {
       if (recordedYet) {
         document.getElementById('testerNextBtn').disabled = false;
@@ -118,7 +118,6 @@ export default function InProcessScreen(props) {
             updateTesterContents={updateTesterContents}
             updateGreenLightStatus={props.updateGreenLightStatus}
           />
-          <p className='warning_message'>Enter Name Before Starting</p>
         </div>
       );
     } else {
@@ -130,7 +129,7 @@ export default function InProcessScreen(props) {
           <div>{displaySentenceToBeRead()}</div>
           <button
             id='testerRecordBtn'
-            className={getRecordState() === 'Done' ? 'btn btn-danger' : 'btn'}
+            className={getRecordState() === 'Done' ? 'btn btn-danger' : 'btn_highlight_green'}
             onClick={record}
             disabled={
               !props.recordGreenLight ||
@@ -192,5 +191,6 @@ InProcessScreen.propTypes = {
   stopTimer: PropTypes.func.isRequired,
   startTimer: PropTypes.func.isRequired,
   recordedProgress: PropTypes.number.isRequired,
-  updateRecordProgress: PropTypes.func.isRequired
+  updateRecordProgress: PropTypes.func.isRequired,
+  showFileSavingLoader: PropTypes.func.isRequired
 };

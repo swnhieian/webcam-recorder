@@ -149,7 +149,7 @@ export default function CameraList(props) {
       document.getElementById('startBtn').click();
       document.getElementById('dummyBtn').disabled = false;
       document.getElementById('dummyBtn').click();
-      cogoToast.info('Mac FaceTime Camera started');
+      cogoToast.success('Mac FaceTime Camera started', {hideAfter: 0.3});
     }
   }
 
@@ -172,17 +172,17 @@ export default function CameraList(props) {
       const idAoni = allDevices.map(device => {
         return device.deviceId;
       });
-      const newPluggedInPaired = allDevices.map(device => [device.kind, device.deviceId])
-      console.log(newPluggedInPaired);
+      // const newPluggedInPaired = allDevices.map(device => [device.kind, device.deviceId])
+      // console.log(newPluggedInPaired);
 
       const newPluggedInID = idAoni.diff(pluggedInDevices);
       if (newPluggedInID.length === 0) {
-        console.log('no new devices detected');
+        // console.log('no new devices detected');
       } else if (newPluggedInID.length === 2) {
         detectedTwoDevices = true;
-        console.log(
-          'new devices: ' + newPluggedInID.map(d => d.substring(0, 5))
-        );
+        // console.log(
+        //   'new devices: ' + newPluggedInID.map(d => d.substring(0, 5))
+        // );
       }
 
       if (detectedTwoDevices) {
@@ -219,7 +219,6 @@ export default function CameraList(props) {
     //  runs once
     useEffect(() => {
       props.updateConnectionStatus();
-      cogoToast.info('cams loaded')
     }, [props.addCamState]);
   }
 
@@ -265,7 +264,11 @@ export default function CameraList(props) {
             recorder.camera = camera;
             cam['recorder'] = recorder;
             let video = cam['ref'];
-            video.current.srcObject = camera;
+            try {
+              video.current.srcObject = camera;
+            } catch (NotYetLoadedException) {
+              //
+            }
             // resetInitialCams(recorder);
             recorder.startRecording();
           }

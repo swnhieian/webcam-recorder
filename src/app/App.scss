@@ -3,6 +3,8 @@ html,
 body {
   height: 100%;
   margin: 0;
+  background: rgba(0,0,0,0.7);
+  color: lightslategray;
 }
 body {
   font-family: 'Nunito', 'Courier New', Courier, monospace;
@@ -23,6 +25,10 @@ body {
 .debug_button {
   margin-left: 0.5em;
   margin-right: 0.5em;
+  background-color: rgba(0, 0, 0, 0.6) ;
+  border-radius: 0.5em;
+  border: transparent;
+  color: darkgrey;
 }
 .camera_status {
   text-align: left;
@@ -62,6 +68,39 @@ body {
   display: block;
   text-align: center;
   width: 100%;
+}
+
+.ct-toast {
+  background-color: rgba(0,0,0,0.8);
+  color: white;
+}
+
+.ct-toast-success .cogo-toast {
+  border-left: 1px dashed green;
+}
+.ct-toast-info .cogo-toast {
+  border-left: 1px dashed rgb(18, 113, 236)
+}
+.ct-toast-loading .cogo-toast {
+  border-left: 1px dashed rgb(18, 113, 236);
+}
+.cogo-toast {
+  display: grid;
+  grid-template-columns: 20% auto 20%;
+  text-align: center;
+  width: 200px;
+  color: white;
+}
+
+.cogo-toast-emoji-left {
+  margin-top: auto;
+  margin-bottom: auto;
+  text-align: right;
+}
+.cogo-toast-emoji-right {
+  margin-top: auto;
+  margin-bottom: auto;
+  text-align: left;
 }
 
 #btn_tester {

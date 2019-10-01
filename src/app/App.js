@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import update from 'react-addons-update'
 import qs from '../utils/qs'
 import cogoToast from 'cogo-toast';
-import { Line } from 'rc-progress';
 import { HashRouter as Router, Route } from "react-router-dom";
 
 // scss
@@ -15,6 +14,7 @@ import CameraList from '../components/CameraList/CameraList';
 import Tester from '../components/Tester/Tester';
 import DataCollection from '../components/Table/DataCollection';
 import Modal from '../components/Modal'
+import Status from '../components/Status'
 
 // data
 import sentences from '../assets/data/sentences.txt';
@@ -271,25 +271,6 @@ class App extends React.Component {
     // window.removeEventListener('beforeunload');
   }
 
-  comp_progressBar(curr, total, align, strokeWidth) {
-    const percent = ((curr / total) * 100).toFixed(2);
-    const alignmentStyle = align === 'left' ? { margin: '0' } : {};
-    return (
-      <div className='progress_bar' style={alignmentStyle}>
-        <pre>
-          Progress: {curr} / {total} ({percent}%)
-        </pre>
-        <Line
-          percent={percent}
-          strokeWidth={strokeWidth}
-          trailWidth={strokeWidth}
-          strokeColor='#2db7f5'
-          trailColor='#363732'
-        />
-      </div>
-    );
-  }
-
   helper_updateFilesSaved = numFiles => {
     const successMessage =
       numFiles % this.state.numCams === 0
@@ -439,7 +420,6 @@ class App extends React.Component {
         updateGreenLightStatus={this.updateGreenLightStatus}
         recordedProgress={this.state.recordedProgress}
         updateRecordProgress={this.updateRecordProgress}
-        comp_progressBar={this.comp_progressBar}
         totalTime={this.state.totalTime}
         updateTotalTime={this.updateTotalTime}
         showFileSavingLoader={this.showFileSavingLoader}
@@ -502,45 +482,6 @@ class App extends React.Component {
     return window.location.href.includes('mobile')
   }
 
-  helper_showTime = () => {
-    this.props.socket.emit('client: ask for start time');
-  }
-  showTime = () => {
-    try {
-      // document.getElementById('askForStartTimeBtn').click();
-      document.getElementById('askForStartTimeBtn').disabled = true;
-    } catch (NotYetLoadedException) {
-      //
-    }
-  }
-
-  comp_overallStatusContent = () => {
-    return (
-      <div>
-        <h4>Connection Status</h4>
-        {this.comp_progressBar(
-          this.state.recordedProgress,
-          this.state.data.length - 1,
-          'left',
-          3
-        )}
-        <pre id='total_time_elapsed'>00:00:00</pre>
-        <pre id='connection_status'></pre>
-        <pre id='num_files_saved'></pre>
-        <pre
-          hidden={
-            this.state.recordGreenLight ||
-            this.helper_checkIfMobileView() ||
-            !qs('name')
-          }
-          className='warning_message'
-        >
-          Please Click Reset!
-        </pre>
-      </div>
-    );
-  };
-
   resetProgress = () => {
     this.props.socket.emit('client: update recording progress', 0);
     this.props.socket.emit('client: delete total time');
@@ -550,6 +491,18 @@ class App extends React.Component {
     this.props.socket.emit(
       'client: save total time',
       [0,0,0]
+    );
+  }
+
+  comp_status = () => {
+    return (
+      <Status
+        data_length={this.state.data.length}
+        recordedProgress={this.state.recordedProgress}
+        helper_checkIfMobileView={this.helper_checkIfMobileView}
+        recordGreenLight={this.state.recordGreenLight}
+        socket={this.props.socket}
+      />
     );
   }
 
@@ -572,7 +525,7 @@ class App extends React.Component {
           socket={this.props.socket}
           title={'Status'}
           onLoadFunc={this.getStatus}
-          message={this.comp_overallStatusContent()}
+          message={this.comp_status()}
           buttonConfirm={'Hide'}
         />
       </div>
@@ -618,11 +571,7 @@ class App extends React.Component {
           id='showSavedFilesBtn'
           className='hidden_button'
         ></button>
-        <button
-          onClick={this.helper_showTime}
-          id='askForStartTimeBtn'
-          className='hidden_button'
-        ></button>
+        
         <pre hidden={this.state.numCams === 8}>
           debug mode, remember to change num cams back to 8
         </pre>

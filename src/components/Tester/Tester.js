@@ -9,7 +9,7 @@ import ProgressBar from '../ProgressBar'
 function Tester(props) {
   const [intervalID, setIntervalID] = useState(undefined);
 
-  
+
   function comp_inProcessScreen() {
     return (
       <InProcessScreen
@@ -28,6 +28,7 @@ function Tester(props) {
         recordedProgress={props.recordedProgress}
         updateRecordProgress={props.updateRecordProgress}
         showFileSavingLoader={props.showFileSavingLoader}
+        comp_timer={comp_timer}
       />
     );
   }
@@ -60,13 +61,13 @@ function Tester(props) {
         min = 0;
       }
       time = [hour, min, sec];
-      document.getElementById('record_time_content').innerHTML =
-        'Total Recording Time—' +
-        ('0' + hour).slice(-2) +
-        ':' +
-        ('0' + min).slice(-2) +
-        ':' +
-        ('0' + sec).slice(-2);
+document.getElementById('record_time_content').innerHTML =
+  'Total Recording Time—' +
+  ('0' + hour).slice(-2) +
+  ':' +
+  ('0' + min).slice(-2) +
+  ':' +
+  ('0' + sec).slice(-2);
     }, 1000);
   }
 

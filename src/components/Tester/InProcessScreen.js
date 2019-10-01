@@ -72,14 +72,34 @@ export default function InProcessScreen(props) {
     }
   }
 
+  function makeEmojiLayout(msg, emoji) {
+    return (
+      <div className='emoji-layout-container'>
+        <div className='emoji-layout-emoji-left'> {emoji}</div>
+        <div>
+          {msg[0]}
+          <br />
+          {msg[1]}
+        </div>
+        <div className='emoji-layout-emoji-right'> {emoji}</div>
+      </div>
+    );
+  }
+
   function displaySentenceToBeRead() {
     disableNextButtonIfCurrNotRead();
     const recordedYet = 
       (props.curr_sentence_index > 0) ? 
       props.recordedProgress >= props.curr_sentence_index : 
       false;
-    const recordedMessage = (recordedYet) ? '(录过)' : ''
-    const sentence = props.data[props.curr_sentence_index] + ' ' + recordedMessage;
+    const emoji = (recordedYet) ? '✅' : ''
+    let sentence = props.data[props.curr_sentence_index];
+    if (sentence) {
+      const line1 = sentence.substring(0,10)
+      const line2 = sentence.substring(10);
+      sentence = makeEmojiLayout([line1, line2], emoji);
+    }
+    // const sentence = recordedMessage + ' ' + props.data[props.curr_sentence_index] + ' ' + recordedMessage;
     const recordedClassName = recordedYet ? 'recorded_sentence_highlight sentence_to_be_read' : 'sentence_to_be_read'
     return (
       <div>
@@ -123,13 +143,20 @@ export default function InProcessScreen(props) {
     } else {
       return (
         <div>
+          {displaySentenceToBeRead()}
           <div className='recording_hint'>
-            {getRecordState() === 'Done' ? '录制中...' : ''}
+            {getRecordState() === 'Done' ? '🔴' : ''}
           </div>
-          <div>{displaySentenceToBeRead()}</div>
+          <div id="record-time-container">
+            {props.comp_timer('recording_time')}
+          </div>
           <button
             id='testerRecordBtn'
-            className={getRecordState() === 'Done' ? 'btn btn-danger' : 'btn_highlight_green'}
+            className={
+              getRecordState() === 'Done'
+                ? 'btn btn-danger'
+                : 'btn_highlight_green'
+            }
             onClick={record}
             disabled={
               !props.recordGreenLight ||
@@ -160,10 +187,10 @@ export default function InProcessScreen(props) {
               props.curr_sentence_index === props.data_length - 1 ||
               !props.recordGreenLight ||
               props.numFilesSaved % props.numCams !== 0 ||
-              recording 
-    }
-  >
-    下一句➡
+              recording
+            }
+          >
+            下一句➡
           </button>
         </div>
       );
@@ -192,5 +219,6 @@ InProcessScreen.propTypes = {
   startTimer: PropTypes.func.isRequired,
   recordedProgress: PropTypes.number.isRequired,
   updateRecordProgress: PropTypes.func.isRequired,
-  showFileSavingLoader: PropTypes.func.isRequired
+  showFileSavingLoader: PropTypes.func.isRequired,
+  comp_timer: PropTypes.func.isRequired
 };

@@ -91,6 +91,7 @@ body {
 .ct-toast-loading .cogo-toast {
   border-left: 1px dashed rgb(18, 113, 236);
 }
+
 .cogo-toast {
   display: grid;
   grid-template-columns: 20% auto 20%;
@@ -98,16 +99,27 @@ body {
   width: 200px;
   color: white;
 }
+.emoji-layout-container {
+  display: grid;
+  grid-template-columns: 20% auto 20%;
+  text-align: center;
+  // width: 200px;
+  color: white;
+}
 
-.cogo-toast-emoji-left {
+.cogo-toast-emoji-left,
+.emoji-layout-emoji-left {
   margin-top: auto;
   margin-bottom: auto;
   text-align: right;
+  margin-right: 1em;
 }
-.cogo-toast-emoji-right {
+.cogo-toast-emoji-right,
+.emoji-layout-emoji-right {
   margin-top: auto;
   margin-bottom: auto;
   text-align: left;
+  margin-left: 1em;
 }
 
 #btn_tester {

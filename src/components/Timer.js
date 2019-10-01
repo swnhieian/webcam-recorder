@@ -50,7 +50,6 @@ export default function Timer(props) {
       totalTime = time;
       try {
         document.getElementById(props.name).innerHTML =
-          'Total Recording Time—' +
           ('0' + hour).slice(-2) +
           ':' +
           ('0' + min).slice(-2) +

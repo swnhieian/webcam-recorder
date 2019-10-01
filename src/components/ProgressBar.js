@@ -8,7 +8,7 @@ export default function ProgressBar(props) {
   return (
     <div className='progress_bar' style={alignmentStyle}>
       <pre>
-        Progress: {props.curr} / {props.total} ({percent}%)
+        {props.curr} / {props.total} ({percent}%)
       </pre>
       <Line
         percent={percent}

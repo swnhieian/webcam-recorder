@@ -96,16 +96,22 @@
   color: white;
 }
 
+#total_timer {
+  margin: 0;
+  margin-bottom: -0.5em;
+}
+
 .sentence_to_be_read {
   font-size: 3em;
-  line-height: 2;
+  line-height: 1.5;
   margin-bottom: 0.5em;
   color: white;
 }
 .recording_hint {
   color: pink;
-  font-size: 2em;
+  font-size: 1.5em;
   height: 5vh;
+  margin-top: -1.3em;
 }
 .warning_message {
   color: pink;

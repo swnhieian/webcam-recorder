@@ -503,9 +503,15 @@ class App extends React.Component {
     return (
       <div>
         <h4>Connection Status</h4>
+        {this.comp_progressBar(
+          this.state.recordedProgress,
+          this.state.data.length - 1,
+          'left',
+          3
+        )}
+        <pre>{this.showTime(this.state.totalTime)}</pre>
         <pre id='connection_status'></pre>
         <pre id='num_files_saved'></pre>
-        <pre>{this.showTime(this.state.totalTime)}</pre>
         <pre
           hidden={
             this.state.recordGreenLight ||
@@ -516,11 +522,6 @@ class App extends React.Component {
         >
           Please Click Reset!
         </pre>
-        {this.comp_progressBar(
-          this.state.recordedProgress,
-          this.state.data.length - 1,
-          'left', 3
-        )}
       </div>
     );
   };

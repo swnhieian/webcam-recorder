@@ -21,6 +21,7 @@ export default class NameField extends Component {
     this.props.socket.emit('client: dummy vid, do not save');
     this.props.socket.emit('client: update recording progress', 0);
     this.props.socket.emit('client: save total time', [0,0,0]);
+    this.props.socket.emit('client: save total start time', new Date())
     this.props.updateTesterContents();
     this.props.updateGreenLightStatus(true);
     

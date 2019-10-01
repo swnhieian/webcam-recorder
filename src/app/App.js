@@ -37,10 +37,11 @@ class App extends React.Component {
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
       connectedOrderMap: {},
-      numCams: 8,
+      numCams: 1,
       recordedProgress: 0,
       addCamState: false,
       totalTime: [],
+      startTime: undefined
     };
     if (!this.helper_checkIfMobileView) {
       this.props.socket.emit('client: update sentence_index', {
@@ -131,6 +132,17 @@ class App extends React.Component {
       if (this.socket_getSetCompID) this.socket_getSetCompID(id);
       this.socket_getSetCompID = null;
     });
+
+    this.props.socket.on('server: response for start time', startTime => {
+      this.setState({ startTime }, () => {
+        try {
+          // alert('setting starttime');
+          document.getElementById('total_time_elapsed').innerText(startTime);
+        } catch (NotYetLoadedException) {
+          //
+        }
+      });
+    })
     
     this.props.socket.on('server: reset cams', () => {
       this.updateGreenLightStatus(true);
@@ -456,7 +468,11 @@ class App extends React.Component {
     // this.props.socket.emit('client: stop cams');
     this.updateGreenLightStatus(true);
     this.props.socket.emit('client: reset cams');
-    document.getElementById('addCamBtn').click();
+    try {
+      document.getElementById('addCamBtn').click();
+    } catch (NotYetLoadedException) {
+      // 
+    }
     this.props.socket.emit('client: dummy vid, do not save');
     cogoToast.info('Cams are reset', {hideAfter: 0.3});
   };
@@ -486,16 +502,15 @@ class App extends React.Component {
     return window.location.href.includes('mobile')
   }
 
-  showTime = timeArray => {
-    if (timeArray) {
-      return (
-        <div>
-          {'Total Recording Time—' + 
-            ('0' + timeArray[0]).slice(-2) + ':' + 
-            ('0' + timeArray[1]).slice(-2) + ':' + 
-            ('0' + timeArray[2]).slice(-2)}
-        </div>
-      )
+  helper_showTime = () => {
+    this.props.socket.emit('client: ask for start time');
+  }
+  showTime = () => {
+    try {
+      // document.getElementById('askForStartTimeBtn').click();
+      document.getElementById('askForStartTimeBtn').disabled = true;
+    } catch (NotYetLoadedException) {
+      //
     }
   }
 
@@ -509,7 +524,7 @@ class App extends React.Component {
           'left',
           3
         )}
-        <pre>{this.showTime(this.state.totalTime)}</pre>
+        <pre id='total_time_elapsed'>00:00:00</pre>
         <pre id='connection_status'></pre>
         <pre id='num_files_saved'></pre>
         <pre
@@ -530,6 +545,7 @@ class App extends React.Component {
     this.props.socket.emit('client: update recording progress', 0);
     this.props.socket.emit('client: delete total time');
     this.props.socket.emit('client: reset total files')
+    document.getElementById('askForStartTimeBtn').disabled = false;
     window.location = window.location.origin;
     this.props.socket.emit(
       'client: save total time',
@@ -597,11 +613,14 @@ class App extends React.Component {
         <button className='debug_button' onClick={this.refreshAll}>
           Refresh All
         </button>
-        
-
         <button
           onClick={this.showFileSavedMessage}
           id='showSavedFilesBtn'
+          className='hidden_button'
+        ></button>
+        <button
+          onClick={this.helper_showTime}
+          id='askForStartTimeBtn'
           className='hidden_button'
         ></button>
         <pre hidden={this.state.numCams === 8}>

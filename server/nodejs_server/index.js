@@ -58,6 +58,7 @@ const RECORDING_STATUS_PATH = './recording_status.json'
 const PROGRESS_PATH = './progress.json'
 const CONNECTION_STATUS_PATH = './connection_status.json'
 const TOTAL_TIME_PATH = './time.json'
+const START_TIME_PATH = './start_time.json'
 let connection_status = {};
 let numSaved = 0;
 let numConnected = 0;
@@ -76,6 +77,28 @@ io.on('connection', function(socket) {
   socket.on('client: reset cams', function() {
     io.emit('server: reset cams');
   });
+
+  socket.on('client: save total start time', startTime => {
+    console.log(startTime);
+    console.log(typeof startTime);
+    saveData({ startTime }, START_TIME_PATH);
+  });
+
+  socket.on('client: ask for start time', function() {
+    readData(START_TIME_PATH, function(err, content) {
+      try {
+        io.emit(
+          'server: response for start time',
+          JSON.parse(content).startTime
+        );
+        console.log('emitted!!!');
+      } catch (FileDNEError) {
+        const startTime = new Date();
+        saveData({ startTime }, START_TIME_PATH);
+        io.emit('server: response for start time', startTime);
+      }
+    });
+  })
   
   socket.on('client: get total time', function() {
     readData(TOTAL_TIME_PATH, function(err, content) {

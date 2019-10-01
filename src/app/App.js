@@ -166,7 +166,11 @@ class App extends React.Component {
           console.log(
             'this occured: ' + this.state.numFilesSavedInd + ' times.'
           );
-          document.getElementById('testerNextBtn').disabled = true;
+          try {
+            document.getElementById('testerNextBtn').disabled = true;
+          } catch (NotYetLoadedException) {
+            //
+          }
           if (this.state.numFilesSavedInd === this.state.numCams) {
             console.log('correct number of files saved');
             try {
@@ -248,7 +252,7 @@ class App extends React.Component {
   
   componentWillUnmount() {
     window.removeEventListener('keydown', this.downHandler);
-    window.removeEventListener('beforeunload');
+    // window.removeEventListener('beforeunload');
   }
 
   comp_progressBar(curr, total, align, strokeWidth) {

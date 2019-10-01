@@ -116,7 +116,11 @@ class App extends React.Component {
     // });
   }
   showFileSavedMessage = () => {
-    this.hideLoader();
+    try {
+      this.hideLoader();
+    } catch (NotOnPageError) {
+      //
+    }
   };
   
 

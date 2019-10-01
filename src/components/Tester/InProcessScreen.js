@@ -46,6 +46,8 @@ export default function InProcessScreen(props) {
     props.socket.emit('client: start cams', 'in process screen');
     setRecordState(true);
     props.startTimer();
+    document.getElementById('testerRecordBtn').className = 'btn btn-danger';
+
   }
 
   function record() {
@@ -92,13 +94,14 @@ export default function InProcessScreen(props) {
       (props.curr_sentence_index > 0) ? 
       props.recordedProgress >= props.curr_sentence_index : 
       false;
-    const emoji = (recordedYet) ? '✅' : ''
+    const emoji = recordedYet ? '↺' : '';
     let sentence = props.data[props.curr_sentence_index];
     if (sentence) {
       const line1 = sentence.substring(0,10)
       const line2 = sentence.substring(10);
       sentence = makeEmojiLayout([line1, line2], emoji);
     }
+    
     // const sentence = recordedMessage + ' ' + props.data[props.curr_sentence_index] + ' ' + recordedMessage;
     const recordedClassName = recordedYet ? 'recorded_sentence_highlight sentence_to_be_read' : 'sentence_to_be_read'
     return (

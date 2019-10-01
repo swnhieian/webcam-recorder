@@ -15,6 +15,7 @@ import Tester from '../components/Tester/Tester';
 import DataCollection from '../components/Table/DataCollection';
 import Modal from '../components/Modal'
 import Status from '../components/Status'
+import Toggle from '../components/Toggle/Toggle'
 
 // data
 import sentences from '../assets/data/sentences.txt';
@@ -573,6 +574,7 @@ class App extends React.Component {
   desktopView = () => {
     return (
       <div className='container'>
+        <Toggle id='debug_mode'/>
         {this.comp_debug()}
         {this.comp_tester()}
         {this.comp_userResearchHeader()}

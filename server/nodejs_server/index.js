@@ -91,7 +91,7 @@ io.on('connection', function(socket) {
           'server: response for start time',
           JSON.parse(content).startTime
         );
-        console.log('emitted!!!');
+        console.log('emitted!!!', JSON.parse(content).startTime);
       } catch (FileDNEError) {
         const startTime = new Date();
         saveData({ startTime }, START_TIME_PATH);

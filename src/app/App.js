@@ -133,16 +133,7 @@ class App extends React.Component {
       this.socket_getSetCompID = null;
     });
 
-    this.props.socket.on('server: response for start time', startTime => {
-      this.setState({ startTime }, () => {
-        try {
-          // alert('setting starttime');
-          document.getElementById('total_time_elapsed').innerText(startTime);
-        } catch (NotYetLoadedException) {
-          //
-        }
-      });
-    })
+    
     
     this.props.socket.on('server: reset cams', () => {
       this.updateGreenLightStatus(true);
@@ -486,7 +477,7 @@ class App extends React.Component {
     this.props.socket.emit('client: update recording progress', 0);
     this.props.socket.emit('client: delete total time');
     this.props.socket.emit('client: reset total files')
-    document.getElementById('askForStartTimeBtn').disabled = false;
+    this.props.socket.emit('client: save total start time', new Date());
     window.location = window.location.origin;
     this.props.socket.emit(
       'client: save total time',

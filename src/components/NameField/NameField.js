@@ -3,7 +3,6 @@ import './NameField.scss'
 import PropTypes from 'prop-types';
 
 export default class NameField extends Component {
-
   saveName = () => {
     let name = document.getElementById("name").value;
     // document.location.search = "name=" + name + "&sentence_index=0";

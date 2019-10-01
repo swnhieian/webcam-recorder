@@ -6,21 +6,11 @@ export default function Timer(props) {
   const [intervalID, setIntervalID] = useState(undefined);
   let totalTime = []
   function saveTotalTime(event) {
-    // Cancel the event as stated by the standard.
     event.preventDefault();
-
-    // console.log(totalTime);
-    // totalTime = totalTime.map(time => {
-    //   return time ? time : 0;
-    // });
-
     props.socket.emit(
       'client: save total time',
       totalTime
     );
-    // console.log('emitted from timer')
-    // console.log(totalTime);
-    // Chrome requires returnValue to be set.
     event.returnValue = '';
   }
 

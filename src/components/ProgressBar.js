@@ -14,7 +14,7 @@ export default function ProgressBar(props) {
         percent={percent}
         strokeWidth={props.strokeWidth}
         trailWidth={props.strokeWidth}
-        strokeColor='#2db7f5'
+        strokeColor='#4E7CD8'
         trailColor='#363732'
       />
     </div>

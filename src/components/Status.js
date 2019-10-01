@@ -15,6 +15,7 @@ export default function Status(props) {
         const startTimeTotalSecs = getSeconds(startTime);
         const nowSecs = getSeconds(new Date());
         let diffSecs = nowSecs - startTimeTotalSecs;
+        // let expectedTime = diffSecs / (props.recordedProgress / props.data_length - 1)
         // console.log(diffSecs);
         const hours = Math.floor(diffSecs / 3600)
         diffSecs -= hours * 3600;

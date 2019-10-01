@@ -3,8 +3,9 @@ html,
 body {
   height: 100%;
   margin: 0;
-  background: rgba(0,0,0,0.7);
-  color: lightslategray;
+  // background: #202838;
+  background: rgba(0, 0, 0, 0.7);
+  color: #4E7CD8;
 }
 body {
   font-family: 'Nunito', 'Courier New', Courier, monospace;
@@ -28,8 +29,14 @@ body {
   background-color: rgba(0, 0, 0, 0.6) ;
   border-radius: 0.5em;
   border: transparent;
+  // height: 1.5em;
   color: darkgrey;
 }
+.debug_button:hover {
+  cursor: pointer;
+  box-shadow: 0px 0px 5px 2px #4E7CD8;
+}
+
 .camera_status {
   text-align: left;
   background: white;

@@ -59,6 +59,17 @@ class App extends React.Component {
     props.socket.emit('client: check for progress');
     props.socket.emit('client: ask for sync id');
   }
+
+  render() {
+    return (
+      <Router>
+        <Route path='/' exact component={this.main_desktopView} />
+        <Route path='/mobile' exact component={this.main_mobileView} />
+        {this.comp_modals()}
+      </Router>
+    );
+  }
+
   componentDidMount() {
     this.readTextFile(sentences);
     this.initSocketListeners();
@@ -71,6 +82,182 @@ class App extends React.Component {
     // window.removeEventListener('beforeunload');
   }
 
+  // * MAIN VIEW * //
+  main_desktopView = () => {
+    return (
+      <div className='container'>
+        <Toggle id='debug_mode' />
+        {this.comp_debug()}
+        {this.comp_tester()}
+        {this.comp_userResearchHeader()}
+        <div className='contents'>
+          <div className='left_panel'>{this.comp_dataCollection()}</div>
+          <div className='right_panel cameras_container'>
+            {this.comp_cameraList()}
+          </div>
+          <div className=''></div>
+        </div>
+      </div>
+    );
+  };
+
+  // * MAIN VIEW * //
+  main_mobileView = () => {
+    return <div onClick={() => this.getStatus()}>{this.comp_debug()}</div>;
+  };
+
+  // * COMPONENT * //
+  comp_dataCollection = () => {
+    return (
+      <DataCollection
+        data={this.state.data}
+        updateName={this.updateName}
+        curr_sentence={this.state.curr_sentence}
+        socket={this.props.socket}
+        curr_sentence_index={this.state.curr_sentence_index}
+        curr_page={this.state.curr_page}
+        updatePage={this.updatePage}
+      />
+    );
+  };
+
+  // * COMPONENT * //
+  comp_tester = () => {
+    return (
+      <Tester
+        updateSentence={this.updateSentence}
+        data={this.state.data}
+        curr_sentence_index={this.state.curr_sentence_index}
+        data_length={this.state.data.length}
+        first_sentence={this.state.data[this.state.curr_sentence_index]}
+        curr_sentence={this.state.curr_sentence}
+        socket={this.props.socket}
+        recordGreenLight={
+          this.state.recordGreenLight &&
+          this.state.numFilesSavedTotal % this.state.numCams === 0
+        }
+        numFilesSaved={this.state.numFilesSavedTotal}
+        numCams={this.state.numCams}
+        updateGreenLightStatus={this.updateGreenLightStatus}
+        recordedProgress={this.state.recordedProgress}
+        updateRecordProgress={this.updateRecordProgress}
+        totalTime={this.state.totalTime}
+        updateTotalTime={this.updateTotalTime}
+        showFileSavingLoader={this.disp_showFileSavingLoader}
+      />
+    );
+  };
+
+  // * COMPONENT * //
+  comp_userResearchHeader = () => {
+    return (
+      <div>
+        <br />
+        <h1>For User Researcher Purpose Only</h1>
+        <hr />
+      </div>
+    );
+  };
+
+  // * COMPONENT * //
+  comp_cameraList = () => {
+    return (
+      <CameraList
+        socket={this.props.socket}
+        computerID={this.state.computerID}
+        computerStatus={this.state.computerStatus}
+        updateConnectionStatus={this.updateConnectionStatus}
+        addCamState={this.state.addCamState}
+        toggleCamState={this.helper_toggleCamState}
+      />
+    );
+  };
+
+  // * COMPONENT * //
+  comp_status = () => {
+    return (
+      <Status
+        data_length={this.state.data.length}
+        recordedProgress={this.state.recordedProgress}
+        helper_checkIfMobileView={this.helper_checkIfMobileView}
+        recordGreenLight={this.state.recordGreenLight}
+        socket={this.props.socket}
+      />
+    );
+  };
+
+  // * COMPONENT * //
+  comp_modals = () => {
+    return (
+      <div>
+        <Modal
+          modalID={'resetProgressModal'}
+          socket={this.props.socket}
+          title={'Are you sure?'}
+          message={'Resetting progress will be permanent.'}
+          buttonCancel={'Cancel'}
+          buttonConfirm={'Reset Progress'}
+          buttonConfirmId={'resetProgressBtn'}
+          toast={'Progress reset'}
+          confirmFunc={this.admin_resetProgress}
+        />
+        <Modal
+          modalID={'overallStatus'}
+          socket={this.props.socket}
+          title={'Status'}
+          onLoadFunc={this.getStatus}
+          message={this.comp_status()}
+          buttonConfirm={'Hide'}
+        />
+      </div>
+    );
+  };
+
+  // * COMPONENT * //
+  comp_debug = () => {
+    return (
+      <div style={{ margin: 'auto', textAlign: 'center' }}>
+        <button
+          onClick={() => {
+            this.helper_toggleModal('overallStatus');
+            this.getStatus();
+          }}
+          className='debug_button'
+        >
+          Status
+        </button>
+        <button
+          id='resetCamsBtn'
+          className='debug_button'
+          onClick={this.admin_resetCams}
+        >
+          Reset Cams
+        </button>
+        <button
+          className='debug_button'
+          onClick={() => {
+            this.helper_toggleModal('resetProgressModal');
+          }}
+        >
+          Reset Progress
+        </button>
+        <button className='debug_button' onClick={this.admin_refreshAll}>
+          Refresh All
+        </button>
+        <button
+          onClick={this.disp_showFileSavedMessage}
+          id='showSavedFilesBtn'
+          className='hidden_button'
+        ></button>
+
+        <pre hidden={this.state.numCams === 8}>
+          debug mode, remember to change num cams back to 8
+        </pre>
+      </div>
+    );
+  };
+
+  // * UTILITY * //
   readTextFile(file) {
     return fetch(file)
       .then(response => response.text())
@@ -85,6 +272,11 @@ class App extends React.Component {
         });
       });
   }
+
+  /**
+   * * UPDATE * 
+   * 
+   */
   updateFilesSaved = numFiles => {
     const successMessage =
       numFiles % this.state.numCams === 0
@@ -101,6 +293,11 @@ class App extends React.Component {
     }
   };
 
+  /** 
+   * * UPDATE *
+   * Updates the state computerID with param id
+   * @param {string} id 
+  */
   updateCompID = id => {
     const status = {};
     this.setState({ computerID: id });
@@ -110,7 +307,15 @@ class App extends React.Component {
     });
   };
 
-  style_boldString = (str, find) => {
+  /**
+   * * STYLE *
+   * Takes a string and finds a substring and returns a stylized version of it,
+   * specifically to add the 🖥 icon in front of the ID.
+   * @param {string} str The full string
+   * @param {string} find The particular substring to find
+   * @returns {string} The stylized string
+   */
+  style_addThisCpuIcon = (str, find) => {
     var re = new RegExp(find, 'g');
     return str.replace(re, '🖥: ' + find);
   };
@@ -164,7 +369,7 @@ class App extends React.Component {
       try {
         document.getElementById(
           'connection_status'
-        ).innerHTML = this.style_boldString(
+        ).innerHTML = this.style_addThisCpuIcon(
           JSON.stringify(status, null, 2),
           this.state.computerID
         );
@@ -368,62 +573,12 @@ class App extends React.Component {
     this.getStatus();
   };
 
-  comp_dataCollection = () => {
-    return (
-      <DataCollection
-        data={this.state.data}
-        updateName={this.updateName}
-        curr_sentence={this.state.curr_sentence}
-        socket={this.props.socket}
-        curr_sentence_index={this.state.curr_sentence_index}
-        curr_page={this.state.curr_page}
-        updatePage={this.updatePage}
-      />
-    );
-  };
-
   updateGreenLightStatus = bool => {
     this.setState({ recordGreenLight: bool });
   };
 
   updateTotalTime = time => {
     this.setState({ totalTime: time });
-  };
-
-  comp_tester = () => {
-    return (
-      <Tester
-        updateSentence={this.updateSentence}
-        data={this.state.data}
-        curr_sentence_index={this.state.curr_sentence_index}
-        data_length={this.state.data.length}
-        first_sentence={this.state.data[this.state.curr_sentence_index]}
-        curr_sentence={this.state.curr_sentence}
-        socket={this.props.socket}
-        recordGreenLight={
-          this.state.recordGreenLight &&
-          this.state.numFilesSavedTotal % this.state.numCams === 0
-        }
-        numFilesSaved={this.state.numFilesSavedTotal}
-        numCams={this.state.numCams}
-        updateGreenLightStatus={this.updateGreenLightStatus}
-        recordedProgress={this.state.recordedProgress}
-        updateRecordProgress={this.updateRecordProgress}
-        totalTime={this.state.totalTime}
-        updateTotalTime={this.updateTotalTime}
-        showFileSavingLoader={this.disp_showFileSavingLoader}
-      />
-    );
-  };
-
-  comp_userResearchHeader = () => {
-    return (
-      <div>
-        <br />
-        <h1>For User Researcher Purpose Only</h1>
-        <hr />
-      </div>
-    );
   };
 
   getStatus = () => {
@@ -449,17 +604,13 @@ class App extends React.Component {
     this.props.socket.emit('client: refresh all');
   };
 
-  comp_cameraList = () => {
-    return (
-      <CameraList
-        socket={this.props.socket}
-        computerID={this.state.computerID}
-        computerStatus={this.state.computerStatus}
-        updateConnectionStatus={this.updateConnectionStatus}
-        addCamState={this.state.addCamState}
-        toggleCamState={this.helper_toggleCamState}
-      />
-    );
+  admin_resetProgress = () => {
+    this.props.socket.emit('client: update recording progress', 0);
+    this.props.socket.emit('client: delete total time');
+    this.props.socket.emit('client: reset total files');
+    this.props.socket.emit('client: save total start time', new Date());
+    window.location = window.location.origin;
+    this.props.socket.emit('client: save total time', [0, 0, 0]);
   };
 
   helper_toggleModal = id => {
@@ -470,120 +621,8 @@ class App extends React.Component {
     return window.location.href.includes('mobile');
   };
 
-  admin_resetProgress = () => {
-    this.props.socket.emit('client: update recording progress', 0);
-    this.props.socket.emit('client: delete total time');
-    this.props.socket.emit('client: reset total files');
-    this.props.socket.emit('client: save total start time', new Date());
-    window.location = window.location.origin;
-    this.props.socket.emit('client: save total time', [0, 0, 0]);
-  };
-
-  comp_status = () => {
-    return (
-      <Status
-        data_length={this.state.data.length}
-        recordedProgress={this.state.recordedProgress}
-        helper_checkIfMobileView={this.helper_checkIfMobileView}
-        recordGreenLight={this.state.recordGreenLight}
-        socket={this.props.socket}
-      />
-    );
-  };
-
-  comp_modals = () => {
-    return (
-      <div>
-        <Modal
-          modalID={'resetProgressModal'}
-          socket={this.props.socket}
-          title={'Are you sure?'}
-          message={'Resetting progress will be permanent.'}
-          buttonCancel={'Cancel'}
-          buttonConfirm={'Reset Progress'}
-          buttonConfirmId={'resetProgressBtn'}
-          toast={'Progress reset'}
-          confirmFunc={this.admin_resetProgress}
-        />
-        <Modal
-          modalID={'overallStatus'}
-          socket={this.props.socket}
-          title={'Status'}
-          onLoadFunc={this.getStatus}
-          message={this.comp_status()}
-          buttonConfirm={'Hide'}
-        />
-      </div>
-    );
-  };
-
   helper_toggleCamState = () => {
     this.setState({ addCamState: !this.state.addCamState });
-  };
-
-  comp_debug = () => {
-    return (
-      <div style={{ margin: 'auto', textAlign: 'center' }}>
-        <button
-          onClick={() => {
-            this.helper_toggleModal('overallStatus');
-            this.getStatus();
-          }}
-          className='debug_button'
-        >
-          Status
-        </button>
-        <button
-          id='resetCamsBtn'
-          className='debug_button'
-          onClick={this.admin_resetCams}
-        >
-          Reset Cams
-        </button>
-        <button
-          className='debug_button'
-          onClick={() => {
-            this.helper_toggleModal('resetProgressModal');
-          }}
-        >
-          Reset Progress
-        </button>
-        <button className='debug_button' onClick={this.admin_refreshAll}>
-          Refresh All
-        </button>
-        <button
-          onClick={this.disp_showFileSavedMessage}
-          id='showSavedFilesBtn'
-          className='hidden_button'
-        ></button>
-
-        <pre hidden={this.state.numCams === 8}>
-          debug mode, remember to change num cams back to 8
-        </pre>
-      </div>
-    );
-  };
-
-  main_desktopView = () => {
-    return (
-      <div className='container'>
-        <Toggle id='debug_mode' />
-        {this.comp_debug()}
-        {this.comp_tester()}
-        {this.comp_userResearchHeader()}
-        <div className='contents'>
-          <div className='left_panel'>{this.comp_dataCollection()}</div>
-          <div className='right_panel cameras_container'>
-            {this.comp_cameraList()}
-          </div>
-          <div className=''></div>
-        </div>
-      </div>
-    );
-  };
-
-  main_mobileView = () => {
-    return <div onClick={() => this.getStatus()}>{this.comp_debug()}</div>;
   };
 
   downHandler(event) {
@@ -613,16 +652,6 @@ class App extends React.Component {
         console.error(NotYetLoadedException);
       }
     }
-  }
-
-  render() {
-    return (
-      <Router>
-        <Route path='/' exact component={this.main_desktopView} />
-        <Route path='/mobile' exact component={this.main_mobileView} />
-        {this.comp_modals()}
-      </Router>
-    );
   }
 }
 

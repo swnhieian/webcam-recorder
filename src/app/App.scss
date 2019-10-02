@@ -3,8 +3,9 @@ html,
 body {
   height: 100%;
   margin: 0;
-  background: rgba(0,0,0,0.7);
-  color: lightslategray;
+  // background: #202838;
+  background: rgba(0, 0, 0, 0.7);
+  color: #4E7CD8;
 }
 body {
   font-family: 'Nunito', 'Courier New', Courier, monospace;
@@ -28,8 +29,14 @@ body {
   background-color: rgba(0, 0, 0, 0.6) ;
   border-radius: 0.5em;
   border: transparent;
+  // height: 1.5em;
   color: darkgrey;
 }
+.debug_button:hover {
+  cursor: pointer;
+  box-shadow: 0px 0px 5px 2px #4E7CD8;
+}
+
 .camera_status {
   text-align: left;
   background: white;
@@ -84,6 +91,7 @@ body {
 .ct-toast-loading .cogo-toast {
   border-left: 1px dashed rgb(18, 113, 236);
 }
+
 .cogo-toast {
   display: grid;
   grid-template-columns: 20% auto 20%;
@@ -91,16 +99,27 @@ body {
   width: 200px;
   color: white;
 }
+.emoji-layout-container {
+  display: grid;
+  grid-template-columns: 20% auto 20%;
+  text-align: center;
+  // width: 200px;
+  color: white;
+}
 
-.cogo-toast-emoji-left {
+.cogo-toast-emoji-left,
+.emoji-layout-emoji-left {
   margin-top: auto;
   margin-bottom: auto;
   text-align: right;
+  margin-right: 1em;
 }
-.cogo-toast-emoji-right {
+.cogo-toast-emoji-right,
+.emoji-layout-emoji-right {
   margin-top: auto;
   margin-bottom: auto;
   text-align: left;
+  margin-left: 1em;
 }
 
 #btn_tester {

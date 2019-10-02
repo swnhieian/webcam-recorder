@@ -3,7 +3,6 @@ import './NameField.scss'
 import PropTypes from 'prop-types';
 
 export default class NameField extends Component {
-
   saveName = () => {
     let name = document.getElementById("name").value;
     // document.location.search = "name=" + name + "&sentence_index=0";
@@ -21,6 +20,7 @@ export default class NameField extends Component {
     this.props.socket.emit('client: dummy vid, do not save');
     this.props.socket.emit('client: update recording progress', 0);
     this.props.socket.emit('client: save total time', [0,0,0]);
+    this.props.socket.emit('client: save total start time', new Date())
     this.props.updateTesterContents();
     this.props.updateGreenLightStatus(true);
     

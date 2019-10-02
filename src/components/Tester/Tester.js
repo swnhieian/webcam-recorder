@@ -4,11 +4,12 @@ import PropTypes from 'prop-types';
 import InProcessScreen from './InProcessScreen.js';
 import Timer from '../Timer.js'
 import qs from '../../utils/qs'
+import ProgressBar from '../ProgressBar'
 
 function Tester(props) {
   const [intervalID, setIntervalID] = useState(undefined);
 
-  
+
   function comp_inProcessScreen() {
     return (
       <InProcessScreen
@@ -27,6 +28,7 @@ function Tester(props) {
         recordedProgress={props.recordedProgress}
         updateRecordProgress={props.updateRecordProgress}
         showFileSavingLoader={props.showFileSavingLoader}
+        comp_timer={comp_timer}
       />
     );
   }
@@ -59,13 +61,13 @@ function Tester(props) {
         min = 0;
       }
       time = [hour, min, sec];
-      document.getElementById('record_time_content').innerHTML =
-        'Total Recording Time—' +
-        ('0' + hour).slice(-2) +
-        ':' +
-        ('0' + min).slice(-2) +
-        ':' +
-        ('0' + sec).slice(-2);
+document.getElementById('record_time_content').innerHTML =
+  'Total Recording Time—' +
+  ('0' + hour).slice(-2) +
+  ':' +
+  ('0' + min).slice(-2) +
+  ':' +
+  ('0' + sec).slice(-2);
     }, 1000);
   }
 
@@ -94,12 +96,24 @@ function Tester(props) {
   return (
     <div className='testing_screen'>
       {comp_totalTimer()}
-      {props.comp_progressBar(props.recordedProgress, props.data_length - 1, 'center', 2)}
+      <ProgressBar
+        curr={props.recordedProgress}
+        total={props.data_length - 1}
+        align={'center'}
+        strokeWidth={2}
+      />
       <div className='middle'>
         <div className='inner'>{comp_inProcessScreen()}</div>
         {comp_timer()}
       </div>
-      <pre hidden={(props.recordGreenLight || props.curr_sentence_index === 0) || !qs('name')} className='warning_message'>
+      <pre
+        hidden={
+          props.recordGreenLight ||
+          props.curr_sentence_index === 0 ||
+          !qs('name')
+        }
+        className='warning_message'
+      >
         如果等保存时间多余10秒钟，通知老师来从设置机器
       </pre>
     </div>
@@ -119,7 +133,6 @@ Tester.propTypes = {
   numCams: PropTypes.number.isRequired,
   recordedProgress: PropTypes.number.isRequired,
   updateRecordProgress: PropTypes.func.isRequired,
-  comp_progressBar: PropTypes.func.isRequired,
   totalTime: PropTypes.array.isRequired,
   updateTotalTime: PropTypes.func.isRequired,
   showFileSavingLoader: PropTypes.func.isRequired

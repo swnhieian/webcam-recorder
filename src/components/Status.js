@@ -1,10 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import qs from '../utils/qs';
 import PropTypes from 'prop-types';
 import ProgressBar from './ProgressBar';
 
 export default function Status(props) {
+  const [remainingWords, setRemainingWords] = useState(Infinity)
+
   let intervalID = undefined
+
+  let i = 0; 
   useEffect(() => {
     // console.log('status page loaded');
     clearInterval(intervalID);
@@ -30,6 +34,9 @@ export default function Status(props) {
       }
     });
     showTime();
+    setRemainingWords(0);
+    console.log(remainingWords);
+    // setRemainingWords(totalWords - wordsCompleted)
   }, [])
 
   const displayTime = time => {
@@ -77,7 +84,6 @@ export default function Status(props) {
     }
   };
 
-
   const getSeconds = date => 
     date.getHours() * 60 * 60 +
     date.getMinutes() * 60 +
@@ -87,6 +93,7 @@ export default function Status(props) {
     // console.log('asking for start time now');
     props.socket.emit('client: ask for start time');
   };
+
   const showTime = () => {
     try {
       document.getElementById('showTimeBtn').click();
@@ -95,6 +102,9 @@ export default function Status(props) {
       //
     }
   };
+
+
+
   return (
     <div>
       <ProgressBar
@@ -104,8 +114,10 @@ export default function Status(props) {
         strokeWidth={3}
       />
       <pre id='total_time_elapsed'>00:00:00</pre>
+      <pre id="total_words"> / {props.totalWords}</pre>
       <pre id='connection_status'></pre>
       <pre id='num_files_saved'></pre>
+      {i++}
       <pre
         hidden={
           props.recordGreenLight ||
@@ -131,4 +143,6 @@ Status.propTypes = {
   recordGreenLight: PropTypes.bool.isRequired,
   helper_checkIfMobileView: PropTypes.func.isRequired,
   socket: PropTypes.object.isRequired,
+  totalWords: PropTypes.number.isRequired
+
 };

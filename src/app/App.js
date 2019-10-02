@@ -19,6 +19,7 @@ import DataCollection from '../components/Table/DataCollection';
 import Modal from '../components/Modal'
 import Status from '../components/Status'
 import Toggle from '../components/Toggle/Toggle'
+import Fireworks from '../components/Fireworks/Fireworks'
 
 // data
 import sentences from '../assets/data/sentences.txt';
@@ -41,11 +42,14 @@ class App extends React.Component {
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
       connectedOrderMap: {},
-      numCams: 8,
+      numCams: 1,
       recordedProgress: 0,
       addCamState: false,
       totalTime: [],
-      startTime: undefined
+      startTime: undefined,
+      totalWords: 0,
+      remainingWords: 0
+
     };
     if (!this.helper_checkIfMobileView) {
       this.props.socket.emit('client: update sentence_index', {
@@ -66,6 +70,7 @@ class App extends React.Component {
         <Route path='/' exact component={this.main_desktopView} />
         <Route path='/mobile' exact component={this.main_mobileView} />
         {this.comp_modals()}
+        {this.comp_fireWorks()}
       </Router>
     );
   }
@@ -105,6 +110,12 @@ class App extends React.Component {
   main_mobileView = () => {
     return <div onClick={() => this.getStatus()}>{this.comp_debug()}</div>;
   };
+
+  comp_fireWorks = () => {
+    if (this.state.recordedProgress + 1 === this.state.data.length) {
+      return <Fireworks />
+    }
+  }
 
   // * COMPONENT * //
   comp_dataCollection = () => {
@@ -177,6 +188,7 @@ class App extends React.Component {
   comp_status = () => {
     return (
       <Status
+        totalWords={this.state.totalWords}
         data_length={this.state.data.length}
         recordedProgress={this.state.recordedProgress}
         helper_checkIfMobileView={this.helper_checkIfMobileView}
@@ -269,6 +281,9 @@ class App extends React.Component {
           this.setState({ curr_sentence }, () => {
             // console.log(this.state.curr_sentence)
           });
+          this.setState({
+            totalWords: this.state.data.reduce((sum, sentence) => sum + sentence.length, 0)
+          })
         });
       });
   }
@@ -486,7 +501,7 @@ class App extends React.Component {
     //console.log("in updateSentence(" + curr_sentence + "):" + qs('name'));
     if (curr_sentence === '$next') {
       if (this.state.curr_sentence_index + 1 === this.state.data.length) {
-        alert('实验结束！谢谢您的参与');
+        // this.initFireWorks()
       } else {
         this.setState(
           {

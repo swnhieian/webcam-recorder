@@ -180,7 +180,6 @@ io.on('connection', function(socket) {
           'server: response for start time',
           JSON.parse(content).startTime
         );
-        console.log('emitted!!!', JSON.parse(content).startTime);
       } catch (FileDNEError) {
         const startTime = new Date();
         saveData({ startTime }, START_TIME_PATH);
@@ -203,7 +202,6 @@ io.on('connection', function(socket) {
   socket.on('client: delete total time', function() {
     fs.unlinkSync(TOTAL_TIME_PATH, err => {
       if (err) throw err;
-      console.log('total time path deleted');
     });
   });
 
@@ -235,15 +233,12 @@ io.on('connection', function(socket) {
   });
 
   socket.on('client: update recording progress', function(progress) {
-    // console.log({progress});
     saveData({progress}, PROGRESS_PATH);
     sendProgressUpdate();
-    // console.log('updating progress', progress);
   });
 
   socket.on('client: check for progress', function() {
     sendProgressUpdate();
-    // console.log('check progress');
   });
 
   socket.on('client: ping for connection status', function() {
@@ -260,8 +255,6 @@ io.on('connection', function(socket) {
 
   socket.on('client: update recording status', function(status) {
     saveConnection(socket, status[socket.id])
-
-    // console.log('server: updated recording status', JSON.stringify(status));
   });
   
   socket.on('client: dummy vid, do not save', function() {
@@ -351,8 +344,7 @@ io.on('connection', function(socket) {
     });
 
     io.emit('server: save files successful', numSaved);
-
-  })
+  });
 });
 
 

@@ -9,9 +9,6 @@ import { HashRouter as Router, Route } from "react-router-dom";
 // scss
 import './App.scss';
 
-// app-utils
-// import { this.updateFilesSaved } from './app-utils/update.js'
-
 // components
 import CameraList from '../components/CameraList/CameraList';
 import Tester from '../components/Tester/Tester';
@@ -19,7 +16,7 @@ import DataCollection from '../components/Table/DataCollection';
 import Modal from '../components/Modal'
 import Status from '../components/Status'
 import Toggle from '../components/Toggle/Toggle'
-import Fireworks from '../components/Fireworks/Fireworks'
+import CompleteAnimation from '../components/CompleteAnimation/CompleteAnimation'
 
 // data
 import sentences from '../assets/data/sentences.txt';
@@ -50,6 +47,7 @@ class App extends React.Component {
       totalWords: 0,
       remainingWords: 0
     };
+
     if (!this.helper_checkIfMobileView) {
       this.props.socket.emit('client: update sentence_index', {
         name: qs('name'),
@@ -69,7 +67,7 @@ class App extends React.Component {
         <Route path='/' exact component={this.main_desktopView} />
         <Route path='/mobile' exact component={this.main_mobileView} />
         {this.comp_modals()}
-        {this.comp_fireWorks()}
+        {this.comp_completeAnimation()}
       </Router>
     );
   }
@@ -83,7 +81,6 @@ class App extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('keydown', this.downHandler);
-    // window.removeEventListener('beforeunload');
   }
 
   // * MAIN VIEW * //
@@ -110,9 +107,12 @@ class App extends React.Component {
     return <div onClick={() => this.getStatus()}>{this.comp_debug()}</div>;
   };
 
-  comp_fireWorks = () => {
+  comp_completeAnimation = () => {
     if (this.state.recordedProgress + 1 === this.state.data.length) {
-      return <Fireworks />
+      document.getElementById('testerNextBtn').disabled = true;
+      return (
+        <CompleteAnimation />
+      )
     }
   }
 

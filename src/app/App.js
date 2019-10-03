@@ -26,6 +26,10 @@ class App extends React.Component {
   per_page = 8;
   curr_index = qs('sentence_index');
 
+  /**
+   * Constructor for main react App Component
+   * @param {object} props 
+   */
   constructor(props) {
     super(props);
     this.state = {
@@ -50,10 +54,13 @@ class App extends React.Component {
     };
   }
 
+  /**
+   * **ReactJS Framework Method**  
+   */
   render() {
     return (
       <Router>
-        <Route path='/' exact component={this.main_desktopView} />
+        <Route path='/' exact component={this.main_userView} />
         <Route path='/admin' exact component={this.main_adminView} />
         {this.comp_modals()}
         {this.comp_completeAnimation()}
@@ -61,23 +68,29 @@ class App extends React.Component {
     );
   }
 
+  /**
+   * **ReactJS Framework Method**
+   */
   componentDidMount() {
-    this.helper_emitInitialListeners();
+    this.helper_emitInitialSocketMessages();
     this.readTextFile(sentences);
     this.initSocketListeners();
     // this.pingServer();
     window.addEventListener('keydown', this.downHandler);
   }
 
+  /**
+   * **ReactJS Framework Method** 
+   */
   componentWillUnmount() {
     window.removeEventListener('keydown', this.downHandler);
   }
 
   /**
-   * **DesktopView**
+   * **Component: User Page** 
    * Renders components for desktop view
    */
-  main_desktopView = () => {
+  main_userView = () => {
     return (
       <div className='container'>
         <Toggle id='debug_mode' />
@@ -96,7 +109,7 @@ class App extends React.Component {
   };
 
   /**
-   * **AdminView Component**
+   * **Component: Admin Page**
    * Renders components for mobile view
    */
   main_adminView = () => {
@@ -104,7 +117,7 @@ class App extends React.Component {
   };
 
   /**
-   * **CompleteAnimation Component**
+   * **Component: Animation for Study Completion**
    */
   comp_completeAnimation = () => {
     if (this.state.recordedProgress + 1 === this.state.data.length) {
@@ -368,6 +381,11 @@ class App extends React.Component {
     }
   };
 
+  /**
+   * **Socket Listeners**
+   * Adds socket listeners to the page to respond to messages sent
+   * from server
+   */
   initSocketListeners = () => {
     this.props.socket.on('server: connected sync id', id => {
       if (this.updateCompID) this.updateCompID(id);
@@ -389,10 +407,6 @@ class App extends React.Component {
       } catch (NotOnPageError) {
         //
       }
-    });
-
-    this.props.socket.on('server: response for recording status', () => {
-      // console.log('beeppppps' + JSON.stringify(status));
     });
 
     this.props.socket.on('server: response for progress', progress => {
@@ -459,8 +473,6 @@ class App extends React.Component {
     });
 
     this.props.socket.on('server: computer connected order', connectedOrder => {
-      // const id = Object.keys(connectedOrder[0])
-      // const order = connectedOrder[id];
       this.setState({
         connectedOrderMap: update(this.state.connectedOrderMap, {
           $merge: connectedOrder
@@ -495,27 +507,29 @@ class App extends React.Component {
     }
   }
 
+  /**
+   * **Update: Sentence**
+   * Sent as a prop to components to update app-level state of 
+   * curr_sentence_index, and updates server with new index. It also updates 
+   * url query without refreshing to reflect current index.
+   * @param {string} curr_sentence
+   */
   updateSentence = curr_sentence => {
-    //console.log("in updateSentence(" + curr_sentence + "):" + qs('name'));
     if (curr_sentence === '$next') {
-      if (this.state.curr_sentence_index + 1 === this.state.data.length) {
-        // this.initFireWorks()
-      } else {
-        this.setState(
-          {
-            curr_sentence_index: this.state.curr_sentence_index + 1
-          },
-          () => {
-            this.updateSentence(
-              this.state.data[this.state.curr_sentence_index]
-            );
-            this.props.socket.emit('client: update sentence_index', {
-              name: qs('name'), //qs['name'],
-              curr_sentence_index: this.state.curr_sentence_index
-            });
-          }
-        );
-      }
+      this.setState(
+        {
+          curr_sentence_index: this.state.curr_sentence_index + 1
+        },
+        () => {
+          this.updateSentence(
+            this.state.data[this.state.curr_sentence_index]
+          );
+          this.props.socket.emit('client: update sentence_index', {
+            name: qs('name'),
+            curr_sentence_index: this.state.curr_sentence_index
+          });
+        }
+      );
     } else if (curr_sentence === '$prev') {
       this.setState(
         {

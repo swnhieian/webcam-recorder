@@ -9,9 +9,6 @@ import { HashRouter as Router, Route } from "react-router-dom";
 // scss
 import './App.scss';
 
-// app-utils
-// import { this.updateFilesSaved } from './app-utils/update.js'
-
 // components
 import CameraList from '../components/CameraList/CameraList';
 import Tester from '../components/Tester/Tester';
@@ -19,23 +16,28 @@ import DataCollection from '../components/Table/DataCollection';
 import Modal from '../components/Modal'
 import Status from '../components/Status'
 import Toggle from '../components/Toggle/Toggle'
-import Fireworks from '../components/Fireworks/Fireworks'
+import CompleteAnimation from '../components/CompleteAnimation/CompleteAnimation'
 
 // data
 import sentences from '../assets/data/sentences.txt';
 // import sentences from '../assets/data/sentences-english-test.txt';
 
 class App extends React.Component {
+  per_page = 8;
+  curr_index = qs('sentence_index');
+
+  /**
+   * Constructor for main react App Component
+   * @param {object} props 
+   */
   constructor(props) {
     super(props);
-    let per_page = 8;
-    let curr_index = qs('sentence_index');
     this.state = {
       curr_sentence: '',
-      curr_sentence_index: curr_index ? Number(curr_index) : 0,
+      curr_sentence_index: this.curr_index ? Number(this.curr_index) : 0,
       data: [],
-      per_page: per_page,
-      curr_page: curr_index ? Math.floor(Number(curr_index) / per_page) + 1 : 1,
+      per_page: this.per_page,
+      curr_page: this.curr_index ? Math.floor(Number(this.curr_index) / this.per_page) + 1 : 1,
       computerStatus: {},
       recordGreenLight: false,
       computerID: -1,
@@ -49,46 +51,46 @@ class App extends React.Component {
       startTime: undefined,
       totalWords: 0,
       remainingWords: 0
-
     };
-    if (!this.helper_checkIfMobileView) {
-      this.props.socket.emit('client: update sentence_index', {
-        name: qs('name'),
-        curr_sentence_index: this.state.curr_sentence_index
-      });
-    } else {
-      this.props.socket.emit('client: ask for recording status');
-    }
-
-    props.socket.emit('client: check for progress');
-    props.socket.emit('client: ask for sync id');
   }
 
+  /**
+   * **ReactJS Framework Method**  
+   */
   render() {
     return (
       <Router>
-        <Route path='/' exact component={this.main_desktopView} />
-        <Route path='/mobile' exact component={this.main_mobileView} />
+        <Route path='/' exact component={this.main_userView} />
+        <Route path='/admin' exact component={this.main_adminView} />
         {this.comp_modals()}
-        {this.comp_fireWorks()}
+        {this.comp_completeAnimation()}
       </Router>
     );
   }
 
+  /**
+   * **ReactJS Framework Method**
+   */
   componentDidMount() {
+    this.helper_emitInitialSocketMessages();
     this.readTextFile(sentences);
     this.initSocketListeners();
     // this.pingServer();
     window.addEventListener('keydown', this.downHandler);
   }
 
+  /**
+   * **ReactJS Framework Method** 
+   */
   componentWillUnmount() {
     window.removeEventListener('keydown', this.downHandler);
-    // window.removeEventListener('beforeunload');
   }
 
-  // * MAIN VIEW * //
-  main_desktopView = () => {
+  /**
+   * **Component: User Page** 
+   * Renders components for desktop view
+   */
+  main_userView = () => {
     return (
       <div className='container'>
         <Toggle id='debug_mode' />
@@ -106,14 +108,23 @@ class App extends React.Component {
     );
   };
 
-  // * MAIN VIEW * //
-  main_mobileView = () => {
+  /**
+   * **Component: Admin Page**
+   * Renders components for mobile view
+   */
+  main_adminView = () => {
     return <div onClick={() => this.getStatus()}>{this.comp_debug()}</div>;
   };
 
-  comp_fireWorks = () => {
+  /**
+   * **Component: Animation for Study Completion**
+   */
+  comp_completeAnimation = () => {
     if (this.state.recordedProgress + 1 === this.state.data.length) {
-      return <Fireworks />
+      document.getElementById('testerNextBtn').disabled = true;
+      return (
+        <CompleteAnimation />
+      )
     }
   }
 
@@ -370,6 +381,11 @@ class App extends React.Component {
     }
   };
 
+  /**
+   * **Socket Listeners**
+   * Adds socket listeners to the page to respond to messages sent
+   * from server
+   */
   initSocketListeners = () => {
     this.props.socket.on('server: connected sync id', id => {
       if (this.updateCompID) this.updateCompID(id);
@@ -391,10 +407,6 @@ class App extends React.Component {
       } catch (NotOnPageError) {
         //
       }
-    });
-
-    this.props.socket.on('server: response for recording status', () => {
-      // console.log('beeppppps' + JSON.stringify(status));
     });
 
     this.props.socket.on('server: response for progress', progress => {
@@ -461,8 +473,6 @@ class App extends React.Component {
     });
 
     this.props.socket.on('server: computer connected order', connectedOrder => {
-      // const id = Object.keys(connectedOrder[0])
-      // const order = connectedOrder[id];
       this.setState({
         connectedOrderMap: update(this.state.connectedOrderMap, {
           $merge: connectedOrder
@@ -497,27 +507,26 @@ class App extends React.Component {
     }
   }
 
+  /**
+   * **Update: Sentence** 
+   * Sent as a prop to components to update app-level state of 
+   * curr_sentence_index, and updates server with new index. It also updates 
+   * url query without refreshing to reflect current index.
+   * @param {string} curr_sentence
+   */
   updateSentence = curr_sentence => {
-    //console.log("in updateSentence(" + curr_sentence + "):" + qs('name'));
     if (curr_sentence === '$next') {
-      if (this.state.curr_sentence_index + 1 === this.state.data.length) {
-        // this.initFireWorks()
-      } else {
-        this.setState(
-          {
-            curr_sentence_index: this.state.curr_sentence_index + 1
-          },
-          () => {
-            this.updateSentence(
-              this.state.data[this.state.curr_sentence_index]
-            );
-            this.props.socket.emit('client: update sentence_index', {
-              name: qs('name'), //qs['name'],
-              curr_sentence_index: this.state.curr_sentence_index
-            });
-          }
-        );
-      }
+      this.setState({curr_sentence_index: this.state.curr_sentence_index + 1},
+        () => {
+          this.updateSentence(
+            this.state.data[this.state.curr_sentence_index]
+          );
+          this.props.socket.emit('client: update sentence_index', {
+            name: qs('name'),
+            curr_sentence_index: this.state.curr_sentence_index
+          });
+        }
+      );
     } else if (curr_sentence === '$prev') {
       this.setState(
         {
@@ -627,6 +636,19 @@ class App extends React.Component {
     window.location = window.location.origin;
     this.props.socket.emit('client: save total time', [0, 0, 0]);
   };
+
+  helper_emitInitialSocketMessages = () => {
+    if (!this.helper_checkIfMobileView) {
+      this.props.socket.emit('client: update sentence_index', {
+        name: qs('name'),
+        curr_sentence_index: this.state.curr_sentence_index
+      });
+    } else {
+      this.props.socket.emit('client: ask for recording status');
+    }
+    this.props.socket.emit('client: check for progress');
+    this.props.socket.emit('client: ask for sync id');
+  }
 
   helper_toggleModal = id => {
     document.getElementById(id).click();

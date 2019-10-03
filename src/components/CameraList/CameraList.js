@@ -327,7 +327,11 @@ export default function CameraList(props) {
       if (state === "paused") {
         recorder.resumeRecording();
       } else if (state === "stopped"){
-        recorder.startRecording();
+        try {
+          recorder.startRecording();
+        } catch (NotYetLoadedException) {
+          cogoToast.warn('Camera not yet loaded!');
+        }
       }
       triggerRecordStatusUpdate(temp, recorder, cam);
       return availableCams;

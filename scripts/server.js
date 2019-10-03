@@ -3,13 +3,48 @@ const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {origins: '*:*'});
 const fs = require('fs');
+const exec = require('child_process').exec;
+const path = require('path')
+const colors = require('colors/safe');
+const os = require('os');
+const ifaces = os.networkInterfaces();
 
-app.get('/', function(req, res) {
-  res.send('<h1>Server Started</h1>');
+let parentDir = path.resolve(process.cwd(), '..');
+exec('getParentDirectory', {
+  cwd: parentDir
 });
+parentDir += '/webcam-recorder/server/nodejs_server/';
+const RECORDING_STATUS_PATH = parentDir + 'recording_status.json'
+const PROGRESS_PATH = parentDir + 'progress.json'
+const CONNECTION_STATUS_PATH = parentDir + 'connection_status.json'
+const TOTAL_TIME_PATH = parentDir + 'time.json'
+const START_TIME_PATH = parentDir + 'start_time.json'
 
-const saveData = (data, path) => {
-  try {
+let connection_status = {};
+let numSaved = 0;
+let numConnected = 0;
+let online = []
+let recordedStart = undefined;
+const ip = getIP();
+
+function getIP() {
+  let address = undefined;
+  Object.keys(ifaces).forEach(function (ifname) {
+    ifaces[ifname].forEach(function (iface) {
+      if ('IPv4' !== iface.family || iface.internal !== false) {
+        // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
+        return;
+      }
+      if (ifname === 'en0') {
+        address = iface.address;
+      }
+    });
+  });
+  return address;
+}
+
+function saveData(data, path) {
+try {
     fs.writeFileSync(path, JSON.stringify(data))
   } catch (err) {
     console.error(err)
@@ -21,9 +56,9 @@ function readData(path, callback) {
     if (err) return callback(err);
     callback(null, content);
   });
-}
+} 
 
-const updateRecordingStatus = (data, path) => {
+function updateRecordingStatus(data, path) {
   try {
     return JSON.parse(fs.readFileSync(path, 'utf8'))
   } catch (err) {
@@ -36,14 +71,14 @@ const updateRecordingStatus = (data, path) => {
   }
 }
 
-const saveConnection = (socket, status) => {
+function saveConnection(socket, status) {
   connection_status.temp = socket.id; // using computer id as variable for object name
   connection_status[connection_status.temp] = status; // cameras
   delete connection_status.temp;
   saveData(connection_status, CONNECTION_STATUS_PATH);
 }
 
-const sendProgressUpdate = () => {
+function sendProgressUpdate() {
   readData(PROGRESS_PATH, function (err, content) {
     try {
       io.emit('server: response for progress', JSON.parse(content).progress);
@@ -54,17 +89,72 @@ const sendProgressUpdate = () => {
   }); 
 }
 
-const RECORDING_STATUS_PATH = './recording_status.json'
-const PROGRESS_PATH = './progress.json'
-const CONNECTION_STATUS_PATH = './connection_status.json'
-const TOTAL_TIME_PATH = './time.json'
-const START_TIME_PATH = './start_time.json'
-let connection_status = {};
-let numSaved = 0;
-let numConnected = 0;
+function displayOnline() {
+  console.log(colors.green(colors.bold('🛫 online    : ') + online));
+}
+
+function disconnect(id) {
+  var index = online.indexOf(id);
+  if (index > -1) {
+    online.splice(index, 1);
+  }
+  displayRemoved(id)
+}
+
+function clearConsole(lines) {
+  for (var i = 0; i < lines; i++) {
+    console.log('\r\n');
+  }
+}
+
+function displayRemoved(id) {
+  const comma = (online.length === 0) ? '' : ', '
+  const print =
+    colors.red.bold('🛬 online    : ') +
+    colors.green(online.toString()) +
+    comma +
+    colors.red.strikethrough(id);
+  clearConsole(13);
+  console.log(print);
+}
+
+function getTimeRecorded() {
+  const totalTimeRecorded = new Date() - recordedStart;
+  const seconds = Math.floor(totalTimeRecorded / 1000);
+  let milliSeconds = totalTimeRecorded - seconds * 1000;
+  milliSeconds = totalTimeRecorded > 0 ? Math.round(totalTimeRecorded / 10).toString().substring(0, 2) : 0;
+  console.log(colors.magenta(colors.bold('⏱  time      : ') + '00:' + ('0' + seconds).split(-2) + ':' + milliSeconds));
+}
+
+function printLine(gap, print) {
+  const width = process.stdout.columns;
+  for (let i = 0; i < (width - 3 - gap) / 2; i++) {
+    print += '-';
+  }
+  return print
+}
+
+function printLineMessage(message) {
+  let print = printLine(message.length, '');
+  print += ' ' + message + ' '
+  print += printLine(message.length, '');
+  console.log(colors.white(print));
+}
+
+app.get('/', function (req, res) {
+  res.send('<h1>Server Started</h1>');
+});
+
+http.listen(5000, function () {
+  clearConsole(13);
+  getIP();
+  console.log(colors.green(colors.bold('👂🏻 listening : ') + 'localhost:5000 or ' + ip + ':5000'));
+});
+
 
 io.on('connection', function(socket) {
-  console.log('computer connected at ' + socket.id);
+  online.push(socket.id)
+  displayOnline();
 
   saveConnection(socket);
   let temp = {}
@@ -74,13 +164,12 @@ io.on('connection', function(socket) {
   socket.on('client: ask for sync id', function() {
     io.emit('server: connected sync id', socket.id);
   })
+
   socket.on('client: reset cams', function() {
     io.emit('server: reset cams');
   });
 
   socket.on('client: save total start time', startTime => {
-    console.log(startTime);
-    console.log(typeof startTime);
     saveData({ startTime }, START_TIME_PATH);
   });
 
@@ -91,14 +180,13 @@ io.on('connection', function(socket) {
           'server: response for start time',
           JSON.parse(content).startTime
         );
-        console.log('emitted!!!', JSON.parse(content).startTime);
       } catch (FileDNEError) {
         const startTime = new Date();
         saveData({ startTime }, START_TIME_PATH);
         io.emit('server: response for start time', startTime);
       }
     });
-  })
+  });
   
   socket.on('client: get total time', function() {
     readData(TOTAL_TIME_PATH, function(err, content) {
@@ -109,16 +197,16 @@ io.on('connection', function(socket) {
         io.emit('server: response for total time', [0,0,0]);
       }
     })
-  })
+  });
+
   socket.on('client: delete total time', function() {
     fs.unlinkSync(TOTAL_TIME_PATH, err => {
       if (err) throw err;
-      console.log('total time path deleted');
     });
   });
 
   socket.on('disconnect', function() {
-    console.log('computer disconnected at ' + socket.id);
+    disconnect(socket.id);
     const socketid = socket.id
     delete connection_status[socketid];
     saveData(connection_status, CONNECTION_STATUS_PATH);
@@ -145,15 +233,12 @@ io.on('connection', function(socket) {
   });
 
   socket.on('client: update recording progress', function(progress) {
-    // console.log({progress});
     saveData({progress}, PROGRESS_PATH);
     sendProgressUpdate();
-    // console.log('updating progress', progress);
   });
 
   socket.on('client: check for progress', function() {
     sendProgressUpdate();
-    // console.log('check progress');
   });
 
   socket.on('client: ping for connection status', function() {
@@ -170,28 +255,27 @@ io.on('connection', function(socket) {
 
   socket.on('client: update recording status', function(status) {
     saveConnection(socket, status[socket.id])
-
-    // console.log('server: updated recording status', JSON.stringify(status));
   });
   
-
   socket.on('client: dummy vid, do not save', function() {
-    console.log('removed first vid');
     io.emit('server: dummy vid, do not save');
   });
 
   socket.on('client: start cams', function() {
-    console.log('received from server: start cams');
+    console.log(colors.yellow(colors.bold('✨ cmd       : ') + 'start cams'));
+    recordedStart = new Date();
     io.emit('server: start cams')
   });
   
   socket.on('client: stop cams', function() {
-    console.log('received from server: stop cams');
+    console.log(colors.yellow(colors.bold('✨ cmd       : ') + 'stop cams'));
+    getTimeRecorded();
     io.emit('server: stop cams');
   });
 
   socket.on('client: start testing', function(data) {
-    console.log('received from server: ' + data.name, data.sentence_index);
+    console.log(colors.green.bold('👩🏻‍💻 user      : ') + colors.white(data.name));
+    printLineMessage('starting recording process');
     saveData(data, RECORDING_STATUS_PATH);
   });
 
@@ -215,7 +299,6 @@ io.on('connection', function(socket) {
 
   let resetTime = false;
   socket.on('client: save total time', function(time) {
-    console.log('received save total time command');
     if (resetTime) {
       saveData({ time: [0, 0, 0]}, TOTAL_TIME_PATH);
       resetTime = false;
@@ -224,7 +307,6 @@ io.on('connection', function(socket) {
       saveData(time, TOTAL_TIME_PATH);
     }
     if (time === 'reset') {
-      console.log('detected reset command, will reset next one');
       resetTime = true;
     } 
   });
@@ -232,7 +314,6 @@ io.on('connection', function(socket) {
   socket.on('client: save data', function(data) {
     numSaved += 1;
     let status = updateRecordingStatus(data, RECORDING_STATUS_PATH);
-    console.log(status);
 
     let name = status.name;
     let sentence_index = status.sentence_index;
@@ -240,7 +321,7 @@ io.on('connection', function(socket) {
     const camera_id = data.camera_id.substring(0, 15);
     const blob = data.blob;
 
-    let nameDir = "./" + name;
+    let nameDir = parentDir + name;
     let sentenceDir = "/" + sentence_index
     const fileName = "/" + camera_id + ".webm"
 
@@ -257,15 +338,13 @@ io.on('connection', function(socket) {
       if (err) {
         return console.log(err)
       }
-      console.log(sentence_index + ': saved, ' + 'numSaved: ' + numSaved);
+      console.log(colors.magenta( 
+        colors.bold('📂 file      : ') + fullPath.substring(1)
+      ));
     });
-    // console.log("files saved: " + numSaved);
-    // setTimeout(()=> {
+
     io.emit('server: save files successful', numSaved);
-    // }, 5000)
-  })
+  });
 });
 
-http.listen(5000, function() {
-  console.log('listening on *:5000');
-});
+

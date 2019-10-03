@@ -49,7 +49,6 @@ class App extends React.Component {
       startTime: undefined,
       totalWords: 0,
       remainingWords: 0
-
     };
     if (!this.helper_checkIfMobileView) {
       this.props.socket.emit('client: update sentence_index', {

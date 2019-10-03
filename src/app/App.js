@@ -121,7 +121,11 @@ class App extends React.Component {
    */
   comp_completeAnimation = () => {
     if (this.state.recordedProgress + 1 === this.state.data.length) {
-      document.getElementById('testerNextBtn').disabled = true;
+      try {
+        document.getElementById('testerNextBtn').disabled = true;
+      } catch(NotYetLoadedException) {
+        //
+      }
       return (
         <CompleteAnimation />
       )

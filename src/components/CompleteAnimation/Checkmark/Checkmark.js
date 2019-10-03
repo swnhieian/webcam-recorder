@@ -1,6 +1,9 @@
 import React from 'react'
 import './Checkmark.scss'
 
+/**
+ * **Credits: https://codepen.io/ashleygalante/pen/nwoKh**
+ */
 export default function Checkmark() {
   return (
     <div className="checkmark">

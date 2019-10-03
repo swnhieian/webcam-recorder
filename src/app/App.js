@@ -23,23 +23,24 @@ import sentences from '../assets/data/sentences.txt';
 // import sentences from '../assets/data/sentences-english-test.txt';
 
 class App extends React.Component {
+  per_page = 8;
+  curr_index = qs('sentence_index');
+
   constructor(props) {
     super(props);
-    let per_page = 8;
-    let curr_index = qs('sentence_index');
     this.state = {
       curr_sentence: '',
-      curr_sentence_index: curr_index ? Number(curr_index) : 0,
+      curr_sentence_index: this.curr_index ? Number(this.curr_index) : 0,
       data: [],
-      per_page: per_page,
-      curr_page: curr_index ? Math.floor(Number(curr_index) / per_page) + 1 : 1,
+      per_page: this.per_page,
+      curr_page: this.curr_index ? Math.floor(Number(this.curr_index) / this.per_page) + 1 : 1,
       computerStatus: {},
       recordGreenLight: false,
       computerID: -1,
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
       connectedOrderMap: {},
-      numCams: 1,
+      numCams: 8,
       recordedProgress: 0,
       addCamState: false,
       totalTime: [],
@@ -47,25 +48,13 @@ class App extends React.Component {
       totalWords: 0,
       remainingWords: 0
     };
-
-    if (!this.helper_checkIfMobileView) {
-      this.props.socket.emit('client: update sentence_index', {
-        name: qs('name'),
-        curr_sentence_index: this.state.curr_sentence_index
-      });
-    } else {
-      this.props.socket.emit('client: ask for recording status');
-    }
-
-    props.socket.emit('client: check for progress');
-    props.socket.emit('client: ask for sync id');
   }
 
   render() {
     return (
       <Router>
         <Route path='/' exact component={this.main_desktopView} />
-        <Route path='/mobile' exact component={this.main_mobileView} />
+        <Route path='/admin' exact component={this.main_adminView} />
         {this.comp_modals()}
         {this.comp_completeAnimation()}
       </Router>
@@ -73,6 +62,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
+    this.helper_emitInitialListeners();
     this.readTextFile(sentences);
     this.initSocketListeners();
     // this.pingServer();
@@ -83,7 +73,10 @@ class App extends React.Component {
     window.removeEventListener('keydown', this.downHandler);
   }
 
-  // * MAIN VIEW * //
+  /**
+   * **DesktopView**
+   * Renders components for desktop view
+   */
   main_desktopView = () => {
     return (
       <div className='container'>
@@ -102,11 +95,17 @@ class App extends React.Component {
     );
   };
 
-  // * MAIN VIEW * //
-  main_mobileView = () => {
+  /**
+   * **AdminView Component**
+   * Renders components for mobile view
+   */
+  main_adminView = () => {
     return <div onClick={() => this.getStatus()}>{this.comp_debug()}</div>;
   };
 
+  /**
+   * **CompleteAnimation Component**
+   */
   comp_completeAnimation = () => {
     if (this.state.recordedProgress + 1 === this.state.data.length) {
       document.getElementById('testerNextBtn').disabled = true;
@@ -626,6 +625,19 @@ class App extends React.Component {
     window.location = window.location.origin;
     this.props.socket.emit('client: save total time', [0, 0, 0]);
   };
+
+  helper_emitInitialSocketMessages = () => {
+    if (!this.helper_checkIfMobileView) {
+      this.props.socket.emit('client: update sentence_index', {
+        name: qs('name'),
+        curr_sentence_index: this.state.curr_sentence_index
+      });
+    } else {
+      this.props.socket.emit('client: ask for recording status');
+    }
+    this.props.socket.emit('client: check for progress');
+    this.props.socket.emit('client: ask for sync id');
+  }
 
   helper_toggleModal = id => {
     document.getElementById(id).click();

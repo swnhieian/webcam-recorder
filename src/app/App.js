@@ -508,7 +508,7 @@ class App extends React.Component {
   }
 
   /**
-   * **Update: Sentence**
+   * **Update: Sentence** 
    * Sent as a prop to components to update app-level state of 
    * curr_sentence_index, and updates server with new index. It also updates 
    * url query without refreshing to reflect current index.
@@ -516,10 +516,7 @@ class App extends React.Component {
    */
   updateSentence = curr_sentence => {
     if (curr_sentence === '$next') {
-      this.setState(
-        {
-          curr_sentence_index: this.state.curr_sentence_index + 1
-        },
+      this.setState({curr_sentence_index: this.state.curr_sentence_index + 1},
         () => {
           this.updateSentence(
             this.state.data[this.state.curr_sentence_index]

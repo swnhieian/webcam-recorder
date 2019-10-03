@@ -13,12 +13,12 @@ let parentDir = path.resolve(process.cwd(), '..');
 exec('getParentDirectory', {
   cwd: parentDir
 });
-
-const RECORDING_STATUS_PATH = parentDir + '/webcam-recorder/server/nodejs_server/recording_status.json'
-const PROGRESS_PATH = parentDir + '/webcam-recorder/server/nodejs_server/progress.json'
-const CONNECTION_STATUS_PATH = parentDir + '/webcam-recorder/server/nodejs_server/connection_status.json'
-const TOTAL_TIME_PATH = parentDir + '/webcam-recorder/server/nodejs_server/time.json'
-const START_TIME_PATH = parentDir + '/webcam-recorder/server/nodejs_server/start_time.json'
+parentDir += '/webcam-recorder/server/nodejs_server/';
+const RECORDING_STATUS_PATH = parentDir + 'recording_status.json'
+const PROGRESS_PATH = parentDir + 'progress.json'
+const CONNECTION_STATUS_PATH = parentDir + 'connection_status.json'
+const TOTAL_TIME_PATH = parentDir + 'time.json'
+const START_TIME_PATH = parentDir + 'start_time.json'
 
 let connection_status = {};
 let numSaved = 0;
@@ -90,7 +90,7 @@ function sendProgressUpdate() {
 }
 
 function displayOnline() {
-  console.log(colors.green(colors.bold('online: ') + online))
+  console.log(colors.green(colors.bold('🛫 online    : ') + online));
 }
 
 function disconnect(id) {
@@ -109,7 +109,11 @@ function clearConsole(lines) {
 
 function displayRemoved(id) {
   const comma = (online.length === 0) ? '' : ', '
-  const print = colors.rainbow('online: ') + colors.green(online.toString()) + comma + colors.red.strikethrough(id);
+  const print =
+    colors.red.bold('🛬 online    : ') +
+    colors.green(online.toString()) +
+    comma +
+    colors.red.strikethrough(id);
   clearConsole(13);
   console.log(print);
 }
@@ -119,7 +123,22 @@ function getTimeRecorded() {
   const seconds = Math.floor(totalTimeRecorded / 1000);
   let milliSeconds = totalTimeRecorded - seconds * 1000;
   milliSeconds = totalTimeRecorded > 0 ? Math.round(totalTimeRecorded / 10).toString().substring(0, 2) : 0;
-  console.log(colors.magenta(colors.bold('    ⏱time: ') + '00:' + ('0' + seconds).split(-2) + ':' + milliSeconds));
+  console.log(colors.magenta(colors.bold('⏱  time      : ') + '00:' + ('0' + seconds).split(-2) + ':' + milliSeconds));
+}
+
+function printLine(gap, print) {
+  const width = process.stdout.columns;
+  for (let i = 0; i < (width - 3 - gap) / 2; i++) {
+    print += '-';
+  }
+  return print
+}
+
+function printLineMessage(message) {
+  let print = printLine(message.length, '');
+  print += ' ' + message + ' '
+  print += printLine(message.length, '');
+  console.log(colors.white(print));
 }
 
 app.get('/', function (req, res) {
@@ -129,7 +148,7 @@ app.get('/', function (req, res) {
 http.listen(5000, function () {
   clearConsole(13);
   getIP();
-  console.log(colors.green(colors.bold('listening: ') + 'localhost:5000 or ' + ip + ':5000'));
+  console.log(colors.green(colors.bold('👂🏻 listening : ') + 'localhost:5000 or ' + ip + ':5000'));
 });
 
 
@@ -250,19 +269,20 @@ io.on('connection', function(socket) {
   });
 
   socket.on('client: start cams', function() {
-    console.log(colors.yellow(colors.bold('✨cmd: ') + 'start cams'));
+    console.log(colors.yellow(colors.bold('✨ cmd       : ') + 'start cams'));
     recordedStart = new Date();
     io.emit('server: start cams')
   });
   
   socket.on('client: stop cams', function() {
-    console.log(colors.yellow(colors.bold('✨cmd: ') + 'stop cams'));
+    console.log(colors.yellow(colors.bold('✨ cmd       : ') + 'stop cams'));
     getTimeRecorded();
     io.emit('server: stop cams');
   });
 
   socket.on('client: start testing', function(data) {
-    console.log(colors.bold('user: ') + data.name);
+    console.log(colors.green.bold('👩🏻‍💻 user      : ') + colors.white(data.name));
+    printLineMessage('starting recording process');
     saveData(data, RECORDING_STATUS_PATH);
   });
 
@@ -308,7 +328,7 @@ io.on('connection', function(socket) {
     const camera_id = data.camera_id.substring(0, 15);
     const blob = data.blob;
 
-    let nameDir = parentDir + "/" + name;
+    let nameDir = parentDir + name;
     let sentenceDir = "/" + sentence_index
     const fileName = "/" + camera_id + ".webm"
 
@@ -326,7 +346,7 @@ io.on('connection', function(socket) {
         return console.log(err)
       }
       console.log(colors.magenta( 
-        colors.bold('    📂file: \'') + parentDir + fullPath.substring(1) + '\''
+        colors.bold('📂 file      : ') + fullPath.substring(1)
       ));
     });
 

@@ -186,27 +186,22 @@ export default function CameraList(props) {
       }
 
       if (detectedTwoDevices) {
-        console.log('detected new devices');
         let [newMicID, newCamDevice] = getNewMicCam(newPluggedInID, allDevices);
         newCamDevice = helper_extractRelevantCamInfo(newCamDevice);
-        console.log(newCamDevice);
         const existCamera = availableCams.filter(cam => {
           return cam.camera_info.id === newCamDevice.camera_info.id;
         })[0];
-        console.log(existCamera);
         if (!existCamera) {
           newCamDevice.mic_info = newMicID;
           let temp = availableCams;
           temp.push(newCamDevice);
           setAvailableCams(temp);
-          console.log(availableCams);
           cogoToast.success(
             'New camera: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.'
           );
           document.getElementById('startBtn').disabled = false;
           initCams();
           setPluggedInDevices(idAoni);
-          console.log(availableCams);
         }
       }      
     }).then(() => {
@@ -284,6 +279,7 @@ export default function CameraList(props) {
   const stopAllCams = (dummy) => {
     const temp =
       recordingStatus === 'recording-status-loading...' ? {} : recordingStatus;
+      
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       if (recorder !== null) {

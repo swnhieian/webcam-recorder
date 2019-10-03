@@ -2,7 +2,7 @@ import React from 'react'
 import './Checkmark.scss'
 
 /**
- * **Credits: https://codepen.io/ashleygalante/pen/nwoKh**
+ * **Based on: https://codepen.io/ashleygalante/pen/nwoKh**
  */
 export default function Checkmark() {
   return (

@@ -123,7 +123,7 @@ function getTimeRecorded() {
   const seconds = Math.floor(totalTimeRecorded / 1000);
   let milliSeconds = totalTimeRecorded - seconds * 1000;
   milliSeconds = totalTimeRecorded > 0 ? Math.round(totalTimeRecorded / 10).toString().substring(0, 2) : 0;
-  console.log(colors.magenta(colors.bold('⏱  time      : ') + '00:' + ('0' + seconds).split(-2) + ':' + milliSeconds));
+  console.log(colors.magenta(colors.bold('⏱  time   : ') + '00:' + ('0' + seconds).split(-2) + ':' + milliSeconds));
 }
 
 function printLine(gap, print) {
@@ -262,13 +262,13 @@ io.on('connection', function(socket) {
   });
 
   socket.on('client: start cams', function() {
-    console.log(colors.yellow(colors.bold('✨ cmd       : ') + 'start cams'));
+    console.log(colors.yellow(colors.bold('✨ cmd    : ') + 'start cams'));
     recordedStart = new Date();
     io.emit('server: start cams')
   });
   
   socket.on('client: stop cams', function() {
-    console.log(colors.yellow(colors.bold('✨ cmd       : ') + 'stop cams'));
+    console.log(colors.yellow(colors.bold('✨ cmd    : ') + 'stop cams'));
     getTimeRecorded();
     io.emit('server: stop cams');
   });
@@ -339,7 +339,7 @@ io.on('connection', function(socket) {
         return console.log(err)
       }
       console.log(colors.magenta( 
-        colors.bold('📂 file      : ') + fullPath.substring(1)
+        colors.bold('📂 file   : ') + fullPath.substring(1)
       ));
     });
 

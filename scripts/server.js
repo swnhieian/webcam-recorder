@@ -308,7 +308,7 @@ io.on('connection', function(socket) {
     const camera_id = data.camera_id.substring(0, 15);
     const blob = data.blob;
 
-    let nameDir = "./" + name;
+    let nameDir = parentDir + "/" + name;
     let sentenceDir = "/" + sentence_index
     const fileName = "/" + camera_id + ".webm"
 

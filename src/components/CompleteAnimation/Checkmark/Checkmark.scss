@@ -2,10 +2,13 @@
  * *Credits: https://codepen.io/ashleygalante/pen/nwoKh*
  */
 
-checkmark {
+.checkmark svg {
+  width: 30vw;
+}
+.checkmark {
   position: absolute;
   left: 35vw;
-  top: 10vh;
+  top: 25vh;
   width: 420px;
   margin: 0 auto;
   padding-top: 40px;
@@ -31,6 +34,7 @@ checkmark {
   color: #FFBA49;
   font-size: 3em;
   margin: 20px auto;
+  margin-left: -2em;
   text-align: center;
   animation: text .5s linear .4s;
 }

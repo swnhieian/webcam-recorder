@@ -201,7 +201,7 @@ export default function CameraList(props) {
           setAvailableCams(temp);
           cogoToast.success(
             'New camera: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.'
-          );
+          ), {hideAfter: 1};
           document.getElementById('startBtn').disabled = false;
           initCams();
           setPluggedInDevices(idAoni);

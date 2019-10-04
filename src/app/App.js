@@ -307,7 +307,7 @@ class App extends React.Component {
 
         <div className="debug_inline_group">
           <label htmlFor="" className="debug_label">Cams: </label>
-          <input type="text" className="debug_text_input debug_sm_input" value={this.state.requiredNumCams}/>
+          <input type="text" className="debug_text_input debug_sm_input" value={this.state.detectedNumCams} readOnly/>
         </div>
 
 
@@ -437,6 +437,8 @@ class App extends React.Component {
 
   updateDetectedNumCams = detectedNumCams => {
     this.setState({ detectedNumCams });
+    console.log(document.getElementsByClassName('debug_sm_input')[0]);
+    document.getElementsByClassName('debug_sm_input')[0].className += (this.state.detectedNumCams > 0) ? " serverPlaceholderConnected" : ""
   }
 
   /** 

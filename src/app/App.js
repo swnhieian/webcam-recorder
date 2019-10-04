@@ -128,7 +128,7 @@ class App extends React.Component {
    * Renders components for mobile view
    */
   main_adminView = () => {
-    return <div onClick={() => this.getStatus()}>{this.comp_debug()}</div>;
+    return <div style={{textAlign: 'center'}}>{this.comp_debug()}</div>;
   };
 
   /** 

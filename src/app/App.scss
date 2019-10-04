@@ -14,7 +14,7 @@ body {
 
 .debug-group .debug_button {
   // color: white;
-  margin-top:-1em;
+  // margin-top:-1em;
 }
 
 .debug_text_input {
@@ -69,15 +69,17 @@ body {
 }
 
 .debug-group {
-  margin-top: 1em;
+  // margin-top: 1em;
   text-align: 'center';
   display: inline-block;
-  z-index: 5;
+  z-index: 200;
+  position: relative;
 }
 
 .debug_inline_group {
   display: inline-block;
   margin-left: 0.5em;  
+  margin-top: 1em;
 }
 
 .debug_label {
@@ -110,6 +112,8 @@ body {
 
 .debug_button {
   // top: -1em;
+  // margin-top: 1em;
+  margin-top: 1em;
   margin-left: 0.5em;
   margin-right: 0.5em;
   background: #1F2736;

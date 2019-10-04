@@ -1,4 +1,4 @@
-$particles: 50;
+$particles: 100;
 $width: 500;
 $height: 500;
 
@@ -98,7 +98,7 @@ $box-shadow2: ();
 
 @include keyframes(gravity) {
   to {
-    @include transform(translateY(200px));
+    @include transform(translateY(300px));
     opacity: 0;
   }
 }

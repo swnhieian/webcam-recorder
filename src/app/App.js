@@ -27,7 +27,7 @@ import ip_util from '../utils/ip'
 class App extends React.Component {
   per_page = 8;
   curr_index = qs('sentence_index');
-  ip_address = 'http://192.168.0.100:5000'
+  ip_address = 'http://192.168.0.103:5000'
   /**
    * Constructor for main react App Component
    * @param {object} props 
@@ -35,6 +35,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      requiredNumCams: 8,
       curr_sentence: '',
       curr_sentence_index: this.curr_index ? Number(this.curr_index) : 0,
       data: [],
@@ -46,7 +47,6 @@ class App extends React.Component {
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
       connectedOrderMap: {},
-      requiredNumCams: 8,
       recordedProgress: 0,
       addCamState: false,
       totalTime: [],

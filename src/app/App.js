@@ -79,6 +79,11 @@ class App extends React.Component {
     this.helper_emitInitialSocketMessages();
     this.readTextFile(sentences);
     this.initSocketListeners();
+    try {
+      document.getElementById('debug_mode').checked = this.state.numCams === 1
+    } catch (NotYetLoadedException) {
+      //
+    }
     // this.pingServer();
     window.addEventListener('keydown', this.downHandler);
   }
@@ -97,7 +102,6 @@ class App extends React.Component {
   main_userView = () => {
     return (
       <div className='container'>
-        <Toggle id='debug_mode' onChangeFunc={this.handler_debugToggle} />
         {this.comp_debug()}
         {this.comp_tester()}
         {this.comp_userResearchHeader()}
@@ -257,7 +261,8 @@ class App extends React.Component {
   // * COMPONENT * //
   comp_debug = () => {
     return (
-      <div style={{ margin: 'auto', textAlign: 'center' }}>
+      <div className="debug-group">
+        <Toggle id='debug_mode' onChangeFunc={this.handler_debugToggle} />
         <button
           onClick={() => {
             this.helper_toggleModal('overallStatus');
@@ -282,9 +287,16 @@ class App extends React.Component {
         >
           Reset Progress
         </button>
-        <button className='debug_button' onClick={this.admin_refreshAll}>
+        
+        <div className="debug_text_input">
+          <label htmlFor="" className="debug_label">label: </label>
+          <input type="text"></input>
+        </div>
+
+        {/* <button className='debug_button' onClick={this.admin_refreshAll}>
           Refresh All
-        </button>
+        </button> */}
+
         <button
           onClick={this.disp_showFileSavedMessage}
           id='showSavedFilesBtn'

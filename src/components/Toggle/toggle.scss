@@ -1,3 +1,12 @@
+.switch-wrapper {
+  display: inline-block;
+  // padding-top: 2em;
+}
+
+.invisible_pushdown {
+  line-height: 0.2em;
+  height: 0.5em;
+}
 .switch input {
   top: 0;
   right: 0;
@@ -16,7 +25,7 @@
   position: relative;
   display: inline-block;
   // margin: auto;
-  padding-top: 1em;
+  // margin-top: 1em;
   // padding-top: 1em;
   // padding-bottom: 1em;
 }
@@ -28,7 +37,10 @@
   background: #1F2736;
   background: linear-gradient(#121823, #161d2b);
   border-radius: 30px 30px 30px 30px;
-  box-shadow: inset 0 3px 8px 1px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(0, 0, 0, 0.5), 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    inset 0 3px 8px 1px rgba(0, 0, 0, 0.5), 
+    inset 0 1px 0 rgba(0, 0, 0, 0.5), 
+    0 1px 0 rgba(255, 255, 255, 0.2);
   -webkit-transition: all .5s ease;
   transition: all .5s ease;
 }
@@ -64,4 +76,13 @@
   inset 0 -3px 8px rgba(185, 231, 253, 0.5);
   -webkit-transition: all 0.5 ease;
   transition: all .5s ease;
+}
+
+.switch-hover {
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.1),
+  0 1px 0 rgba(255, 255, 255, 0.1),
+  0 1px 2px rgba(100, 231, 253, 1),
+  inset 0 0 2px rgba(61, 157, 247, 0.8),
+  inset 0 0 3px rgba(185, 231, 253, 0.3),
+  inset 0 0 4px rgba(185, 231, 253, 0.5);
 }

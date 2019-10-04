@@ -17,15 +17,26 @@ export default function Toggle(props) {
       toggle.addEventListener('change', () => {
         props.onChangeFunc(toggle.checked);
       });
+      // document.getElementsByClassName('switch-wrapper')[0].addEventListener('mouseover', () => {
+      //   document.getElementsByClassName('inset-toggle')[0].classList.add('switch-hover');
+      //   console.log('hovered over')
+      // });
+      // document.getElementsByClassName('switch-wrapper')[0].addEventListener('mouseout', () => {
+      //   document.getElementsByClassName('inset-toggle')[0].classList.remove('switch-hover');
+      //   console.log('hovered out')
+      // })
     } catch (NotYetLoadedException) {
       //
     }
   }, [])
   return (
-    <div className="switch">
-      <input type="checkbox" name="toggle" id={props.id}/>
-      <label htmlFor="toggle"><i></i></label>
-    </div>  
+    <div className="switch-wrapper">
+      <div className="switch">
+      <div className="invisible_pushdown"></div>
+        <input type="checkbox" name="toggle" id={props.id}/>
+        <label htmlFor="toggle" className="inset-toggle"><i></i></label>
+      </div>  
+    </div>
   )
 }
 

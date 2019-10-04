@@ -2,6 +2,7 @@ const os = require('os');
 const ifaces = os.networkInterfaces();
 
 const getIP = () => {
+  console.log('getting ip...')
   let address = undefined;
   Object.keys(ifaces).forEach(function (ifname) {
     ifaces[ifname].forEach(function (iface) {

@@ -151,6 +151,10 @@ io.on('connection', function(socket) {
   // io.emit('server: computer connected order', temp);
   io.to(socket.id).emit('server: connected', socket.id);
 
+  socket.on('client: check server connection', function() {
+    io.emit('server: online');
+  });
+
   socket.on('client: ask for sync id', function() {
     io.emit('server: connected sync id', socket.id);
   })

@@ -22,6 +22,8 @@ import CompleteAnimation from '../components/CompleteAnimation/CompleteAnimation
 import sentences from '../assets/data/sentences.txt';
 // import sentences from '../assets/data/sentences-english-test.txt';
 
+import ip_util from '../utils/ip'
+
 class App extends React.Component {
   per_page = 8;
   curr_index = qs('sentence_index');
@@ -78,6 +80,8 @@ class App extends React.Component {
    * **ReactJS Framework Method**
    */
   componentDidMount() {
+    // console.log(ip.getIP());
+    console.log(ip_util);
     this.helper_emitInitialSocketMessages();
     this.readTextFile(sentences);
     this.initSocketListeners();
@@ -369,7 +373,7 @@ class App extends React.Component {
   };
 
   handler_useThisCompAsServer = () => {
-    
+
   }
 
   handler_IPOnChange = e => {
@@ -378,9 +382,9 @@ class App extends React.Component {
   handler_debugToggle = debugMode => {
     this.setState({debugMode}, () => {
       if (debugMode) {
-        this.setState({numCams: 1});
+        this.setState({requiredNumCams: 1});
       } else {
-        this.setState({numCams: 8});
+        this.setState({requiredNumCams: 8});
       }
     });
   }
@@ -514,6 +518,12 @@ class App extends React.Component {
    * from server
    */
   initSocketListeners = () => {
+    this.state.socket.on('server: online', () => {
+      console.log('server online!')
+      document.getElementsByClassName('server_status')[0].classList.add('server_online');
+      document.getElementById('inputServerIP').classList.add('serverPlaceholderConnected');
+    });
+
     this.state.socket.on('server: disconnected', () => {
       this.setState({ connectedToServer: false}, () => {
         document.getElementsByClassName('server_status')[0].classList.remove('server_online');
@@ -521,8 +531,9 @@ class App extends React.Component {
       });
     });
 
-    this.state.socket.on('server: connected', () => {
-      this.setState({ connectedToServer: true}, () => {
+    this.state.socket.on('server: connected', computerID => {
+      console.log('detected server connected')
+      this.setState({ connectedToServer: true, computerID}, () => {
         document.getElementsByClassName('server_status')[0].classList.add('server_online');
         document.getElementById('inputServerIP').classList.add('serverPlaceholderConnected')
       });
@@ -762,9 +773,9 @@ class App extends React.Component {
     }
   }
 
-  handler_keydown(event) {
+  handler_keydown = (event) => {
     let key = event.key;
-    if ([' ', 'ArrowLeft', 'ArrowRight', 'Escape', 'Enter'].includes(key)) {
+    if ([' ', 'ArrowLeft', 'ArrowRight', 'Escape', 'Enter', 's'].includes(key)) {
       try {
         if (key === ' ') {
           document.getElementById('testerRecordBtn').click();
@@ -780,9 +791,18 @@ class App extends React.Component {
           if (document.getElementsByClassName('modali-button-destructive')[0]) {
             document.getElementsByClassName('modali-button-destructive')[0].click();
             this.admin_resetProgress();
-          } else {
-            return true;
           }
+          const inputServerIP = document.getElementById('inputServerIP');
+          if (document.activeElement === inputServerIP) {
+            this.state.socket.disconnect();
+            document.getElementsByClassName('server_status')[0].classList.remove('server_online');
+            document.getElementById('inputServerIP').classList.remove('serverPlaceholderConnected');
+            console.log(inputServerIP.value);
+            this.setState({socket: io(inputServerIP.value), ip: inputServerIP.value});
+            this.state.socket.emit('client: check server connection')
+          }
+        } else if (key === 's') {
+          this.helper_toggleModal('overallStatus');
         }
         event.preventDefault();
       } catch (NotYetLoadedException) {

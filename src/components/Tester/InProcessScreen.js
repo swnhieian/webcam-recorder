@@ -147,7 +147,6 @@ export default function InProcessScreen(props) {
       try {
         let recordTimeEle = document.getElementById('record_time_content');
         let colorRecordTime = (recordTimeEle.innerText === '00:00:00') ? 'grey' : 'red';
-        console.log(colorRecordTime)
         if (colorRecordTime === 'grey') {
           recordTimeEle.style.color = 'lightgreen';
         } else {

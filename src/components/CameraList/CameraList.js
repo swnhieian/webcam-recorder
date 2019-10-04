@@ -314,7 +314,7 @@ export default function CameraList(props) {
       setRecordingStatus(temp);
       props.updateConnectionStatus(temp);
     } catch (NotYetLoadedException) {
-      cogoToast.warn('Camera not yet loaded!');
+      cogoToast.warn('Camera not yet loaded!', {hideAfter: 0});
     }
   }
 
@@ -327,7 +327,7 @@ export default function CameraList(props) {
       try {
         state = recorder.getState();
       } catch {
-        cogoToast.warn("Camera not yet loaded!");
+        cogoToast.warn("Camera not yet loaded!", {hideAfter: 0});
       }
       if (state === "paused") {
         recorder.resumeRecording();
@@ -335,7 +335,7 @@ export default function CameraList(props) {
         try {
           recorder.startRecording();
         } catch (NotYetLoadedException) {
-          cogoToast.warn('Camera not yet loaded!');
+          cogoToast.warn('Camera not yet loaded!', {hideAfter: 0});
         }
       }
       triggerRecordStatusUpdate(temp, recorder, cam);

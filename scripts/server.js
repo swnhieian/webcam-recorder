@@ -212,6 +212,7 @@ io.on('connection', function(socket) {
   });
 
   socket.on('disconnect', function() {
+    io.to(socket.id).emit('server: you disconnected'); // when would this ever show up??
     disconnect(socket.id);
     const socketid = socket.id
     delete connection_status[socketid];

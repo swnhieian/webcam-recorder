@@ -5,6 +5,7 @@ import qs from '../utils/qs'
 import cogoToast from 'cogo-toast';
 import { HashRouter as Router, Route } from "react-router-dom";
 import io from 'socket.io-client';
+
 // scss
 import './App.scss';
 
@@ -52,7 +53,8 @@ class App extends React.Component {
       remainingWords: 0,
       debugMode: false,
       socket: io('http://192.168.0.100:5000'),
-      ip: 'http://192.168.0.100:5000'
+      ip: 'http://192.168.0.100:5000',
+      connectedToServer: false
     };
   }
 
@@ -491,7 +493,9 @@ class App extends React.Component {
   initSocketListeners = () => {
     this.state.socket.on('server: connected', id => {
       console.log('hey there ', id);
-    })
+      this.setState({ connectedToServer: true});
+    });
+
     this.state.socket.on('server: connected sync id', id => {
       if (this.updateCompID) this.updateCompID(id);
       this.updateCompID = null;

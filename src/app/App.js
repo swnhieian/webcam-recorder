@@ -446,8 +446,11 @@ class App extends React.Component {
 
   updateDetectedNumCams = detectedNumCams => {
     this.setState({ detectedNumCams });
-    console.log(document.getElementsByClassName('debug_sm_input')[0]);
-    document.getElementsByClassName('debug_sm_input')[0].className += (this.state.detectedNumCams > 0) ? " serverPlaceholderConnected" : ""
+    try {
+      document.getElementsByClassName('debug_sm_input')[0].className += (this.state.detectedNumCams > 0) ? " serverPlaceholderConnected" : ""
+    } catch (NotYetLoadedException) {
+      //
+    }
   }
 
   /** 

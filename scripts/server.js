@@ -27,7 +27,6 @@ const START_TIME_PATH = parentDir + 'start_time.json'
 
 let connection_status = {};
 let numSaved = 0;
-let numConnected = 0;
 let online = []
 let recordedStart = undefined;
 const ip = getIP();
@@ -155,6 +154,8 @@ http.listen(5000, function () {
   getIP();
   console.log(colors.green(colors.bold('👂🏻 listening : ') + 'localhost:5000 or ' + ip + ':5000'));
 });
+
+
 
 
 io.on('connection', function(socket) {
@@ -352,6 +353,13 @@ io.on('connection', function(socket) {
 
     io.emit('server: save files successful', numSaved);
   });
+
+  
 });
 
 
+process.on('SIGINT', function () {
+  console.log("\nCaught interrupt signal");
+  io.emit('server: disconnected');
+  process.exit();
+});

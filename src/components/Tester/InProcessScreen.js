@@ -146,11 +146,18 @@ export default function InProcessScreen(props) {
     } else {
       try {
         let recordTimeEle = document.getElementById('record_time_content');
-        let colorRecordTime = (recordTimeEle.innerText === '00:00:00') ? 'grey' : 'red';
-        if (colorRecordTime === 'grey') {
-          recordTimeEle.style.color = 'lightgreen';
+        let recordTimeMsg = document.getElementById('record_time_msg');
+        let colorRecordTime = (recordTimeEle.innerText === '00:00:00') ? 'gray' : 'red';
+        if (colorRecordTime === 'gray') {
+          recordTimeEle.style.transition = 'all 0.5 ease'
+          recordTimeMsg.style.transition = 'all 0.5 ease'
+          recordTimeEle.style.color = 'black';
+          recordTimeMsg.style.color = 'black';
         } else {
-          recordTimeEle.style.color = 'red';
+          recordTimeEle.style.transition = 'all 0.5 ease'
+          recordTimeMsg.style.transition = 'all 0.5 ease'
+          recordTimeEle.style.color = '#FF1053';
+          recordTimeMsg.style.color = '#FF1053';
         }
       } catch (NotYetLoadedException) {
         //
@@ -160,9 +167,8 @@ export default function InProcessScreen(props) {
           {displaySentenceToBeRead()}
           <div className='recording_hint'>
           <pre id='record_time_content'>00:00:00</pre>
-            {
-              getRecordState() === 'Done' ? ' 🔴 录制中 🔴 ' : ''
-            }
+          <pre id='record_time_msg'>录制中</pre>
+            
           </div>
           <button
             id='testerRecordBtn'

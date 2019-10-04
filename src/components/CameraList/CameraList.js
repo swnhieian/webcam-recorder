@@ -45,9 +45,11 @@ export default function CameraList(props) {
       micDevices.push(device);
   }
   const helper_getNumCams = devices => {
-    return devices.reduce((accumulator, device) => {
+    const num = devices.reduce((accumulator, device) => {
       return device.kind === 'videoinput' ? accumulator + 1 : accumulator;
     }, 0);
+    props.updateDetectedNumCams(num);
+    return num;
   }
   const initCams = () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -57,6 +59,7 @@ export default function CameraList(props) {
         let videoDevices = [];
         let micDevices = [];
         const numCams = helper_getNumCams(devices);
+
         console.log("number of cams detected: " + numCams);
         devices.map(function(device) {
           if (device.kind === 'audioinput') {

@@ -9,7 +9,6 @@ import ProgressBar from '../ProgressBar'
 function Tester(props) {
   const [intervalID, setIntervalID] = useState(undefined);
 
-
   function comp_inProcessScreen() {
     return (
       <InProcessScreen
@@ -60,31 +59,24 @@ function Tester(props) {
         min = 0;
       }
       time = [hour, min, sec];
-document.getElementById('record_time_content').innerHTML =
-  ('0' + hour).slice(-2) +
-  ':' +
-  ('0' + min).slice(-2) +
-  ':' +
-  ('0' + sec).slice(-2);
-    }, 10);
+      document.getElementById('record_time_content').innerHTML =
+        ('0' + hour).slice(-2) +
+        ':' +
+        ('0' + min).slice(-2) +
+        ':' +
+        ('0' + sec).slice(-2);
+      }, 10);
   }
 
-  function comp_totalTimer() {
-    if (qs('name')) {
-      return (
-        <Timer
+  return (
+    <div className='testing_screen'>
+      <Timer
           name={'total_timer'}
           socket={props.socket}
           totalTime={props.totalTime}
           updateTotalTime={props.updateTotalTime}
         />
-      );
-    }
-  }
-
-  return (
-    <div className='testing_screen'>
-      {comp_totalTimer()}
+      <pre id='total_timer'>00:00:00</pre>
       <ProgressBar
         curr={props.recordedProgress}
         total={props.data_length - 1}

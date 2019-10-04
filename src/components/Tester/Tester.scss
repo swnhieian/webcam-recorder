@@ -110,12 +110,12 @@
 }
 
 .btn-danger {
-  background-color: red;
+  background-color: #FF1053;
   color: white;
 }
 
 #total_timer {
-  margin: 0;
+  // margin: 0;
   margin-bottom: -0.5em;
 }
 
@@ -126,15 +126,23 @@
   color: white;
 }
 .recording_hint {
-  color: red;
+  color: #FF1053;
   height: 5vh;
   margin-top: 1em;
 }
 .warning_message {
-  color: red;
+  color: #FF1053;
 }
 
 #record_time_content{
-  color: lightgrey;
+  color: black;
   font-weight: medium;
+  -webkit-transition: all 0.5 ease;
+  transition: all 0.5s ease;
+}
+
+#record_time_msg {
+  color: black;
+  -webkit-transition: all 0.5 ease;
+  transition: all 0.5s ease;
 }

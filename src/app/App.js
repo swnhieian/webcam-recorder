@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import React from 'react';
-import PropTypes from 'prop-types';
 import update from 'react-addons-update'
 import qs from '../utils/qs'
 import cogoToast from 'cogo-toast';
 import { HashRouter as Router, Route } from "react-router-dom";
+import io from 'socket.io-client';
 
 // scss
 import './App.scss';
@@ -44,13 +44,18 @@ class App extends React.Component {
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
       connectedOrderMap: {},
-      numCams: 8,
+      requiredNumCams: 1,
       recordedProgress: 0,
       addCamState: false,
       totalTime: [],
       startTime: undefined,
       totalWords: 0,
-      remainingWords: 0
+      remainingWords: 0,
+      debugMode: false,
+      socket: io('http://192.168.0.100:5000'),
+      ip: 'http://192.168.0.100:5000',
+      connectedToServer: false,
+      detectedNumCams: 0
     };
   }
 
@@ -62,6 +67,7 @@ class App extends React.Component {
       <Router>
         <Route path='/' exact component={this.main_userView} />
         <Route path='/admin' exact component={this.main_adminView} />
+        <Route path='/playground' exact component={this.main_playground} />
         {this.comp_modals()}
         {this.comp_completeAnimation()}
       </Router>
@@ -75,15 +81,21 @@ class App extends React.Component {
     this.helper_emitInitialSocketMessages();
     this.readTextFile(sentences);
     this.initSocketListeners();
+    try {
+      document.getElementById('debug_mode').checked = this.state.requiredNumCams === 1
+    } catch (NotYetLoadedException) {
+      //
+    }
     // this.pingServer();
-    window.addEventListener('keydown', this.downHandler);
+    window.addEventListener('keydown', this.handler_keydown);
+    window.addEventListener('keyup', this.handler_keyup);
   }
 
   /**
    * **ReactJS Framework Method** 
    */
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.downHandler);
+    window.removeEventListener('keydown', this.handler_keydown);
   }
 
   /**
@@ -93,7 +105,6 @@ class App extends React.Component {
   main_userView = () => {
     return (
       <div className='container'>
-        <Toggle id='debug_mode' />
         {this.comp_debug()}
         {this.comp_tester()}
         {this.comp_userResearchHeader()}
@@ -116,6 +127,16 @@ class App extends React.Component {
     return <div onClick={() => this.getStatus()}>{this.comp_debug()}</div>;
   };
 
+  /** 
+   * **Component: PlaygroundPage**
+   * Renders components for experimental purposes
+   */
+
+   main_playground = () => {
+     return (
+       <Toggle />
+     )
+   }
   /**
    * **Component: Animation for Study Completion**
    */
@@ -139,7 +160,7 @@ class App extends React.Component {
         data={this.state.data}
         updateName={this.updateName}
         curr_sentence={this.state.curr_sentence}
-        socket={this.props.socket}
+        socket={this.state.socket}
         curr_sentence_index={this.state.curr_sentence_index}
         curr_page={this.state.curr_page}
         updatePage={this.updatePage}
@@ -157,13 +178,13 @@ class App extends React.Component {
         data_length={this.state.data.length}
         first_sentence={this.state.data[this.state.curr_sentence_index]}
         curr_sentence={this.state.curr_sentence}
-        socket={this.props.socket}
+        socket={this.state.socket}
         recordGreenLight={
           this.state.recordGreenLight &&
-          this.state.numFilesSavedTotal % this.state.numCams === 0
+          this.state.numFilesSavedTotal % this.state.requiredNumCams === 0
         }
         numFilesSaved={this.state.numFilesSavedTotal}
-        numCams={this.state.numCams}
+        numCams={this.state.requiredNumCams}
         updateGreenLightStatus={this.updateGreenLightStatus}
         recordedProgress={this.state.recordedProgress}
         updateRecordProgress={this.updateRecordProgress}
@@ -189,12 +210,13 @@ class App extends React.Component {
   comp_cameraList = () => {
     return (
       <CameraList
-        socket={this.props.socket}
+        socket={this.state.socket}
         computerID={this.state.computerID}
         computerStatus={this.state.computerStatus}
         updateConnectionStatus={this.updateConnectionStatus}
         addCamState={this.state.addCamState}
         toggleCamState={this.helper_toggleCamState}
+        updateDetectedNumCams={this.updateDetectedNumCams}
       />
     );
   };
@@ -208,7 +230,7 @@ class App extends React.Component {
         recordedProgress={this.state.recordedProgress}
         helper_checkIfMobileView={this.helper_checkIfMobileView}
         recordGreenLight={this.state.recordGreenLight}
-        socket={this.props.socket}
+        socket={this.state.socket}
       />
     );
   };
@@ -219,7 +241,7 @@ class App extends React.Component {
       <div>
         <Modal
           modalID={'resetProgressModal'}
-          socket={this.props.socket}
+          socket={this.state.socket}
           title={'Are you sure?'}
           message={'Resetting progress will be permanent.'}
           buttonCancel={'Cancel'}
@@ -230,7 +252,7 @@ class App extends React.Component {
         />
         <Modal
           modalID={'overallStatus'}
-          socket={this.props.socket}
+          socket={this.state.socket}
           title={'Status'}
           onLoadFunc={this.getStatus}
           message={this.comp_status()}
@@ -240,10 +262,12 @@ class App extends React.Component {
     );
   };
 
+  
+
   // * COMPONENT * //
   comp_debug = () => {
     return (
-      <div style={{ margin: 'auto', textAlign: 'center' }}>
+      <div className="debug-group">
         <button
           onClick={() => {
             this.helper_toggleModal('overallStatus');
@@ -268,18 +292,38 @@ class App extends React.Component {
         >
           Reset Progress
         </button>
-        <button className='debug_button' onClick={this.admin_refreshAll}>
+        
+        
+        <div className="debug_inline_group">
+          <label className="debug_label">Debug Mode: </label>
+          <Toggle id='debug_mode' onChangeFunc={this.handler_debugToggle} />
+        </div>
+
+        <div className="debug_inline_group">
+          <label htmlFor="" className="debug_label">Server: </label>
+          <span className="server_status"></span>
+          <input id="inputServerIP"type="text" className="debug_text_input" value={this.state.ip} onChange={this.handler_IPOnChange}/>
+        </div>
+
+        <div className="debug_inline_group">
+          <label htmlFor="" className="debug_label">Cams: </label>
+          <input type="text" className="debug_text_input debug_sm_input" value={this.state.detectedNumCams} readOnly/>
+        </div>
+
+
+        {/* <button className='debug_button' onClick={this.admin_refreshAll}>
           Refresh All
-        </button>
+        </button> */}
+
         <button
           onClick={this.disp_showFileSavedMessage}
           id='showSavedFilesBtn'
           className='hidden_button'
         ></button>
 
-        <pre hidden={this.state.numCams === 8}>
+        {/* <pre hidden={this.state.numCams === 8}>
           debug mode, remember to change num cams back to 8
-        </pre>
+        </pre> */}
       </div>
     );
   };
@@ -309,7 +353,7 @@ class App extends React.Component {
    */
   updateFilesSaved = numFiles => {
     const successMessage =
-      numFiles % this.state.numCams === 0
+      numFiles % this.state.requiredNumCams === 0
         ? ' (successful)'
         : ' (not all cams saved!!)';
     this.setState({
@@ -322,6 +366,80 @@ class App extends React.Component {
       // console.error(NotYetLoadedException);
     }
   };
+
+  handler_IPOnChange = e => {
+    this.setState({ip: e.target.value})
+  }
+  handler_debugToggle = debugMode => {
+    this.setState({debugMode}, () => {
+      if (debugMode) {
+        this.setState({numCams: 1});
+      } else {
+        this.setState({numCams: 8});
+      }
+    });
+  }
+
+  handler_fileSaveSuccess = numFiles => {
+    this.updateFilesSaved(numFiles);
+    this.setState({
+        numFilesSavedInd: this.state.numFilesSavedInd + 1
+      },
+      () => {
+        console.log(
+          'this occured: ' + this.state.numFilesSavedInd + ' times.'
+        );
+        try {
+          document.getElementById('testerNextBtn').disabled = true;
+        } catch (NotYetLoadedException) {
+          //
+        }
+        if (this.state.numFilesSavedInd === this.state.requiredNumCams) {
+          console.log('correct number of files saved');
+          try {
+            document.getElementById('showSavedFilesBtn').click();
+            document.getElementById('showSavedFilesBtn').disabled = true;
+            this.setState({
+                numFilesSavedInd: 0
+              },
+              () => {
+                cogoToast.success(
+                  this.style_makeEmojiToastLayout(
+                    ['视频已成功保存', '可继续录'],
+                    '🔥'
+                  ), {
+                    hideAfter: 2
+                  }
+                );
+              }
+            );
+
+            this.updateGreenLightStatus(true);
+          } catch (Exception) {
+            console.error(Exception);
+          }
+          try {
+            if (this.helper_checkIfMobileView()) {
+              // console.log('here here??');
+              cogoToast.info(
+                'Completed @ Sentence [' + this.state.recordedProgress + ']', {
+                  hideAfter: 0.75
+                }
+              );
+            }
+          } catch (NotYetLoadedException) {
+            console.error(NotYetLoadedException);
+          }
+        }
+      }
+    );
+  }
+
+  updateDetectedNumCams = detectedNumCams => {
+    this.setState({ detectedNumCams });
+    console.log(document.getElementsByClassName('debug_sm_input')[0]);
+    document.getElementsByClassName('debug_sm_input')[0].className += (this.state.detectedNumCams > 0) ? " serverPlaceholderConnected" : ""
+  }
 
   /** 
    * * UPDATE *
@@ -391,16 +509,30 @@ class App extends React.Component {
    * from server
    */
   initSocketListeners = () => {
-    this.props.socket.on('server: connected sync id', id => {
+    this.state.socket.on('server: disconnected', () => {
+      this.setState({ connectedToServer: false}, () => {
+        document.getElementsByClassName('server_status')[0].classList.remove('server_online');
+        document.getElementById('inputServerIP').classList.remove('serverPlaceholderConnected')
+      });
+    });
+
+    this.state.socket.on('server: connected', () => {
+      this.setState({ connectedToServer: true}, () => {
+        document.getElementsByClassName('server_status')[0].classList.add('server_online');
+        document.getElementById('inputServerIP').classList.add('serverPlaceholderConnected')
+      });
+    });
+    
+    this.state.socket.on('server: connected sync id', id => {
       if (this.updateCompID) this.updateCompID(id);
       this.updateCompID = null;
     });
 
-    this.props.socket.on('server: reset cams', () => {
+    this.state.socket.on('server: reset cams', () => {
       this.updateGreenLightStatus(true);
     });
 
-    this.props.socket.on('server: response for connection status', status => {
+    this.state.socket.on('server: response for connection status', status => {
       try {
         document.getElementById(
           'connection_status'
@@ -413,70 +545,19 @@ class App extends React.Component {
       }
     });
 
-    this.props.socket.on('server: response for progress', progress => {
+    this.state.socket.on('server: response for progress', progress => {
       this.setState({ recordedProgress: progress ? progress : 0 });
     });
 
-    this.props.socket.on('server: response for numFilesSaved', numFiles => {
+    this.state.socket.on('server: response for numFilesSaved', numFiles => {
       this.updateFilesSaved(numFiles);
     });
 
-    this.props.socket.on('server: save files successful', numFiles => {
-      this.updateFilesSaved(numFiles);
-      this.setState(
-        {
-          numFilesSavedInd: this.state.numFilesSavedInd + 1
-        },
-        () => {
-          console.log(
-            'this occured: ' + this.state.numFilesSavedInd + ' times.'
-          );
-          try {
-            document.getElementById('testerNextBtn').disabled = true;
-          } catch (NotYetLoadedException) {
-            //
-          }
-          if (this.state.numFilesSavedInd === this.state.numCams) {
-            console.log('correct number of files saved');
-            try {
-              document.getElementById('showSavedFilesBtn').click();
-              document.getElementById('showSavedFilesBtn').disabled = true;
-              this.setState(
-                {
-                  numFilesSavedInd: 0
-                },
-                () => {
-                  cogoToast.success(
-                    this.style_makeEmojiToastLayout(
-                      ['视频已成功保存', '可继续录'],
-                      '🔥'
-                    ),
-                    { hideAfter: 2 }
-                  );
-                }
-              );
-
-              this.updateGreenLightStatus(true);
-            } catch (Exception) {
-              console.error(Exception);
-            }
-            try {
-              if (this.helper_checkIfMobileView()) {
-                // console.log('here here??');
-                cogoToast.info(
-                  'Completed @ Sentence [' + this.state.recordedProgress + ']',
-                  { hideAfter: 0.75 }
-                );
-              }
-            } catch (NotYetLoadedException) {
-              console.error(NotYetLoadedException);
-            }
-          }
-        }
-      );
+    this.state.socket.on('server: save files successful', numFiles => {
+      this.handler_fileSaveSuccess(numFiles);
     });
 
-    this.props.socket.on('server: computer connected order', connectedOrder => {
+    this.state.socket.on('server: computer connected order', connectedOrder => {
       this.setState({
         connectedOrderMap: update(this.state.connectedOrderMap, {
           $merge: connectedOrder
@@ -485,7 +566,7 @@ class App extends React.Component {
     });
 
     const refreshRates = [0, 666, 1332];
-    this.props.socket.on('server: refresh all', () => {
+    this.state.socket.on('server: refresh all', () => {
       const conectedOrderNum = this.state.connectedOrderMap[
         this.state.computerID
       ];
@@ -499,7 +580,7 @@ class App extends React.Component {
 
   async pingServer() {
     try {
-      const serverID = this.props.socket.io.opts.hostname;
+      const serverID = this.state.socket.io.opts.hostname;
       const response = await fetch(serverID, { mode: 'no-cors' });
       if (!response.ok) {
         console.error('no response from server');
@@ -525,7 +606,7 @@ class App extends React.Component {
           this.updateSentence(
             this.state.data[this.state.curr_sentence_index]
           );
-          this.props.socket.emit('client: update sentence_index', {
+          this.state.socket.emit('client: update sentence_index', {
             name: qs('name'),
             curr_sentence_index: this.state.curr_sentence_index
           });
@@ -538,7 +619,7 @@ class App extends React.Component {
         },
         () => {
           this.updateSentence(this.state.data[this.state.curr_sentence_index]);
-          this.props.socket.emit('client: update sentence_index', {
+          this.state.socket.emit('client: update sentence_index', {
             name: qs('name'),
             curr_sentence_index: this.state.curr_sentence_index
           });
@@ -581,7 +662,7 @@ class App extends React.Component {
         recordedProgress: curr_sentence_index
       },
       () => {
-        this.props.socket.emit(
+        this.state.socket.emit(
           'client: update recording progress',
           curr_sentence_index
         );
@@ -594,9 +675,8 @@ class App extends React.Component {
       const status = {};
       status[this.state.computerID] = recordingStatus;
       this.setState({ computerStatus: status }, () => {
-        // console.log(this.state.computerStatus);
       });
-      this.props.socket.emit('client: update recording status', status);
+      this.state.socket.emit('client: update recording status', status);
     }
     this.getStatus();
   };
@@ -610,48 +690,53 @@ class App extends React.Component {
   };
 
   getStatus = () => {
-    this.props.socket.emit('client: ping for connection status');
-    this.props.socket.emit('client: ping for numFilesSaved');
-    this.props.socket.emit('client: ping for progress');
+    this.state.socket.emit('client: ping for connection status');
+    this.state.socket.emit('client: ping for numFilesSaved');
+    this.state.socket.emit('client: ping for progress');
   };
 
   admin_resetCams = () => {
-    // this.props.socket.emit('client: stop cams');
+    // this.state.socket.emit('client: stop cams');
     this.updateGreenLightStatus(true);
-    this.props.socket.emit('client: reset cams');
+    this.state.socket.emit('client: reset cams');
     try {
       document.getElementById('addCamBtn').click();
     } catch (NotYetLoadedException) {
       //
     }
-    this.props.socket.emit('client: dummy vid, do not save');
-    cogoToast.info('Cams are reset', { hideAfter: 0.3 });
+    this.state.socket.emit('client: dummy vid, do not save');
+    // cogoToast.info('Cams are reset', { hideAfter: 0.3 });
+
+    const resetBtn = document.getElementById('resetCamsBtn');
+    if (!resetBtn.className.includes('btn-active')) {
+      document.getElementById('resetCamsBtn').className += (' btn-active');
+    }
   };
 
   admin_refreshAll = () => {
-    this.props.socket.emit('client: refresh all');
+    this.state.socket.emit('client: refresh all');
   };
 
   admin_resetProgress = () => {
-    this.props.socket.emit('client: update recording progress', 0);
-    this.props.socket.emit('client: delete total time');
-    this.props.socket.emit('client: reset total files');
-    this.props.socket.emit('client: save total start time', new Date());
+    this.state.socket.emit('client: update recording progress', 0);
+    this.state.socket.emit('client: delete total time');
+    this.state.socket.emit('client: reset total files');
+    this.state.socket.emit('client: save total start time', new Date());
     window.location = window.location.origin;
-    this.props.socket.emit('client: save total time', [0, 0, 0]);
+    this.state.socket.emit('client: save total time', [0, 0, 0]);
   };
 
   helper_emitInitialSocketMessages = () => {
     if (!this.helper_checkIfMobileView) {
-      this.props.socket.emit('client: update sentence_index', {
+      this.state.socket.emit('client: update sentence_index', {
         name: qs('name'),
         curr_sentence_index: this.state.curr_sentence_index
       });
     } else {
-      this.props.socket.emit('client: ask for recording status');
+      this.state.socket.emit('client: ask for recording status');
     }
-    this.props.socket.emit('client: check for progress');
-    this.props.socket.emit('client: ask for sync id');
+    this.state.socket.emit('client: check for progress');
+    this.state.socket.emit('client: ask for sync id');
   }
 
   helper_toggleModal = id => {
@@ -666,7 +751,13 @@ class App extends React.Component {
     this.setState({ addCamState: !this.state.addCamState });
   };
 
-  downHandler(event) {
+  handler_keyup() {
+    for (const btn of document.getElementsByClassName('debug_button')) {
+      btn.classList.remove('btn-active');
+    }
+  }
+
+  handler_keydown(event) {
     let key = event.key;
     if ([' ', 'ArrowLeft', 'ArrowRight', 'Escape', 'Enter'].includes(key)) {
       try {
@@ -681,9 +772,9 @@ class App extends React.Component {
           document.getElementById('resetCamsBtn').click();
         } else if (key === 'Enter') {
           console.log('detected enter key');
-          if (document.getElementById('resetProgressBtn')) {
-            console.log('reset button exists!');
-            document.getElementById('resetProgressBtn').click();
+          if (document.getElementsByClassName('modali-button-destructive')[0]) {
+            document.getElementsByClassName('modali-button-destructive')[0].click();
+            this.admin_resetProgress();
           } else {
             return true;
           }
@@ -694,10 +785,6 @@ class App extends React.Component {
       }
     }
   }
-}
-
-App.propTypes = {
-  socket: PropTypes.object.isRequired
 }
 
 export default App;

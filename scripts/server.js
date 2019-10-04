@@ -1,5 +1,10 @@
 /* eslint-disable no-console */
 const app = require('express')();
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "localhost");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+})
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {origins: '*:*'});
 const fs = require('fs');
@@ -22,7 +27,6 @@ const START_TIME_PATH = parentDir + 'start_time.json'
 
 let connection_status = {};
 let numSaved = 0;
-let numConnected = 0;
 let online = []
 let recordedStart = undefined;
 const ip = getIP();
@@ -123,7 +127,7 @@ function getTimeRecorded() {
   const seconds = Math.floor(totalTimeRecorded / 1000);
   let milliSeconds = totalTimeRecorded - seconds * 1000;
   milliSeconds = totalTimeRecorded > 0 ? Math.round(totalTimeRecorded / 10).toString().substring(0, 2) : 0;
-  console.log(colors.magenta(colors.bold('⏱  time      : ') + '00:' + ('0' + seconds).split(-2) + ':' + milliSeconds));
+  console.log(colors.magenta(colors.bold('⏱  time   : ') + '00:' + ('0' + seconds).split(-2) + ':' + milliSeconds));
 }
 
 function printLine(gap, print) {
@@ -152,14 +156,17 @@ http.listen(5000, function () {
 });
 
 
+
+
 io.on('connection', function(socket) {
   online.push(socket.id)
   displayOnline();
 
   saveConnection(socket);
-  let temp = {}
-  temp[socket.id] = numConnected++
-  io.emit('server: computer connected order', temp);
+  // let temp = {}
+  // temp[socket.id] = numConnected++
+  // io.emit('server: computer connected order', temp);
+  io.to(socket.id).emit('server: connected', socket.id);
 
   socket.on('client: ask for sync id', function() {
     io.emit('server: connected sync id', socket.id);
@@ -206,6 +213,7 @@ io.on('connection', function(socket) {
   });
 
   socket.on('disconnect', function() {
+    io.to(socket.id).emit('server: you disconnected'); // when would this ever show up??
     disconnect(socket.id);
     const socketid = socket.id
     delete connection_status[socketid];
@@ -262,13 +270,13 @@ io.on('connection', function(socket) {
   });
 
   socket.on('client: start cams', function() {
-    console.log(colors.yellow(colors.bold('✨ cmd       : ') + 'start cams'));
+    console.log(colors.yellow(colors.bold('✨ cmd    : ') + 'start cams'));
     recordedStart = new Date();
     io.emit('server: start cams')
   });
   
   socket.on('client: stop cams', function() {
-    console.log(colors.yellow(colors.bold('✨ cmd       : ') + 'stop cams'));
+    console.log(colors.yellow(colors.bold('✨ cmd    : ') + 'stop cams'));
     getTimeRecorded();
     io.emit('server: stop cams');
   });
@@ -339,12 +347,19 @@ io.on('connection', function(socket) {
         return console.log(err)
       }
       console.log(colors.magenta( 
-        colors.bold('📂 file      : ') + fullPath.substring(1)
+        colors.bold('📂 file   : ') + fullPath.substring(1)
       ));
     });
 
     io.emit('server: save files successful', numSaved);
   });
+
+  
 });
 
 
+process.on('SIGINT', function () {
+  console.log("\nCaught interrupt signal");
+  io.emit('server: disconnected');
+  process.exit();
+});

@@ -12,7 +12,7 @@
 //   return b;
 // })(window.location.search.substr(1).split('&'));
 
-let qs = function(id) {
+const qs = function(id) {
   let parsedUrl = new URL(window.location.href);
   if (parsedUrl.searchParams.has(id)) {
     return parsedUrl.searchParams.get(id);

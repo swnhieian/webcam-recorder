@@ -302,8 +302,9 @@ class App extends React.Component {
         <div className="debug_inline_group">
           <label htmlFor="" className="debug_label">Server: </label>
           <span className="server_status"></span>
-          <input id="inputServerIP"type="text" className="debug_text_input" value={this.state.ip} onChange={this.handler_IPOnChange}/>
+          <input id="inputServerIP" type="text" className="debug_text_input" value={this.state.ip} onChange={this.handler_IPOnChange}/>
         </div>
+        <button className='debug_button' onClick={this.handler_useThisCompAsServer()}>🖥</button>
 
         <div className="debug_inline_group">
           <label htmlFor="" className="debug_label">Cams: </label>
@@ -366,6 +367,10 @@ class App extends React.Component {
       // console.error(NotYetLoadedException);
     }
   };
+
+  handler_useThisCompAsServer = () => {
+    
+  }
 
   handler_IPOnChange = e => {
     this.setState({ip: e.target.value})

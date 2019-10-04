@@ -11,8 +11,7 @@ const fs = require('fs');
 const exec = require('child_process').exec;
 const path = require('path')
 const colors = require('colors/safe');
-const os = require('os');
-const ifaces = os.networkInterfaces();
+const ip = require('../src/utils/ip');
 
 let parentDir = path.resolve(process.cwd(), '..');
 exec('getParentDirectory', {
@@ -29,23 +28,7 @@ let connection_status = {};
 let numSaved = 0;
 let online = []
 let recordedStart = undefined;
-const ip = getIP();
-
-function getIP() {
-  let address = undefined;
-  Object.keys(ifaces).forEach(function (ifname) {
-    ifaces[ifname].forEach(function (iface) {
-      if ('IPv4' !== iface.family || iface.internal !== false) {
-        // skip over internal (i.e. 127.0.0.1) and non-ipv4 addresses
-        return;
-      }
-      if (ifname === 'en0') {
-        address = iface.address;
-      }
-    });
-  });
-  return address;
-}
+const my_ip = ip.getIP();
 
 function saveData(data, path) {
 try {
@@ -151,8 +134,8 @@ app.get('/', function (req, res) {
 
 http.listen(5000, function () {
   clearConsole(13);
-  getIP();
-  console.log(colors.green(colors.bold('👂🏻 listening : ') + 'localhost:5000 or ' + ip + ':5000'));
+  ip.getIP();
+  console.log(colors.green(colors.bold('👂🏻 listening : ') + 'localhost:5000 or ' + my_ip + ':5000'));
 });
 
 

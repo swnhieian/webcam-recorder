@@ -44,7 +44,7 @@ class App extends React.Component {
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
       connectedOrderMap: {},
-      requiredNumCams: 1,
+      requiredNumCams: 8,
       recordedProgress: 0,
       addCamState: false,
       totalTime: [],
@@ -52,8 +52,8 @@ class App extends React.Component {
       totalWords: 0,
       remainingWords: 0,
       debugMode: false,
-      socket: io('http://192.168.0.100:5000'),
-      ip: 'http://192.168.0.100:5000',
+      socket: io('http://192.168.0.103:5000'),
+      ip: 'http://192.168.0.103:5000',
       connectedToServer: false,
       detectedNumCams: 0
     };

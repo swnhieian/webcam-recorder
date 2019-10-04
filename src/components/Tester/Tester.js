@@ -28,14 +28,13 @@ function Tester(props) {
         recordedProgress={props.recordedProgress}
         updateRecordProgress={props.updateRecordProgress}
         showFileSavingLoader={props.showFileSavingLoader}
-        comp_timer={comp_timer}
       />
     );
   }
 
   function stopTimer() {
     clearInterval(intervalID);
-    document.getElementById('record_time_content').innerHTML = '';
+    document.getElementById('record_time_content').innerHTML = '00:00:00';
   }
 
   function startTimer() {
@@ -62,22 +61,12 @@ function Tester(props) {
       }
       time = [hour, min, sec];
 document.getElementById('record_time_content').innerHTML =
-  'Total Recording Time—' +
   ('0' + hour).slice(-2) +
   ':' +
   ('0' + min).slice(-2) +
   ':' +
   ('0' + sec).slice(-2);
-    }, 1000);
-  }
-
-
-  function comp_timer() {
-    return (
-      <div>
-        <pre id='record_time_content'></pre>
-      </div>
-    );
+    }, 10);
   }
 
   function comp_totalTimer() {
@@ -104,7 +93,6 @@ document.getElementById('record_time_content').innerHTML =
       />
       <div className='middle'>
         <div className='inner'>{comp_inProcessScreen()}</div>
-        {comp_timer()}
       </div>
       <pre
         hidden={

@@ -144,14 +144,26 @@ export default function InProcessScreen(props) {
         </div>
       );
     } else {
+      try {
+        let recordTimeEle = document.getElementById('record_time_content');
+        let colorRecordTime = (recordTimeEle.innerText === '00:00:00') ? 'grey' : 'red';
+        console.log(colorRecordTime)
+        if (colorRecordTime === 'grey') {
+          recordTimeEle.style.color = 'lightgreen';
+        } else {
+          recordTimeEle.style.color = 'red';
+        }
+      } catch (NotYetLoadedException) {
+        //
+      }
       return (
         <div>
           {displaySentenceToBeRead()}
           <div className='recording_hint'>
-            {getRecordState() === 'Done' ? '🔴' : ''}
-          </div>
-          <div id="record-time-container">
-            {props.comp_timer('recording_time')}
+          <pre id='record_time_content'>00:00:00</pre>
+            {
+              getRecordState() === 'Done' ? ' 🔴 录制中 🔴 ' : ''
+            }
           </div>
           <button
             id='testerRecordBtn'
@@ -223,5 +235,4 @@ InProcessScreen.propTypes = {
   recordedProgress: PropTypes.number.isRequired,
   updateRecordProgress: PropTypes.func.isRequired,
   showFileSavingLoader: PropTypes.func.isRequired,
-  comp_timer: PropTypes.func.isRequired
 };

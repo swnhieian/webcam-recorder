@@ -24,11 +24,9 @@
   height: 27px;
   position: relative;
   display: inline-block;
-  // margin: auto;
-  // margin-top: 1em;
-  // padding-top: 1em;
-  // padding-bottom: 1em;
 }
+
+// the inset toggle background container
 .switch label {
   display: block;
   width: 80%;
@@ -45,6 +43,7 @@
   transition: all .5s ease;
 }
 
+// the circle in the toggle
 .switch input~label i {
   display: block;
   height: 23px;

@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import React from 'react';
-import PropTypes from 'prop-types';
 import update from 'react-addons-update'
 import qs from '../utils/qs'
 import cogoToast from 'cogo-toast';
@@ -52,8 +51,8 @@ class App extends React.Component {
       totalWords: 0,
       remainingWords: 0,
       debugMode: false,
-      socket: io('http://192.168.0.100:5000')
-
+      socket: io('http://192.168.0.100:5000'),
+      ip: 'http://192.168.0.100:5000'
     };
   }
 
@@ -258,11 +257,12 @@ class App extends React.Component {
     );
   };
 
+  
+
   // * COMPONENT * //
   comp_debug = () => {
     return (
       <div className="debug-group">
-        <Toggle id='debug_mode' onChangeFunc={this.handler_debugToggle} />
         <button
           onClick={() => {
             this.helper_toggleModal('overallStatus');
@@ -288,10 +288,17 @@ class App extends React.Component {
           Reset Progress
         </button>
         
-        <div className="debug_text_input">
-          <label htmlFor="" className="debug_label">label: </label>
-          <input type="text"></input>
+        
+        <div className="debug_inline_group">
+          <label className="debug_label">Debug Mode: </label>
+          <Toggle id='debug_mode' onChangeFunc={this.handler_debugToggle} />
         </div>
+
+        <div className="debug_inline_group">
+          <label htmlFor="" className="debug_label">Server IP: </label>
+          <input type="text" className="debug_text_input" placeholder={this.state.socket.io.uri}/>
+        </div>
+
 
         {/* <button className='debug_button' onClick={this.admin_refreshAll}>
           Refresh All
@@ -303,9 +310,9 @@ class App extends React.Component {
           className='hidden_button'
         ></button>
 
-        <pre hidden={this.state.numCams === 8}>
+        {/* <pre hidden={this.state.numCams === 8}>
           debug mode, remember to change num cams back to 8
-        </pre>
+        </pre> */}
       </div>
     );
   };
@@ -482,6 +489,9 @@ class App extends React.Component {
    * from server
    */
   initSocketListeners = () => {
+    this.state.socket.on('server: connected', id => {
+      console.log('hey there ', id);
+    })
     this.state.socket.on('server: connected sync id', id => {
       if (this.updateCompID) this.updateCompID(id);
       this.updateCompID = null;
@@ -733,10 +743,6 @@ class App extends React.Component {
       }
     }
   }
-}
-
-App.propTypes = {
-  socket: PropTypes.object.isRequired
 }
 
 export default App;

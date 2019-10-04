@@ -309,9 +309,13 @@ export default function CameraList(props) {
   };
 
   const triggerRecordStatusUpdate = (temp, recorder, cam) => {
-    temp[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
-    setRecordingStatus(temp);
-    props.updateConnectionStatus(temp);
+    try {
+      temp[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
+      setRecordingStatus(temp);
+      props.updateConnectionStatus(temp);
+    } catch (NotYetLoadedException) {
+      cogoToast.warn('Camera not yet loaded!');
+    }
   }
 
   const resumeAllCams = () => {
@@ -319,7 +323,12 @@ export default function CameraList(props) {
       recordingStatus === 'recording-status-loading...' ? {} : recordingStatus;
     availableCams.map(cam => {
       let recorder = cam['recorder'];
-      let state = recorder.getState();
+      let state = undefined;
+      try {
+        state = recorder.getState();
+      } catch {
+        cogoToast.warn("Camera not yet loaded!");
+      }
       if (state === "paused") {
         recorder.resumeRecording();
       } else if (state === "stopped"){

@@ -1,5 +1,10 @@
 /* eslint-disable no-console */
 const app = require('express')();
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "localhost");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+})
 const http = require('http').createServer(app);
 const io = require('socket.io')(http, {origins: '*:*'});
 const fs = require('fs');
@@ -157,9 +162,10 @@ io.on('connection', function(socket) {
   displayOnline();
 
   saveConnection(socket);
-  let temp = {}
-  temp[socket.id] = numConnected++
-  io.emit('server: computer connected order', temp);
+  // let temp = {}
+  // temp[socket.id] = numConnected++
+  // io.emit('server: computer connected order', temp);
+  io.to(socket.id).emit('server: connected', socket.id);
 
   socket.on('client: ask for sync id', function() {
     io.emit('server: connected sync id', socket.id);

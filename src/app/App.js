@@ -27,7 +27,7 @@ import ip_util from '../utils/ip'
 class App extends React.Component {
   per_page = 8;
   curr_index = qs('sentence_index');
-
+  ip_address = 'http://192.168.0.100:5000'
   /**
    * Constructor for main react App Component
    * @param {object} props 
@@ -54,8 +54,8 @@ class App extends React.Component {
       totalWords: 0,
       remainingWords: 0,
       debugMode: false,
-      socket: io('http://192.168.0.103:5000'),
-      ip: 'http://192.168.0.103:5000',
+      socket: io(this.ip_address),
+      ip: this.ip_address,
       connectedToServer: false,
       detectedNumCams: 0
     };
@@ -498,7 +498,7 @@ class App extends React.Component {
   disp_showFileSavingLoader = () => {
     this.ref_hideLoader = cogoToast.loading(
       this.style_makeEmojiToastLayout(['视频正在保存', '请耐心等待'], '⌛️'),
-      { hideAfter: 0 }
+      { hideAfter: 5 }
     );
     // setTimeout(hideLoader, 2000);
     // hideLoader();
@@ -782,13 +782,17 @@ class App extends React.Component {
       try {
         if (key === ' ') {
           document.getElementById('testerRecordBtn').click();
+          event.preventDefault();
         } else if (key === 'ArrowLeft') {
           document.getElementById('testerPrevBtn').click();
+          event.preventDefault();
         } else if (key === 'ArrowRight') {
           console.log('detected right arrow key');
           document.getElementById('testerNextBtn').click();
+          event.preventDefault();
         } else if (key === 'Escape') {
           document.getElementById('resetCamsBtn').click();
+          event.preventDefault();
         } else if (key === 'Enter') {
           console.log('detected enter key');
           if (document.getElementsByClassName('modali-button-destructive')[0]) {
@@ -803,11 +807,11 @@ class App extends React.Component {
             console.log(inputServerIP.value);
             this.setState({socket: io(inputServerIP.value), ip: inputServerIP.value});
             this.state.socket.emit('client: check server connection')
+            event.preventDefault();
           }
         } else if (key === 's') {
-          this.helper_toggleModal('overallStatus');
+          if (document.activeElement !== document.getElementById('name')) this.helper_toggleModal('overallStatus');
         }
-        event.preventDefault();
       } catch (NotYetLoadedException) {
         console.error(NotYetLoadedException);
       }

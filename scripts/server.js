@@ -334,7 +334,7 @@ io.on('connection', function(socket) {
         return console.log(err)
       }
       console.log(colors.magenta( 
-        colors.bold('📂 file   : ') + fullPath.substring(1)
+        colors.bold('📂 file   : /') + fullPath.substring(1)
       ));
     });
 

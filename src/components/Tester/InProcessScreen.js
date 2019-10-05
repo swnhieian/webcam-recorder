@@ -61,16 +61,18 @@ export default function InProcessScreen(props) {
 
   
   function disableNextButtonIfCurrNotRead() {
-    const recordedYet =
+    if (!props.debugMode) {
+      const recordedYet =
       props.recordedProgress > props.curr_sentence_index;
-    try {
-      if (recordedYet) {
-        document.getElementById('testerNextBtn').disabled = false;
-      } else {
-        document.getElementById('testerNextBtn').disabled = true;
+      try {
+        if (recordedYet) {
+          document.getElementById('testerNextBtn').disabled = false;
+        } else {
+          document.getElementById('testerNextBtn').disabled = true;
+        }
+      } catch (Exception) {
+        // console.log(Exception);
       }
-    } catch (Exception) {
-      // console.log(Exception);
     }
   }
 
@@ -108,6 +110,7 @@ export default function InProcessScreen(props) {
       <div>
         <br />
         <div className={recordedClassName}>
+          <p style={{fontSize: '16px'}}>[{props.curr_sentence_index}]</p>
           {sentence}
         </div>
       </div>
@@ -180,7 +183,8 @@ export default function InProcessScreen(props) {
             onClick={record}
             disabled={
               !props.recordGreenLight ||
-              props.numFilesSaved % props.numCams !== 0
+              props.numFilesSaved % props.numCams !== 0 || 
+              !props.connectedToServer
             }
           >
             {trans(getRecordState())}
@@ -240,4 +244,6 @@ InProcessScreen.propTypes = {
   recordedProgress: PropTypes.number.isRequired,
   updateRecordProgress: PropTypes.func.isRequired,
   showFileSavingLoader: PropTypes.func.isRequired,
+  debugMode: PropTypes.bool.isRequired,
+  connectedToServer: PropTypes.bool.isRequired,
 };

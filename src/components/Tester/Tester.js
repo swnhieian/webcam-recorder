@@ -26,6 +26,8 @@ function Tester(props) {
         recordedProgress={props.recordedProgress}
         updateRecordProgress={props.updateRecordProgress}
         showFileSavingLoader={props.showFileSavingLoader}
+        debugMode={props.debugMode}
+        connectedToServer={props.connectedToServer}
       />
     );
   }
@@ -107,7 +109,9 @@ Tester.propTypes = {
   updateRecordProgress: PropTypes.func.isRequired,
   totalTime: PropTypes.array.isRequired,
   updateTotalTime: PropTypes.func.isRequired,
-  showFileSavingLoader: PropTypes.func.isRequired
-};
+  showFileSavingLoader: PropTypes.func.isRequired,
+  debugMode: PropTypes.bool.isRequired,
+  connectedToServer: PropTypes.bool.isRequired,
+}
 
 export default Tester;

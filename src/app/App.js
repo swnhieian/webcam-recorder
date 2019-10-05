@@ -260,6 +260,7 @@ class App extends React.Component {
           this.state.recordGreenLight &&
           this.state.numFilesSavedTotal % this.state.requiredNumCams === 0
         }
+        debugMode={this.state.debugMode}
         numFilesSaved={this.state.numFilesSavedTotal}
         numCams={this.state.requiredNumCams}
         updateGreenLightStatus={this.updateGreenLightStatus}
@@ -268,6 +269,7 @@ class App extends React.Component {
         totalTime={this.state.totalTime}
         updateTotalTime={this.updateTotalTime}
         showFileSavingLoader={this.disp_showFileSavingLoader}
+        connectedToServer={this.state.connectedToServer}
       />
     );
   };
@@ -642,6 +644,7 @@ class App extends React.Component {
       if (this.hideServerOfflineRef) this.hideServerOfflineRef();
       document.getElementsByClassName('server_status')[0].classList.add('server_online');
       document.getElementById('inputServerIP').classList.add('serverPlaceholderConnected');
+      
     });
     if (!this.hideServerOfflineRef) {
       this.hideServerOfflineRef = this.helper_showServerNotOnline();

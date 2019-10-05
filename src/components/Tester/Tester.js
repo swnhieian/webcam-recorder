@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import './Tester.scss';
 import PropTypes from 'prop-types';
 import InProcessScreen from './InProcessScreen.js';
-import Timer from '../Timer.js'
 import qs from '../../utils/qs'
 import ProgressBar from '../ProgressBar'
 

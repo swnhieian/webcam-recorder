@@ -152,7 +152,10 @@ io.on('connection', function(socket) {
   io.to(socket.id).emit('server: connected', socket.id);
 
   socket.on('client: check server connection', function() {
-    io.emit('server: online');
+    setTimeout(() => {
+      console.log('server online')
+      io.emit('server: online')
+    }, 3000);
   });
 
   socket.on('client: ask for sync id', function() {

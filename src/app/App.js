@@ -521,7 +521,7 @@ class App extends React.Component {
    */
   initSocketListeners = () => {
     this.state.socket.on('server: online', () => {
-      console.log('server online!')
+      cogoToast.success(this.style_makeEmojiToastLayout(['Server ' + this.state.ip + ' is online.'], '🔥'))
       document.getElementsByClassName('server_status')[0].classList.add('server_online');
       document.getElementById('inputServerIP').classList.add('serverPlaceholderConnected');
     });
@@ -777,18 +777,23 @@ class App extends React.Component {
 
   handler_keydown = (event) => {
     let key = event.key;
+    const inputServerIP = document.getElementById('inputServerIP');
+
     if ([' ', 'ArrowLeft', 'ArrowRight', 'Escape', 'Enter', 's'].includes(key)) {
       try {
         if (key === ' ') {
           document.getElementById('testerRecordBtn').click();
           event.preventDefault();
         } else if (key === 'ArrowLeft') {
-          document.getElementById('testerPrevBtn').click();
-          event.preventDefault();
+          if (document.activeElement !== inputServerIP) {
+            document.getElementById('testerPrevBtn').click();
+            event.preventDefault();
+          }
         } else if (key === 'ArrowRight') {
-          console.log('detected right arrow key');
-          document.getElementById('testerNextBtn').click();
-          event.preventDefault();
+          if (document.activeElement !== inputServerIP) {
+            document.getElementById('testerNextBtn').click();
+            event.preventDefault();
+          }
         } else if (key === 'Escape') {
           document.getElementById('resetCamsBtn').click();
           event.preventDefault();
@@ -798,7 +803,6 @@ class App extends React.Component {
             document.getElementsByClassName('modali-button-destructive')[0].click();
             this.admin_resetProgress();
           }
-          const inputServerIP = document.getElementById('inputServerIP');
           if (document.activeElement === inputServerIP) {
             this.state.socket.disconnect();
             document.getElementsByClassName('server_status')[0].classList.remove('server_online');
@@ -806,13 +810,14 @@ class App extends React.Component {
             console.log(inputServerIP.value);
             this.setState({socket: io(inputServerIP.value), ip: inputServerIP.value});
             this.state.socket.emit('client: check server connection')
+            this.initSocketListeners();
             event.preventDefault();
           }
         } else if (key === 's') {
           if (document.activeElement !== document.getElementById('name')) this.helper_toggleModal('overallStatus');
         }
       } catch (NotYetLoadedException) {
-        console.error(NotYetLoadedException);
+        // console.error(NotYetLoadedException);
       }
     }
   }

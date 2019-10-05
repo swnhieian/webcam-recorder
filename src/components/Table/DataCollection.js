@@ -8,8 +8,6 @@ export default class DataCollection extends Component {
   render() {
     return (
       <div>
-        <div className='name_field'>
-        </div>
         <div className='data_table'>
           <Table
             data={this.props.data}

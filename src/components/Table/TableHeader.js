@@ -5,7 +5,7 @@ export default class TableHeader extends Component {
     return (
       <div>
         <div className='table_header_footer'>
-          <div>Sentence</div>
+          <h3>Sentence</h3>
           {/* <div>Length</div>
           <div>Actions</div> */}
         </div>

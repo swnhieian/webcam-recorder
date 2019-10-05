@@ -53,7 +53,7 @@ class App extends React.Component {
       startTime: undefined,
       totalWords: 0,
       remainingWords: 0,
-      debugMode: false,
+      debugMode: true,
       socket: io(this.ip_address),
       ip: this.ip_address,
       connectedToServer: false,
@@ -91,26 +91,63 @@ class App extends React.Component {
     // this.pingServer();
       window.addEventListener('keydown', this.handler_keydown);
       window.addEventListener('keyup', this.handler_keyup);
-      const debugHoverArea = document.getElementById('debug_hover_area');
-      debugHoverArea.addEventListener('mouseout', () => {
-        console.log('hovered over me!')
-        try {
-          // if (debugHoverArea.focus)
-          document.getElementsByClassName('debug-group')[0].className += ' hideDebug'
-        } catch (NotYetLoadedException) {
-          console.error(NotYetLoadedException)
-        }
-      });
-      debugHoverArea.addEventListener('mouseover', () => {
-        console.log('hovered out of me!')
-        try {
-          document.getElementsByClassName('debug-group')[0].classList.remove('hideDebug');
-        } catch (NotYetLoadedException) {
-          console.error(NotYetLoadedException)
-        }
-      })
+      
+      this.helper_addHoverEventListeners()
+      
     } catch (NotYetLoadedException) {
       //
+    }
+  }
+
+  helper_addHoverEventListeners = () => {
+    const debugHoverArea = document.getElementById('debug_hover_area');
+    const bottomHoverArea = document.getElementById('bottom_hover_area');
+    debugHoverArea.addEventListener('mouseout', this.handler_hoverMouseOutDebug);
+    debugHoverArea.addEventListener('mouseover', this.handler_hoverMouseOverDebug);
+    bottomHoverArea.addEventListener('mouseout', this.handler_hoverMouseOutBottom);
+    bottomHoverArea.addEventListener('mouseover', this.handler_hoverMouseOverHover);
+  }
+  helper_removeHoverEventListeners = () => {
+    const debugHoverArea = document.getElementById('debug_hover_area');
+    const bottomHoverArea = document.getElementById('bottom_hover_area');
+    debugHoverArea.removeEventListener('mouseout', this.handler_hoverMouseOutDebug);
+    debugHoverArea.removeEventListener('mouseover', this.handler_hoverMouseOverDebug);
+    bottomHoverArea.removeEventListener('mouseout', this.handler_hoverMouseOutBottom);
+    bottomHoverArea.removeEventListener('mouseover', this.handler_hoverMouseOverHover);
+    this.handler_hoverMouseOverHover();
+  }
+
+  handler_hoverMouseOutDebug = () => {
+    try {
+      console.log('debug mouse out')
+      document.getElementsByClassName('debug-group')[0].className += ' ' + 'hideDebug'
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException)
+    }
+  }
+
+  handler_hoverMouseOverDebug = () => {
+    try {
+      console.log('debug mouse over')
+      document.getElementsByClassName('debug-group')[0].classList.remove('hideDebug');
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException)
+    }
+  }
+
+  handler_hoverMouseOutBottom = () => {
+    try {
+      document.getElementsByClassName('contents')[0].className += ' ' + 'hideBottom'
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException)
+    } 
+  }
+
+  handler_hoverMouseOverHover = () => {
+    try {
+      document.getElementsByClassName('contents')[0].classList.remove('hideBottom');
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException)
     }
   }
 
@@ -128,18 +165,22 @@ class App extends React.Component {
   main_userView = () => {
     return (
       <div className='container'>
-        <span id="debug_hover_area">
-          {this.comp_debug()}
-        </span>
+        <span id = "debug_hover_area" > 
+          {this.comp_debug()} 
+        </span> 
         {this.comp_tester()}
-        {this.comp_userResearchHeader()}
-        <div className='contents'>
-          <div className='left_panel'>{this.comp_dataCollection()}</div>
-          <div className='right_panel cameras_container'>
-            {this.comp_cameraList()}
+        <span id="bottom_hover_area">
+          <div className='contents'>
+            <div className='left_panel'>{this.comp_dataCollection()}</div>
+            <div className='right_panel'>
+              <h3>Cameras</h3>
+              <div className='cameras_container'>
+                {this.comp_cameraList()}
+              </div>
+            </div>
           </div>
-          <div className=''></div>
-        </div>
+        </span>
+
       </div>
     );
   };
@@ -221,17 +262,6 @@ class App extends React.Component {
         updateTotalTime={this.updateTotalTime}
         showFileSavingLoader={this.disp_showFileSavingLoader}
       />
-    );
-  };
-
-  // * COMPONENT * //
-  comp_userResearchHeader = () => {
-    return (
-      <div>
-        <br />
-        <h1>For User Researcher Purpose Only</h1>
-        <hr />
-      </div>
     );
   };
 
@@ -328,7 +358,7 @@ class App extends React.Component {
         
         <div className="debug_inline_group">
           <label className="debug_label">Debug: </label>
-          <Toggle id='debug_mode' onChangeFunc={this.handler_debugToggle} />
+          <Toggle id='debug_mode' onChangeFunc={this.handler_debugToggle} checked={this.state.debugMode}/>
         </div>
         <span className="vert-bar">|</span>
 
@@ -432,14 +462,21 @@ class App extends React.Component {
   handler_IPOnChange = e => {
     this.setState({ip: e.target.value})
   }
+
   handler_debugToggle = debugMode => {
+    console.log('toggling debug mode')
     this.setState({debugMode}, () => {
       if (debugMode) {
         this.setState({requiredNumCams: 1});
+        this.helper_removeHoverEventListeners()
       } else {
         this.setState({requiredNumCams: 8});
+        this.helper_addHoverEventListeners()
+        this.handler_hoverMouseOutBottom();
       }
     });
+
+
   }
 
   handler_fileSaveSuccess = numFiles => {
@@ -587,9 +624,6 @@ class App extends React.Component {
     this.state.socket.on('server: online', () => {
       cogoToast.success('Server is online.', {
         position: 'top-right', 
-        onClick: hide => {
-          hide()
-        }, 
         hideAfter: 0
       });
       if (this.hideServerOfflineRef) this.hideServerOfflineRef();
@@ -844,10 +878,7 @@ class App extends React.Component {
   helper_showServerNotOnline = () => {
     return cogoToast.warn("Server is offline", {
       hideAfter: 0,
-      position: 'top-right',
-      onClick: hide => {
-        hide()
-      }
+      position: 'top-right'
     });
   }
 

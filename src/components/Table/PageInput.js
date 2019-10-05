@@ -18,6 +18,7 @@ export default class PageInput extends Component {
             type='text'
             value={this.props.curr_page}
             onChange={this.handleChange}
+            className = 'debug_text_input'
           />
         </form>
       </div>

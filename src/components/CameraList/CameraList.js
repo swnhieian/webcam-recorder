@@ -399,22 +399,22 @@ export default function CameraList(props) {
       return (
         <div>
           {/* <p>Don't click these while actual testing</p> */}
-          <button id='dummyBtn' onClick={initCamsDummy}>
+          <button id='dummyBtn' className="hidden_button" onClick={initCamsDummy}>
             dummy reset
           </button>
-          <button id='startBtn' onClick={startAllCams}>
+          <button id='startBtn' className="hidden_button" onClick={startAllCams}>
             start and pause all cams
           </button>
-          <button id='resumeBtn' onClick={resumeAllCams}>
+          <button id='resumeBtn' className="hidden_button" onClick={resumeAllCams}>
             resume all cams
           </button>
-          <button id='stopBtn' onClick={stopAllCams}>
+          <button id='stopBtn' className="hidden_button" onClick={stopAllCams}>
             stop all cams
           </button>
           <button
             id='addCamBtn'
             className='hidden_button'
-            onClick={addNewCamMic}
+            onClick={addNewCamMic} 
           >
             Add Cam
           </button>

@@ -1,10 +1,13 @@
-orig = open("sentences-pinyin-accentnum.txt", "r")
-new = open("sentences-pinyin-accent-nonum.txt","w")
+import os
+os.chdir('src/assets/data')
+
+orig = open("sentences-pinyin-on-top.txt", "r")
+new = open("sentences-pinyin-accent-nospecialchar.txt","w")
 longest = ""
 
 for line in orig:
-  line = line.replace("锟斤拷", "v")
-  line = ''.join([i for i in line if not i.isdigit()])
+  line = line.replace("锟斤拷", "ǚ")
+  # line = ''.join([i for i in line if not i.isdigit()])
   line = line.replace("，", " ")
   line = line.replace("“", "")
   line = line.replace("”", "")

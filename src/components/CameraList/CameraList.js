@@ -45,9 +45,11 @@ export default function CameraList(props) {
       micDevices.push(device);
   }
   const helper_getNumCams = devices => {
-    return devices.reduce((accumulator, device) => {
+    const num = devices.reduce((accumulator, device) => {
       return device.kind === 'videoinput' ? accumulator + 1 : accumulator;
     }, 0);
+    props.updateDetectedNumCams(num);
+    return num;
   }
   const initCams = () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -57,6 +59,7 @@ export default function CameraList(props) {
         let videoDevices = [];
         let micDevices = [];
         const numCams = helper_getNumCams(devices);
+
         console.log("number of cams detected: " + numCams);
         devices.map(function(device) {
           if (device.kind === 'audioinput') {
@@ -149,7 +152,7 @@ export default function CameraList(props) {
       document.getElementById('startBtn').click();
       document.getElementById('dummyBtn').disabled = false;
       document.getElementById('dummyBtn').click();
-      cogoToast.info('Mac FaceTime Camera started');
+      cogoToast.success('Mac FaceTime Camera started', {hideAfter: 0.3});
     }
   }
 
@@ -172,41 +175,36 @@ export default function CameraList(props) {
       const idAoni = allDevices.map(device => {
         return device.deviceId;
       });
-      const newPluggedInPaired = allDevices.map(device => [device.kind, device.deviceId])
-      console.log(newPluggedInPaired);
+      // const newPluggedInPaired = allDevices.map(device => [device.kind, device.deviceId])
+      // console.log(newPluggedInPaired);
 
       const newPluggedInID = idAoni.diff(pluggedInDevices);
       if (newPluggedInID.length === 0) {
-        console.log('no new devices detected');
+        // console.log('no new devices detected');
       } else if (newPluggedInID.length === 2) {
         detectedTwoDevices = true;
-        console.log(
-          'new devices: ' + newPluggedInID.map(d => d.substring(0, 5))
-        );
+        // console.log(
+        //   'new devices: ' + newPluggedInID.map(d => d.substring(0, 5))
+        // );
       }
 
       if (detectedTwoDevices) {
-        console.log('detected new devices');
         let [newMicID, newCamDevice] = getNewMicCam(newPluggedInID, allDevices);
         newCamDevice = helper_extractRelevantCamInfo(newCamDevice);
-        console.log(newCamDevice);
         const existCamera = availableCams.filter(cam => {
           return cam.camera_info.id === newCamDevice.camera_info.id;
         })[0];
-        console.log(existCamera);
         if (!existCamera) {
           newCamDevice.mic_info = newMicID;
           let temp = availableCams;
           temp.push(newCamDevice);
           setAvailableCams(temp);
-          console.log(availableCams);
           cogoToast.success(
             'New camera: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.'
-          );
+          ), {hideAfter: 1};
           document.getElementById('startBtn').disabled = false;
           initCams();
           setPluggedInDevices(idAoni);
-          console.log(availableCams);
         }
       }      
     }).then(() => {
@@ -219,7 +217,6 @@ export default function CameraList(props) {
     //  runs once
     useEffect(() => {
       props.updateConnectionStatus();
-      cogoToast.info('cams loaded')
     }, [props.addCamState]);
   }
 
@@ -265,7 +262,11 @@ export default function CameraList(props) {
             recorder.camera = camera;
             cam['recorder'] = recorder;
             let video = cam['ref'];
-            video.current.srcObject = camera;
+            try {
+              video.current.srcObject = camera;
+            } catch (NotYetLoadedException) {
+              //
+            }
             // resetInitialCams(recorder);
             recorder.startRecording();
           }
@@ -281,6 +282,7 @@ export default function CameraList(props) {
   const stopAllCams = (dummy) => {
     const temp =
       recordingStatus === 'recording-status-loading...' ? {} : recordingStatus;
+      
     availableCams.map(cam => {
       let recorder = cam['recorder'];
       if (recorder !== null) {
@@ -310,9 +312,13 @@ export default function CameraList(props) {
   };
 
   const triggerRecordStatusUpdate = (temp, recorder, cam) => {
-    temp[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
-    setRecordingStatus(temp);
-    props.updateConnectionStatus(temp);
+    try {
+      temp[cam['camera_info'].id.substring(0, 15)] = recorder.getState();
+      setRecordingStatus(temp);
+      props.updateConnectionStatus(temp);
+    } catch (NotYetLoadedException) {
+      cogoToast.warn('Camera not yet loaded!', {hideAfter: 0});
+    }
   }
 
   const resumeAllCams = () => {
@@ -320,11 +326,20 @@ export default function CameraList(props) {
       recordingStatus === 'recording-status-loading...' ? {} : recordingStatus;
     availableCams.map(cam => {
       let recorder = cam['recorder'];
-      let state = recorder.getState();
+      let state = undefined;
+      try {
+        state = recorder.getState();
+      } catch {
+        cogoToast.warn("Camera not yet loaded!", {hideAfter: 0});
+      }
       if (state === "paused") {
         recorder.resumeRecording();
       } else if (state === "stopped"){
-        recorder.startRecording();
+        try {
+          recorder.startRecording();
+        } catch (NotYetLoadedException) {
+          cogoToast.warn('Camera not yet loaded!', {hideAfter: 0});
+        }
       }
       triggerRecordStatusUpdate(temp, recorder, cam);
       return availableCams;

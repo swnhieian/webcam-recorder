@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import NameField from '../NameField/NameField';
 import qs from '../../utils/qs';
-import cogoToast from 'cogo-toast';
 
 export default function InProcessScreen(props) {
   const [recording, setRecordState] = useState(false);
@@ -31,21 +30,24 @@ export default function InProcessScreen(props) {
     setRecordState(false);
     props.socket.emit('client: stop cams', 'in process screen');
     reset(false);
-    cogoToast
-      .loading('Files are currently saving. Please wait...', { hideAfter: 2 });
+    props.showFileSavingLoader();
+    props.updateSentence('$next');
+
     props.updateGreenLightStatus(false);
     props.stopTimer();
     markSentenceAsDone(props.curr_sentence_index);
   }
 
   function markSentenceAsDone(curr_sentence_index) {
-    if (curr_sentence_index > 0 ) props.updateRecordProgress(curr_sentence_index);
+    if (curr_sentence_index >= 0 ) props.updateRecordProgress(curr_sentence_index);
   }
 
   function startRecording() {
     props.socket.emit('client: start cams', 'in process screen');
     setRecordState(true);
     props.startTimer();
+    document.getElementById('testerRecordBtn').className = 'btn btn-danger';
+
   }
 
   function record() {
@@ -60,7 +62,7 @@ export default function InProcessScreen(props) {
   
   function disableNextButtonIfCurrNotRead() {
     const recordedYet =
-      props.recordedProgress >= props.curr_sentence_index; 
+      props.recordedProgress > props.curr_sentence_index;
     try {
       if (recordedYet) {
         document.getElementById('testerNextBtn').disabled = false;
@@ -72,15 +74,38 @@ export default function InProcessScreen(props) {
     }
   }
 
+  function makeEmojiLayout(msg, emoji) {
+    return (
+      <div className='emoji-layout-container'>
+        <div className='emoji-layout-emoji-left'> {emoji}</div>
+        <div>
+          {msg[0]}
+          <br />
+          {msg[1]}
+        </div>
+        <div className='emoji-layout-emoji-right'> {emoji}</div>
+      </div>
+    );
+  }
+
   function displaySentenceToBeRead() {
     disableNextButtonIfCurrNotRead();
-    const recordedYet = props.recordedProgress >= props.curr_sentence_index;
-    const recordedMessage = (recordedYet) ? '(录过)' : ''
-    const sentence = props.data[props.curr_sentence_index] + ' ' + recordedMessage;
+    const recordedYet = 
+      (props.curr_sentence_index > 0) ? 
+      props.recordedProgress >= props.curr_sentence_index : 
+      false;
+    const emoji = recordedYet ? '↺' : '';
+    let sentence = props.data[props.curr_sentence_index];
+    if (sentence) {
+      const line1 = sentence.substring(0,10)
+      const line2 = sentence.substring(10);
+      sentence = makeEmojiLayout([line1, line2], emoji);
+    }
+    
+    // const sentence = recordedMessage + ' ' + props.data[props.curr_sentence_index] + ' ' + recordedMessage;
     const recordedClassName = recordedYet ? 'recorded_sentence_highlight sentence_to_be_read' : 'sentence_to_be_read'
     return (
       <div>
-        [{props.curr_sentence_index}]
         <br />
         <div className={recordedClassName}>
           {sentence}
@@ -116,19 +141,42 @@ export default function InProcessScreen(props) {
             updateTesterContents={updateTesterContents}
             updateGreenLightStatus={props.updateGreenLightStatus}
           />
-          <p className='warning_message'>Enter Name Before Starting</p>
         </div>
       );
     } else {
+      try {
+        let recordTimeEle = document.getElementById('record_time_content');
+        let recordTimeMsg = document.getElementById('record_time_msg');
+        let colorRecordTime = (recordTimeEle.innerText === '00:00:00') ? 'gray' : 'red';
+        if (colorRecordTime === 'gray') {
+          recordTimeEle.style.transition = 'all 0.5 ease'
+          recordTimeMsg.style.transition = 'all 0.5 ease'
+          recordTimeEle.style.color = 'black';
+          recordTimeMsg.style.color = 'black';
+        } else {
+          recordTimeEle.style.transition = 'all 0.5 ease'
+          recordTimeMsg.style.transition = 'all 0.5 ease'
+          recordTimeEle.style.color = '#FF1053';
+          recordTimeMsg.style.color = '#FF1053';
+        }
+      } catch (NotYetLoadedException) {
+        //
+      }
       return (
         <div>
+          {displaySentenceToBeRead()}
           <div className='recording_hint'>
-            {getRecordState() === 'Done' ? '录制中...' : ''}
+          <pre id='record_time_content'>00:00:00</pre>
+          <pre id='record_time_msg'>录制中</pre>
+            
           </div>
-          <div>{displaySentenceToBeRead()}</div>
           <button
             id='testerRecordBtn'
-            className={getRecordState() === 'Done' ? 'btn btn-danger' : 'btn'}
+            className={
+              getRecordState() === 'Done'
+                ? 'btn btn-danger'
+                : 'btn_highlight_green'
+            }
             onClick={record}
             disabled={
               !props.recordGreenLight ||
@@ -159,10 +207,10 @@ export default function InProcessScreen(props) {
               props.curr_sentence_index === props.data_length - 1 ||
               !props.recordGreenLight ||
               props.numFilesSaved % props.numCams !== 0 ||
-              recording 
-    }
-  >
-    下一句➡
+              recording
+            }
+          >
+            下一句➡
           </button>
         </div>
       );
@@ -190,5 +238,6 @@ InProcessScreen.propTypes = {
   stopTimer: PropTypes.func.isRequired,
   startTimer: PropTypes.func.isRequired,
   recordedProgress: PropTypes.number.isRequired,
-  updateRecordProgress: PropTypes.func.isRequired
+  updateRecordProgress: PropTypes.func.isRequired,
+  showFileSavingLoader: PropTypes.func.isRequired,
 };

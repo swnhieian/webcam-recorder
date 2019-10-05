@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import InProcessScreen from './InProcessScreen.js';
 import Timer from '../Timer.js'
 import qs from '../../utils/qs'
+import ProgressBar from '../ProgressBar'
 
 function Tester(props) {
   const [intervalID, setIntervalID] = useState(undefined);
 
-  
   function comp_inProcessScreen() {
     return (
       <InProcessScreen
@@ -26,13 +26,14 @@ function Tester(props) {
         startTimer={startTimer}
         recordedProgress={props.recordedProgress}
         updateRecordProgress={props.updateRecordProgress}
+        showFileSavingLoader={props.showFileSavingLoader}
       />
     );
   }
 
   function stopTimer() {
     clearInterval(intervalID);
-    document.getElementById('record_time_content').innerHTML = '';
+    document.getElementById('record_time_content').innerHTML = '00:00:00';
   }
 
   function startTimer() {
@@ -59,47 +60,41 @@ function Tester(props) {
       }
       time = [hour, min, sec];
       document.getElementById('record_time_content').innerHTML =
-        'Total Recording Time—' +
         ('0' + hour).slice(-2) +
         ':' +
         ('0' + min).slice(-2) +
         ':' +
         ('0' + sec).slice(-2);
-    }, 1000);
+      }, 10);
   }
 
-
-  function comp_timer() {
-    return (
-      <div>
-        <pre id='record_time_content'></pre>
-      </div>
-    );
-  }
-
-  function comp_totalTimer() {
-    if (qs('name')) {
-      return (
-        <Timer
+  return (
+    <div className='testing_screen'>
+      <Timer
           name={'total_timer'}
           socket={props.socket}
           totalTime={props.totalTime}
           updateTotalTime={props.updateTotalTime}
         />
-      );
-    }
-  }
-
-  return (
-    <div className='testing_screen'>
-      {comp_totalTimer()}
-      {props.comp_progressBar(props.recordedProgress, props.data_length - 1, 'center', 2)}
+      <pre id='total_timer'>00:00:00</pre>
+      <ProgressBar
+        curr={props.recordedProgress}
+        total={props.data_length - 1}
+        align={'center'}
+        strokeWidth={2}
+      />
       <div className='middle'>
         <div className='inner'>{comp_inProcessScreen()}</div>
-        {comp_timer()}
       </div>
-      <pre hidden={(props.recordGreenLight || props.curr_sentence_index === 0) || !qs('name')} className='warning_message'>
-        There may be an issue with file saves. Please notify research facilitator.
+      <pre
+        hidden={
+          props.recordGreenLight ||
+          props.curr_sentence_index === 0 ||
+          !qs('name')
+        }
+        className='warning_message'
+      >
+        如果等保存时间多余10秒钟，通知老师来从设置机器
       </pre>
     </div>
   );
@@ -118,9 +113,9 @@ Tester.propTypes = {
   numCams: PropTypes.number.isRequired,
   recordedProgress: PropTypes.number.isRequired,
   updateRecordProgress: PropTypes.func.isRequired,
-  comp_progressBar: PropTypes.func.isRequired,
   totalTime: PropTypes.array.isRequired,
-  updateTotalTime: PropTypes.func.isRequired
+  updateTotalTime: PropTypes.func.isRequired,
+  showFileSavingLoader: PropTypes.func.isRequired
 };
 
 export default Tester;

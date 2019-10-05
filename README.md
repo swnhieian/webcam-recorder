@@ -1,5 +1,8 @@
 # Multi-webcam  Recorder for Lip Reading Speech Recognition
 
+Preview [demo](https://s3and0s.github.io/webcam-recorder). Note, webcam-recorder can only successfully run experiment study when run locally. Instructions will be provided soon.
+
+--- 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 

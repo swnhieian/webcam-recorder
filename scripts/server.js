@@ -28,7 +28,7 @@ let connection_status = {};
 let numSaved = 0;
 let online = []
 let recordedStart = undefined;
-const my_ip = ip.getIP();
+const my_ip = ip.nodeGetIP();
 
 function saveData(data, path) {
 try {
@@ -134,7 +134,7 @@ app.get('/', function (req, res) {
 
 http.listen(5000, function () {
   clearConsole(13);
-  ip.getIP();
+  // ip.nodeGetIP();
   console.log(colors.green(colors.bold('👂🏻 listening : ') + 'localhost:5000 or ' + my_ip + ':5000'));
 });
 

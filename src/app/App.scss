@@ -35,6 +35,11 @@ body {
   transition: all .5s ease;
 }
 
+.vert-bar {
+  padding-left:0.7em;
+  padding-right: 0.5em;
+}
+
 .serverPlaceholderConnected {
   color: #b9f3fe;
   -webkit-transition: all 0.5 ease;
@@ -74,11 +79,11 @@ body {
   display: inline-block;
   z-index: 200;
   position: relative;
+  max-width: 60vw;
 }
 
 .debug_inline_group {
   display: inline-block;
-  margin-left: 0.5em;  
   margin-top: 1em;
 }
 

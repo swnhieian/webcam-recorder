@@ -80,8 +80,8 @@ class App extends React.Component {
    * **ReactJS Framework Method**
    */
   componentDidMount() {
-    // console.log(ip.getIP());
-    console.log(ip_util);
+    // console.log(ip_util.getIP());
+    // console.log(ip_util);
     this.helper_emitInitialSocketMessages();
     this.readTextFile(sentences);
     this.initSocketListeners();
@@ -272,6 +272,9 @@ class App extends React.Component {
   comp_debug = () => {
     return (
       <div className="debug-group">
+        <span className="vert-bar">|</span>
+        <label className="debug_label">Admin: </label>
+
         <button
           onClick={() => {
             this.helper_toggleModal('overallStatus');
@@ -296,26 +299,32 @@ class App extends React.Component {
         >
           Reset Progress
         </button>
-        
+        <span className="vert-bar">|</span>
         
         <div className="debug_inline_group">
-          <label className="debug_label">Debug Mode: </label>
+          <label className="debug_label">Debug: </label>
           <Toggle id='debug_mode' onChangeFunc={this.handler_debugToggle} />
         </div>
+        <span className="vert-bar">|</span>
 
+        
         <div className="debug_inline_group">
+          <span className="vert-bar">|</span>
           <label htmlFor="" className="debug_label">Server: </label>
           <span className="server_status"></span>
           <input id="inputServerIP" type="text" className="debug_text_input" value={this.state.ip} onChange={this.handler_IPOnChange}/>
+          <button className='debug_button' onClick={this.handler_useThisCompAsServer}>🖥</button>
+          <span className="vert-bar">|</span>
         </div>
-        <button className='debug_button' onClick={this.handler_useThisCompAsServer()}>🖥</button>
+
 
         <div className="debug_inline_group">
           <label htmlFor="" className="debug_label">Cams: </label>
           <input type="text" className="debug_text_input debug_sm_input" value={this.state.detectedNumCams} readOnly/>
         </div>
 
-
+        <span className="vert-bar">|</span>
+        
         {/* <button className='debug_button' onClick={this.admin_refreshAll}>
           Refresh All
         </button> */}
@@ -372,8 +381,27 @@ class App extends React.Component {
     }
   };
 
-  handler_useThisCompAsServer = () => {
-
+  handler_useThisCompAsServer = () => {    
+    ip_util.clientGetIP(ip => {
+      console.log(ip);
+      if (ip.split('.').length === 4) {
+        cogoToast.loading(this.style_makeEmojiToastLayout(['Connecting to ', ip], '📡'), {
+          position: 'top-right', 
+          onClick: hide => {
+            hide()
+          }
+        });
+        ip = 'http://' + ip + ':5000'
+        this.helper_setServerIP(ip);
+        if (!this.hideServerOfflineRef) {
+          this.hideServerOfflineRef = this.helper_showServerNotOnline();
+        } else {
+          this.hideServerOfflineRef();
+        }
+      }
+    });
+    // const [ip_v6, ip_v4] = [temp[0], temp[1]]
+    // console.log(ip_v4);
   }
 
   handler_IPOnChange = e => {
@@ -417,7 +445,10 @@ class App extends React.Component {
                     ['视频已成功保存', '可继续录'],
                     '🔥'
                   ), {
-                    hideAfter: 2
+                    hideAfter: 2,
+                    onClick: hide => {
+                      hide()
+                    }
                   }
                 );
               }
@@ -432,7 +463,10 @@ class App extends React.Component {
               // console.log('here here??');
               cogoToast.info(
                 'Completed @ Sentence [' + this.state.recordedProgress + ']', {
-                  hideAfter: 0.75
+                  hideAfter: 0.75,
+                  onClick: hide => {
+                    hide()
+                  }
                 }
               );
             }
@@ -497,7 +531,11 @@ class App extends React.Component {
   ref_hideLoader = undefined;
   disp_showFileSavingLoader = () => {
     this.ref_hideLoader = cogoToast.loading(
-      this.style_makeEmojiToastLayout(['视频正在保存', '请耐心等待'], '⌛️')
+      this.style_makeEmojiToastLayout(['视频正在保存', '请耐心等待'], '⌛️'), {
+        onClick: hide => {
+          hide()
+        }
+      }
     );
     // setTimeout(hideLoader, 2000);
     // hideLoader();
@@ -514,6 +552,7 @@ class App extends React.Component {
     }
   };
 
+  hideServerOfflineRef=undefined;
   /**
    * **Socket Listeners**
    * Adds socket listeners to the page to respond to messages sent
@@ -521,10 +560,22 @@ class App extends React.Component {
    */
   initSocketListeners = () => {
     this.state.socket.on('server: online', () => {
-      cogoToast.success(this.style_makeEmojiToastLayout(['Server ' + this.state.ip + ' is online.'], '🔥'))
+      cogoToast.success('Server is online.', {
+        position: 'top-right', 
+        onClick: hide => {
+          hide()
+        }, 
+        hideAfter: 0
+      });
+      if (this.hideServerOfflineRef) this.hideServerOfflineRef();
       document.getElementsByClassName('server_status')[0].classList.add('server_online');
       document.getElementById('inputServerIP').classList.add('serverPlaceholderConnected');
     });
+    if (!this.hideServerOfflineRef) {
+      this.hideServerOfflineRef = this.helper_showServerNotOnline();
+    } else {
+      this.hideServerOfflineRef();
+    }
 
     this.state.socket.on('server: disconnected', () => {
       this.setState({ connectedToServer: false}, () => {
@@ -765,6 +816,38 @@ class App extends React.Component {
     return window.location.href.includes('mobile');
   };
 
+  helper_showServerNotOnline = () => {
+    return cogoToast.warn("Server is offline", {
+      hideAfter: 0,
+      position: 'top-right',
+      onClick: hide => {
+        hide()
+      }
+    });
+  }
+
+  helper_setServerIP = ip => {
+    this.state.socket.disconnect();
+    try {
+      document.getElementsByClassName('server_status')[0].classList.remove('server_online');
+      document.getElementById('inputServerIP').classList.remove('serverPlaceholderConnected');
+    } catch(NotYetLoadedException) {
+      //
+    }
+    this.setState({
+      socket: io(ip),
+      ip: ip
+    });
+    this.state.socket.emit('client: check server connection')
+    // if (hideLoadServer) {hideLoadServer()}
+    setTimeout(() => {
+      if (!document.getElementsByClassName('server_status')[0].className.includes('server_online')) {
+        this.hideServerOfflineRef = this.helper_showServerNotOnline();
+      }
+    }, 3000);
+    this.initSocketListeners();
+  }
+
   helper_toggleCamState = () => {
     this.setState({ addCamState: !this.state.addCamState });
   };
@@ -804,13 +887,12 @@ class App extends React.Component {
             this.admin_resetProgress();
           }
           if (document.activeElement === inputServerIP) {
-            this.state.socket.disconnect();
-            document.getElementsByClassName('server_status')[0].classList.remove('server_online');
-            document.getElementById('inputServerIP').classList.remove('serverPlaceholderConnected');
-            console.log(inputServerIP.value);
-            this.setState({socket: io(inputServerIP.value), ip: inputServerIP.value});
-            this.state.socket.emit('client: check server connection')
-            this.initSocketListeners();
+            this.helper_setServerIP(inputServerIP.value);
+            cogoToast.info('Updated IP: ' + inputServerIP.value, {
+              onClick: hide => {
+                hide()
+              }
+            })
             event.preventDefault();
           }
         } else if (key === 's') {

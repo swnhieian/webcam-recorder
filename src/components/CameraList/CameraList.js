@@ -152,7 +152,12 @@ export default function CameraList(props) {
       document.getElementById('startBtn').click();
       document.getElementById('dummyBtn').disabled = false;
       document.getElementById('dummyBtn').click();
-      cogoToast.success('Mac FaceTime Camera started', {hideAfter: 0.3});
+      cogoToast.success('Mac FaceTime Camera started', {
+        hideAfter: 0.3,
+        onClick: hide => {
+          hide()
+        }
+      });
     }
   }
 
@@ -201,7 +206,12 @@ export default function CameraList(props) {
           setAvailableCams(temp);
           cogoToast.success(
             'New camera: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.'
-          ), {hideAfter: 1};
+          ), {
+            hideAfter: 1,
+            onClick: hide => {
+              hide()
+            }
+          };
           document.getElementById('startBtn').disabled = false;
           initCams();
           setPluggedInDevices(idAoni);
@@ -317,7 +327,12 @@ export default function CameraList(props) {
       setRecordingStatus(temp);
       props.updateConnectionStatus(temp);
     } catch (NotYetLoadedException) {
-      cogoToast.warn('Camera not yet loaded!', {hideAfter: 0});
+      cogoToast.warn('Camera not yet loaded!', {
+        hideAfter: 0,
+        onClick: hide => {
+          hide()
+        }
+      });
     }
   }
 
@@ -330,7 +345,12 @@ export default function CameraList(props) {
       try {
         state = recorder.getState();
       } catch {
-        cogoToast.warn("Camera not yet loaded!", {hideAfter: 0});
+        cogoToast.warn("Camera not yet loaded!", {
+          hideAfter: 0,
+          onClick: hide => {
+            hide()
+          }
+        });
       }
       if (state === "paused") {
         recorder.resumeRecording();
@@ -338,7 +358,12 @@ export default function CameraList(props) {
         try {
           recorder.startRecording();
         } catch (NotYetLoadedException) {
-          cogoToast.warn('Camera not yet loaded!', {hideAfter: 0});
+          cogoToast.warn('Camera not yet loaded!', {
+            hideAfter: 0,
+            onClick: hide => {
+              hide()
+            }
+          });
         }
       }
       triggerRecordStatusUpdate(temp, recorder, cam);

@@ -1,4 +1,7 @@
 //@import url('https://fonts.googleapis.com/css?family=Nunito:300,400&display=swap');
+html {
+  background: rgba(0, 0, 0, 0.7);
+}
 html,
 body {
   height: 100%;
@@ -12,9 +15,21 @@ body {
   font-weight: 300;
 }
 
-.debug-group .debug_button {
-  // color: white;
-  // margin-top:-1em;
+.hideDebug {
+  // position: absolute;
+  transform: translate(0, -23vh);
+  transition: all 0.5s ease-out;
+}
+
+#debug_hover_area {
+  border: red 1px solid;
+  position: absolute;
+  width: 100%;
+  height: 23vh;
+  left: 0;
+  top: 0;
+  z-index: 6;
+  color: transparent;
 }
 
 .debug_text_input {
@@ -42,8 +57,7 @@ body {
 
 .serverPlaceholderConnected {
   color: #b9f3fe;
-  -webkit-transition: all 0.5 ease;
-  transition: all .5s ease;
+  transition: all 0.5s ease;
 }
 
 .server_status {
@@ -77,9 +91,10 @@ body {
   // margin-top: 1em;
   text-align: 'center';
   display: inline-block;
-  z-index: 200;
+  z-index: 5;
   position: relative;
   max-width: 60vw;
+  transition: all 0.5s ease;
 }
 
 .debug_inline_group {

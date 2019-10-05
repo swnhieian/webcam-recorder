@@ -82,17 +82,36 @@ class App extends React.Component {
   componentDidMount() {
     // console.log(ip_util.getIP());
     // console.log(ip_util);
-    this.helper_emitInitialSocketMessages();
-    this.readTextFile(sentences);
-    this.initSocketListeners();
     try {
+      this.helper_emitInitialSocketMessages();
+      this.readTextFile(sentences);
+      this.initSocketListeners();
       document.getElementById('debug_mode').checked = this.state.requiredNumCams === 1
+    
+    // this.pingServer();
+      window.addEventListener('keydown', this.handler_keydown);
+      window.addEventListener('keyup', this.handler_keyup);
+      const debugHoverArea = document.getElementById('debug_hover_area');
+      debugHoverArea.addEventListener('mouseout', () => {
+        console.log('hovered over me!')
+        try {
+          // if (debugHoverArea.focus)
+          document.getElementsByClassName('debug-group')[0].className += ' hideDebug'
+        } catch (NotYetLoadedException) {
+          console.error(NotYetLoadedException)
+        }
+      });
+      debugHoverArea.addEventListener('mouseover', () => {
+        console.log('hovered out of me!')
+        try {
+          document.getElementsByClassName('debug-group')[0].classList.remove('hideDebug');
+        } catch (NotYetLoadedException) {
+          console.error(NotYetLoadedException)
+        }
+      })
     } catch (NotYetLoadedException) {
       //
     }
-    // this.pingServer();
-    window.addEventListener('keydown', this.handler_keydown);
-    window.addEventListener('keyup', this.handler_keyup);
   }
 
   /**
@@ -109,7 +128,9 @@ class App extends React.Component {
   main_userView = () => {
     return (
       <div className='container'>
-        {this.comp_debug()}
+        <span id="debug_hover_area">
+          {this.comp_debug()}
+        </span>
         {this.comp_tester()}
         {this.comp_userResearchHeader()}
         <div className='contents'>
@@ -135,12 +156,16 @@ class App extends React.Component {
    * **Component: PlaygroundPage**
    * Renders components for experimental purposes
    */
+  main_playground = () => {
+    return (
+      <Toggle />
+    )
+  }
 
-   main_playground = () => {
-     return (
-       <Toggle />
-     )
-   }
+  comp_debugHover = () => {
+    
+  }
+
   /**
    * **Component: Animation for Study Completion**
    */

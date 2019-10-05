@@ -70,13 +70,6 @@ function Tester(props) {
 
   return (
     <div className='testing_screen'>
-      <Timer
-          name={'total_timer'}
-          socket={props.socket}
-          totalTime={props.totalTime}
-          updateTotalTime={props.updateTotalTime}
-        />
-      <pre id='total_timer'>00:00:00</pre>
       <ProgressBar
         curr={props.recordedProgress}
         total={props.data_length - 1}

@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { Line } from 'rc-progress';
 
 export default function ProgressBar(props) {
-  const percent = ((props.curr / props.total) * 100).toFixed(2);
+  const percent = ((props.curr ) / (props.total + 1) * 100).toFixed(2);
   const alignmentStyle = props.align === 'left' ? { margin: '0' } : {};
   return (
     <div className='progress_bar' style={alignmentStyle}>
       <pre>
-        {props.curr} / {props.total} ({percent}%)
+        进度: {props.curr} / {props.total + 1} ({percent}%)
       </pre>
       <Line
         percent={percent}

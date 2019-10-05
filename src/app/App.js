@@ -35,7 +35,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      requiredNumCams: 8,
+      requiredNumCams: 1,
       curr_sentence: '',
       curr_sentence_index: this.curr_index ? Number(this.curr_index) : 0,
       data: [],
@@ -517,7 +517,7 @@ class App extends React.Component {
                     ['视频已成功保存', '可继续录'],
                     '🔥'
                   ), {
-                    hideAfter: 2,
+                    hideAfter: 1,
                     onClick: hide => {
                       hide()
                     }
@@ -634,7 +634,10 @@ class App extends React.Component {
     this.state.socket.on('server: online', () => {
       cogoToast.success('Server is online.', {
         position: 'top-right', 
-        hideAfter: 0
+        hideAfter: 0, 
+        onClick: hide => {
+          hide();
+        }
       });
       if (this.hideServerOfflineRef) this.hideServerOfflineRef();
       document.getElementsByClassName('server_status')[0].classList.add('server_online');
@@ -849,6 +852,8 @@ class App extends React.Component {
     if (!resetBtn.className.includes('btn-active')) {
       document.getElementById('resetCamsBtn').className += (' btn-active');
     }
+    setTimeout(() => document.getElementById('resetCamsBtn').classList.remove('btn-active'), 1000);
+
   };
 
   admin_refreshAll = () => {

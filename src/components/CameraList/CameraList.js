@@ -207,9 +207,9 @@ export default function CameraList(props) {
           cogoToast.success(
             'New camera: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.'
           ), {
-            hideAfter: 1,
+            hideAfter: 0.5,
             onClick: hide => {
-              hide()
+              hide();
             }
           };
           document.getElementById('startBtn').disabled = false;

@@ -1,14 +1,17 @@
 
 .testing_screen {
-  padding-top: 3vh;
+  // padding-top: 3vh;
+  position: absolute;
+  width: 100%;
   // padding-bottom: 30vh;
   margin-left: 1em;
   margin-right: 1em;
   // position: fixed;
   // width:100%;
   // display: absolute;
-  padding-top: 23vh;
+  // padding-top: 23vh;
   // margin: 1em;
+  top: 25%;
 }
 
 .btn_highlight_green {

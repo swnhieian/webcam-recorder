@@ -141,7 +141,7 @@ body {
   text-align: center;
 }
 .middle {
-  margin-top: 5vh;
+  margin-top: 1vh;
   display: block;
 }
 
@@ -175,6 +175,9 @@ body {
   height: 2.5em;
   // height: 1.5em;
   color: darkgrey;
+}
+.debug_button:active {
+  color: #b9f3fe !important;  
 }
 .debug_button:hover {
   cursor: pointer;

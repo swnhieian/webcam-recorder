@@ -497,8 +497,7 @@ class App extends React.Component {
   ref_hideLoader = undefined;
   disp_showFileSavingLoader = () => {
     this.ref_hideLoader = cogoToast.loading(
-      this.style_makeEmojiToastLayout(['视频正在保存', '请耐心等待'], '⌛️'),
-      { hideAfter: 5 }
+      this.style_makeEmojiToastLayout(['视频正在保存', '请耐心等待'], '⌛️')
     );
     // setTimeout(hideLoader, 2000);
     // hideLoader();

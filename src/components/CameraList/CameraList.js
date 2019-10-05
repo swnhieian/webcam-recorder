@@ -440,12 +440,19 @@ export default function CameraList(props) {
       );
     });
 
+    const noCamsMessage = () => {
+      if (comp_camsList.length === 0) {
+        return <p style={{marginTop: '40%'}}>No Cams</p>
+      }
+    }
+      
 
     return (
       <div id='camera_list'>
         {debugControls(debug)}
         <div>
           <div className='cameras'>{comp_camsList}</div>
+          {noCamsMessage()}
         </div>
       </div>
     );

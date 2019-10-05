@@ -76,6 +76,9 @@ class App extends React.Component {
     );
   }
 
+  showNoCamsRef = undefined;
+  hideServerOfflineRef = undefined;
+ 
   /**
    * **ReactJS Framework Method**
    */
@@ -91,8 +94,12 @@ class App extends React.Component {
     // this.pingServer();
       window.addEventListener('keydown', this.handler_keydown);
       window.addEventListener('keyup', this.handler_keyup);
-      
-      this.helper_addHoverEventListeners()
+      this.showNoCamsRef = this.helper_showNoCamsConnected();
+      setTimeout(() => {
+        this.hideServerOfflineRef = this.helper_showServerNotOnline();
+      }, 3000)
+
+      // this.helper_addHoverEventListeners()
       
     } catch (NotYetLoadedException) {
       //
@@ -321,7 +328,9 @@ class App extends React.Component {
     );
   };
 
-  
+  updateDebugMode = () => {
+    this.setState({debugMode: !this.state.debugMode});
+  }
 
   // * COMPONENT * //
   comp_debug = () => {
@@ -358,10 +367,16 @@ class App extends React.Component {
         
         <div className="debug_inline_group">
           <label className="debug_label">Debug: </label>
-          <Toggle id='debug_mode' onChangeFunc={this.handler_debugToggle} checked={this.state.debugMode}/>
+          <Toggle id='debug_mode' onChangeFunc={this.handler_debugToggle} checked={this.state.debugMode} updateDebugMode={this.updateDebugMode}/>
         </div>
         <span className="vert-bar">|</span>
 
+        <br/>
+        <span className="vert-bar">|</span>
+        <div className="debug_inline_group">
+          <label htmlFor="" className="debug_label">Cams: </label>
+          <input type="text" className="debug_text_input debug_sm_input" value={this.state.detectedNumCams} readOnly/>
+        </div>
         
         <div className="debug_inline_group">
           <span className="vert-bar">|</span>
@@ -369,14 +384,9 @@ class App extends React.Component {
           <span className="server_status"></span>
           <input id="inputServerIP" type="text" className="debug_text_input" value={this.state.ip} onChange={this.handler_IPOnChange}/>
           <button className='debug_button' onClick={this.handler_useThisCompAsServer}>🖥</button>
-          <span className="vert-bar">|</span>
         </div>
 
 
-        <div className="debug_inline_group">
-          <label htmlFor="" className="debug_label">Cams: </label>
-          <input type="text" className="debug_text_input debug_sm_input" value={this.state.detectedNumCams} readOnly/>
-        </div>
 
         <span className="vert-bar">|</span>
         
@@ -542,6 +552,7 @@ class App extends React.Component {
 
   updateDetectedNumCams = detectedNumCams => {
     this.setState({ detectedNumCams });
+    this.showNoCamsRef();
     try {
       document.getElementsByClassName('debug_sm_input')[0].className += (this.state.detectedNumCams > 0) ? " serverPlaceholderConnected" : ""
     } catch (NotYetLoadedException) {
@@ -614,7 +625,6 @@ class App extends React.Component {
     }
   };
 
-  hideServerOfflineRef=undefined;
   /**
    * **Socket Listeners**
    * Adds socket listeners to the page to respond to messages sent
@@ -875,7 +885,16 @@ class App extends React.Component {
     return window.location.href.includes('mobile');
   };
 
+  helper_showNoCamsConnected = () => {
+    console.log('no cams')
+    return cogoToast.warn("No Webcams", {
+      hideAfter: 0,
+      position: 'top-left'
+    });
+  }
+
   helper_showServerNotOnline = () => {
+    console.log('no server')
     return cogoToast.warn("Server is offline", {
       hideAfter: 0,
       position: 'top-right'

@@ -28,7 +28,7 @@ const options = {
 };
 
 app.use((req, res, next) => {
-  const allowedOrigins = ['http://localhost:3000', 'https://s3and0s.github.io/webcam-recorder/'];
+  const allowedOrigins = ['https://localhost:3000', 'https://s3and0s.github.io/webcam-recorder/'];
   const origin = req.headers.origin;
   if (allowedOrigins.indexOf(origin) > -1) {
     res.setHeader('Access-Control-Allow-Origin', origin);
@@ -40,7 +40,7 @@ app.use((req, res, next) => {
 });
 const https = require('https').createServer(options, app);
 const io = require('socket.io')(https, {
-  origins: '*:*'
+  origins: '*:*', secure: true
 });
 const RECORDING_STATUS_PATH = parentDir + 'recording_status.json'
 const PROGRESS_PATH = parentDir + 'progress.json'

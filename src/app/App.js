@@ -34,9 +34,9 @@ class App extends React.Component {
   /**
    * **Basic Configuration**
    */
-  sentencesPerPageInTable = 8; // sentences per page of Table 
+  sentencesPerPageInTable = 8; // sentences per page of Table
   curr_index = qs('sentence_index'); // extracts the curr index from URL
-  ip_address = 'http://192.168.0.103:5000' // default IP address of server
+  ip_address = 'http://192.168.0.103:5000'; // default IP address of server
 
   /**
    * **CogoToast References to call to hide toasts**
@@ -47,7 +47,7 @@ class App extends React.Component {
   /**
    * **ReactJS Framework Initializing States onCreate**
    * Constructor for main react App Component
-   * @param {object} props 
+   * @param {object} props
    */
   constructor(props) {
     super(props);
@@ -59,7 +59,9 @@ class App extends React.Component {
       computerStatus: {},
       currSentence: '',
       currSentenceIndex: this.curr_index ? Number(this.curr_index) : 0,
-      currPageInTable: this.curr_index ? Math.floor(Number(this.curr_index) / this.sentencesPerPageInTable) + 1 : 1,
+      currPageInTable: this.curr_index
+        ? Math.floor(Number(this.curr_index) / this.sentencesPerPageInTable) + 1
+        : 1,
       data: [],
       detectedNumCams: 0,
       debugMode: true,
@@ -74,13 +76,10 @@ class App extends React.Component {
       startTime: undefined,
       socket: io(this.ip_address),
       totalTime: [],
-      totalWords: 0,
+      totalWords: 0
     };
   }
 
-  /**
-   * **ReactJS Framework Method**  
-   */
   render() {
     return (
       <Router>
@@ -93,146 +92,97 @@ class App extends React.Component {
     );
   }
 
-  
- 
-  /**
-   * **ReactJS Framework Method**
-   */
   componentDidMount() {
-    // console.log(ip_util.getIP());
-    // console.log(ip_util);
     try {
       this.helper_emitInitialSocketMessages();
       this.readTextFile(sentences);
       this.initSocketListeners();
-      document.getElementById('debug_mode').checked = this.state.requiredNumCams === 1
-    
-    // this.pingServer();
+      document.getElementById('debug_mode').checked =
+        this.state.requiredNumCams === 1;
       window.addEventListener('keydown', this.handler_keydown);
       window.addEventListener('keyup', this.handler_keyup);
       this.showNoCamsRef = this.helper_showNoCamsConnected();
       setTimeout(() => {
         this.hideServerOfflineRef = this.helper_showServerNotOnline();
-      }, 1000)
-
-      // this.helper_addHoverEventListeners()
-      
+      }, 1000);
     } catch (NotYetLoadedException) {
       //
     }
   }
 
-  helper_addHoverEventListeners = () => {
-    const debugHoverArea = document.getElementById('debug_hover_area');
-    const bottomHoverArea = document.getElementById('bottom_hover_area');
-    debugHoverArea.addEventListener('mouseout', this.handler_hoverMouseOutDebug);
-    debugHoverArea.addEventListener('mouseover', this.handler_hoverMouseOverDebug);
-    bottomHoverArea.addEventListener('mouseout', this.handler_hoverMouseOutBottom);
-    bottomHoverArea.addEventListener('mouseover', this.handler_hoverMouseOverBottom);
-  }
-  helper_removeHoverEventListeners = () => {
-    const debugHoverArea = document.getElementById('debug_hover_area');
-    const bottomHoverArea = document.getElementById('bottom_hover_area');
-    debugHoverArea.removeEventListener('mouseout', this.handler_hoverMouseOutDebug);
-    debugHoverArea.removeEventListener('mouseover', this.handler_hoverMouseOverDebug);
-    bottomHoverArea.removeEventListener('mouseout', this.handler_hoverMouseOutBottom);
-    bottomHoverArea.removeEventListener('mouseover', this.handler_hoverMouseOverBottom);
-    this.handler_hoverMouseOverBottom();
-  }
-
   handler_hoverMouseOutDebug = () => {
     try {
-      document.getElementsByClassName('debug-group')[0].className += ' ' + 'hideDebug'
+      document.getElementsByClassName('debug-group')[0].className +=
+        ' ' + 'hideDebug';
     } catch (NotYetLoadedException) {
-      console.error(NotYetLoadedException)
+      console.error(NotYetLoadedException);
     }
-  }
+  };
 
   handler_hoverMouseOverDebug = () => {
     try {
-      document.getElementsByClassName('debug-group')[0].classList.remove('hideDebug');
+      document
+        .getElementsByClassName('debug-group')[0]
+        .classList.remove('hideDebug');
     } catch (NotYetLoadedException) {
-      console.error(NotYetLoadedException)
+      console.error(NotYetLoadedException);
     }
-  }
+  };
 
   handler_hoverMouseOutBottom = () => {
     try {
-      document.getElementsByClassName('contents')[0].className += ' ' + 'hideBottom'
+      document.getElementsByClassName('contents')[0].className +=
+        ' ' + 'hideBottom';
     } catch (NotYetLoadedException) {
-      console.error(NotYetLoadedException)
-    } 
-  }
+      console.error(NotYetLoadedException);
+    }
+  };
 
   handler_hoverMouseOverBottom = () => {
     try {
-      document.getElementsByClassName('contents')[0].classList.remove('hideBottom');
+      document
+        .getElementsByClassName('contents')[0]
+        .classList.remove('hideBottom');
     } catch (NotYetLoadedException) {
-      console.error(NotYetLoadedException)
+      console.error(NotYetLoadedException);
     }
-  }
-
-  helper_toggleHideDebug = () => {
-    console.log('toggling')
-    try {
-      if (document.getElementsByClassName('debug-group')[0].className.includes('hideDebug')) {
-        this.handler_hoverMouseOverDebug();
-      } else {
-        this.handler_hoverMouseOutDebug();
-      }
-    } catch (NotYetLoadedException) {
-      // 
-    }
-  }
-  
-  helper_toggleHideBottom = () => {
-    console.log('toggling')
-    try {
-      if (document.getElementsByClassName('contents')[0].className.includes('hideBottom')) {
-        this.handler_hoverMouseOverBottom();
-      } else {
-        this.handler_hoverMouseOutBottom();
-      }
-    } catch (NotYetLoadedException) {
-      // 
-    }
-  }
+  };
 
   /**
-   * **ReactJS Framework Method** 
+   * **ReactJS Framework Method**
    */
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handler_keydown);
   }
 
   /**
-   * **Component: User Page** 
+   * **Component: User Page**
    * Renders components for desktop view
    */
   main_userView = () => {
     return (
       <div className='container'>
-        <span id="debug_hover_area" > 
-          {this.comp_debug()} 
-        </span> 
+        <span id='debug_hover_area'>{this.comp_debug()}</span>
         {this.comp_tester()}
-        <span id="bottom_hover_area">
+        <span id='bottom_hover_area'>
           <div className='contents'>
-            <div style={{width: '100%', height: '100%'}} onClick={this.helper_toggleHideBottom}>
-              <img className="chevron" src={down_chevron}></img>
+            <div
+              style={{ width: '100%', height: '100%' }}
+              onClick={this.helper_toggleHideBottom}
+            >
+              <img className='chevron' src={down_chevron}></img>
             </div>
-            <div className="panel_container">
+            <div className='panel_container'>
               <div className='left_panel'>{this.comp_dataCollection()}</div>
               <div className='right_panel'>
                 <h3>Cameras</h3>
-                <div className='cameras_container' >
+                <div className='cameras_container'>
                   {this.comp_cameraList()}
                 </div>
               </div>
             </div>
           </div>
         </span>
-
       </div>
     );
   };
@@ -242,22 +192,18 @@ class App extends React.Component {
    * Renders components for mobile view
    */
   main_adminView = () => {
-    return <div style={{textAlign: 'center'}}>{this.comp_debug()}</div>;
+    return <div style={{ textAlign: 'center' }}>{this.comp_debug()}</div>;
   };
 
-  /** 
+  /**
    * **Component: PlaygroundPage**
    * Renders components for experimental purposes
    */
   main_playground = () => {
-    return (
-      <Toggle />
-    )
-  }
+    return <Toggle />;
+  };
 
-  comp_debugHover = () => {
-    
-  }
+  comp_debugHover = () => {};
 
   /**
    * **Component: Animation for Study Completion**
@@ -266,14 +212,12 @@ class App extends React.Component {
     if (this.state.recordProgress + 1 === this.state.data.length) {
       try {
         document.getElementById('testerNextBtn').disabled = true;
-      } catch(NotYetLoadedException) {
+      } catch (NotYetLoadedException) {
         //
       }
-      return (
-        <CompleteAnimation />
-      )
+      return <CompleteAnimation />;
     }
-  }
+  };
 
   // * COMPONENT * //
   comp_dataCollection = () => {
@@ -378,15 +322,15 @@ class App extends React.Component {
   };
 
   updateDebugMode = () => {
-    this.setState({debugMode: !this.state.debugMode});
-  }
+    this.setState({ debugMode: !this.state.debugMode });
+  };
 
   // * COMPONENT * //
   comp_debug = () => {
     return (
-      <div className="debug-group">
-        <span className="vert-bar">|</span>
-        <label className="debug_label">Admin: </label>
+      <div className='debug-group'>
+        <span className='vert-bar'>|</span>
+        <label className='debug_label'>Admin: </label>
 
         <button
           onClick={() => {
@@ -412,41 +356,65 @@ class App extends React.Component {
         >
           Reset Progress
         </button>
-        <span className="vert-bar">|</span>
-        
-        <div className="debug_inline_group">
-          <label className="debug_label">Debug: </label>
-          <Toggle id='debug_mode' onChangeFunc={this.handler_debugToggle} checked={this.state.debugMode} updateDebugMode={this.updateDebugMode}/>
+        <span className='vert-bar'>|</span>
+
+        <div className='debug_inline_group'>
+          <label className='debug_label'>Debug: </label>
+          <Toggle
+            id='debug_mode'
+            onChangeFunc={this.handler_debugToggle}
+            checked={this.state.debugMode}
+            updateDebugMode={this.updateDebugMode}
+          />
         </div>
-        <span className="vert-bar">|</span>
+        <span className='vert-bar'>|</span>
 
-        <br/>
-        <span className="vert-bar">|</span>
-        <div className="debug_inline_group">
-          <label htmlFor="" className="debug_label">Cams: </label>
-          <input id="numCamsInput" type="text" className="debug_text_input debug_sm_input warning_message" value={this.state.detectedNumCams} readOnly/>
-        </div>
-        
-        <div className="debug_inline_group">
-          <span className="vert-bar">|</span>
-          <label htmlFor="" className="debug_label">Server: </label>
-          <span className="server_status"></span>
-          <input id="inputServerIP" type="text" className="debug_text_input warning_message" value={this.state.ip} onChange={this.handler_IPOnChange}/>
-          < button className = 'debug_button'
-          onClick = {
-            this.handler_useThisCompAsServer
-          } > 📡 < /button>
+        <br />
+        <span className='vert-bar'>|</span>
+        <div className='debug_inline_group'>
+          <label htmlFor='' className='debug_label'>
+            Cams:{' '}
+          </label>
+          <input
+            id='numCamsInput'
+            type='text'
+            className='debug_text_input debug_sm_input warning_message'
+            value={this.state.detectedNumCams}
+            readOnly
+          />
         </div>
 
-
-
-        <span className="vert-bar">|</span>
-
-        
-        <div style={{width: '100%', height: '100%'}} onClick={this.helper_toggleHideDebug}>
-          <img className="chevron" src={up_chevron}></img>
+        <div className='debug_inline_group'>
+          <span className='vert-bar'>|</span>
+          <label htmlFor='' className='debug_label'>
+            Server:{' '}
+          </label>
+          <span className='server_status'></span>
+          <input
+            id='inputServerIP'
+            type='text'
+            className='debug_text_input warning_message'
+            value={this.state.ip}
+            onChange={this.handler_IPOnChange}
+          />
+          <button
+            className='debug_button'
+            onClick={this.handler_useThisCompAsServer}
+          >
+            {' '}
+            📡{' '}
+          </button>
         </div>
-        
+
+        <span className='vert-bar'>|</span>
+
+        <div
+          style={{ width: '100%', height: '100%' }}
+          onClick={this.helper_toggleHideDebug}
+        >
+          <img className='chevron' src={up_chevron}></img>
+        </div>
+
         {/* <button className='debug_button' onClick={this.admin_refreshAll}>
           Refresh All
         </button> */}
@@ -477,15 +445,18 @@ class App extends React.Component {
             // console.log(this.state.curr_sentence)
           });
           this.setState({
-            totalWords: this.state.data.reduce((sum, sentence) => sum + sentence.length, 0)
-          })
+            totalWords: this.state.data.reduce(
+              (sum, sentence) => sum + sentence.length,
+              0
+            )
+          });
         });
       });
   }
 
   /**
-   * * UPDATE * 
-   * 
+   * * UPDATE *
+   *
    */
   updateFilesSaved = numFiles => {
     const successMessage =
@@ -501,22 +472,21 @@ class App extends React.Component {
     try {
       document.getElementById('num_files_saved').innerHTML =
         'Total Files Saved: ' + numFiles + successMessage;
-      
     } catch (NotYetLoadedException) {
       // console.error(NotYetLoadedException);
     }
   };
 
-  handler_useThisCompAsServer = () => {    
+  handler_useThisCompAsServer = () => {
     ip_util.clientGetIP(ip => {
       console.log(ip);
       if (ip.split('.').length === 4) {
-        ip = 'http://' + ip + ':5000'
+        ip = 'http://' + ip + ':5000';
         cogoToast.loading(ip, {
-          position: 'top-right', 
+          position: 'top-right',
           hideAfter: 3,
           onClick: hide => {
-            hide()
+            hide();
           }
         });
         this.helper_setServerIP(ip);
@@ -529,37 +499,34 @@ class App extends React.Component {
     });
     // const [ip_v6, ip_v4] = [temp[0], temp[1]]
     // console.log(ip_v4);
-  }
+  };
 
   handler_IPOnChange = e => {
-    this.setState({ip: e.target.value})
-  }
+    this.setState({ ip: e.target.value });
+  };
 
   handler_debugToggle = debugMode => {
-    console.log('toggling debug mode')
-    this.setState({debugMode}, () => {
+    console.log('toggling debug mode');
+    this.setState({ debugMode }, () => {
       if (debugMode) {
-        this.setState({requiredNumCams: 1});
-        this.helper_removeHoverEventListeners()
+        this.setState({ requiredNumCams: 1 });
+        this.helper_removeHoverEventListeners();
       } else {
-        this.setState({requiredNumCams: 8});
-        this.helper_addHoverEventListeners()
+        this.setState({ requiredNumCams: 8 });
+        this.helper_addHoverEventListeners();
         this.handler_hoverMouseOutBottom();
       }
     });
-
-
-  }
+  };
 
   handler_fileSaveSuccess = numFiles => {
     this.updateFilesSaved(numFiles);
-    this.setState({
+    this.setState(
+      {
         numFilesSavedInd: this.state.numFilesSavedInd + 1
       },
       () => {
-        console.log(
-          'this occured: ' + this.state.numFilesSavedInd + ' times.'
-        )
+        console.log('this occured: ' + this.state.numFilesSavedInd + ' times.');
         try {
           document.getElementById('testerNextBtn').disabled = true;
         } catch (NotYetLoadedException) {
@@ -570,7 +537,8 @@ class App extends React.Component {
           try {
             document.getElementById('showSavedFilesBtn').click();
             document.getElementById('showSavedFilesBtn').disabled = true;
-            this.setState({
+            this.setState(
+              {
                 numFilesSavedInd: 0
               },
               () => {
@@ -578,10 +546,11 @@ class App extends React.Component {
                   this.style_makeEmojiToastLayout(
                     ['视频已成功保存', '可继续录'],
                     '🔥'
-                  ), {
+                  ),
+                  {
                     hideAfter: 1,
                     onClick: hide => {
-                      hide()
+                      hide();
                     }
                   }
                 );
@@ -596,10 +565,11 @@ class App extends React.Component {
             if (this.helper_checkIfMobileView()) {
               // console.log('here here??');
               cogoToast.info(
-                'Completed @ Sentence [' + this.state.recordProgress + ']', {
+                'Completed @ Sentence [' + this.state.recordProgress + ']',
+                {
                   hideAfter: 0.75,
                   onClick: hide => {
-                    hide()
+                    hide();
                   }
                 }
               );
@@ -610,26 +580,28 @@ class App extends React.Component {
         }
       }
     );
-  }
+  };
 
   updateDetectedNumCams = detectedNumCams => {
     this.setState({ detectedNumCams });
     this.updateGreenLightStatus(true);
     this.showNoCamsRef();
     try {
-      document.getElementsByClassName('debug_sm_input')[0].className += (this.state.detectedNumCams > 0) ? " serverPlaceholderConnected" : ""
-      document.getElementById('numCamsInput').classList.remove("warning_message");
-      
+      document.getElementsByClassName('debug_sm_input')[0].className +=
+        this.state.detectedNumCams > 0 ? ' serverPlaceholderConnected' : '';
+      document
+        .getElementById('numCamsInput')
+        .classList.remove('warning_message');
     } catch (NotYetLoadedException) {
       //
     }
-  }
+  };
 
-  /** 
+  /**
    * * UPDATE *
    * Updates the state computerID with param id
-   * @param {string} id 
-  */
+   * @param {string} id
+   */
   updateCompID = id => {
     const status = {};
     this.setState({ computerID: id });
@@ -669,10 +641,11 @@ class App extends React.Component {
   ref_hideLoader = undefined;
   disp_showFileSavingLoader = () => {
     this.ref_hideLoader = cogoToast.loading(
-      this.style_makeEmojiToastLayout(['视频正在保存', '请耐心等待'], '⌛️'), {
+      this.style_makeEmojiToastLayout(['视频正在保存', '请耐心等待'], '⌛️'),
+      {
         hideAfter: 0,
         onClick: hide => {
-          hide()
+          hide();
         }
       }
     );
@@ -683,6 +656,10 @@ class App extends React.Component {
     // });
   };
 
+
+  /**
+   * Hides file saved loader
+   */
   disp_showFileSavedMessage = () => {
     try {
       this.ref_hideLoader();
@@ -692,25 +669,30 @@ class App extends React.Component {
   };
 
   /**
-   * **Socket Listeners**
-   * Adds socket listeners to the page to respond to messages sent
-   * from server
+   * Socket Listeners — adds socket listeners to the page to respond to 
+   * messages sent from server
    */
   initSocketListeners = () => {
     this.state.socket.on('server: online', () => {
       cogoToast.success('Server is online.', {
-        position: 'top-right', 
-        hideAfter: 0, 
+        position: 'top-right',
+        hideAfter: 0,
         onClick: hide => {
           hide();
         }
       });
       if (this.hideServerOfflineRef) this.hideServerOfflineRef();
-      document.getElementsByClassName('server_status')[0].classList.add('server_online');
-      document.getElementById('inputServerIP').classList.add('serverPlaceholderConnected');
-      document.getElementById('inputServerIP').classList.remove('warning_message');
-  
+      document
+        .getElementsByClassName('server_status')[0]
+        .classList.add('server_online');
+      document
+        .getElementById('inputServerIP')
+        .classList.add('serverPlaceholderConnected');
+      document
+        .getElementById('inputServerIP')
+        .classList.remove('warning_message');
     });
+
     if (!this.hideServerOfflineRef) {
       this.hideServerOfflineRef = this.helper_showServerNotOnline();
     } else {
@@ -718,19 +700,25 @@ class App extends React.Component {
     }
 
     this.state.socket.on('server: disconnected', () => {
-      this.setState({ connectedToServer: false}, () => {
-        document.getElementsByClassName('server_status')[0].classList.remove('server_online');
-        document.getElementById('inputServerIP').classList.remove('serverPlaceholderConnected')
+      this.setState({ connectedToServer: false }, () => {
+        document
+          .getElementsByClassName('server_status')[0]
+          .classList.remove('server_online');
+        document
+          .getElementById('inputServerIP')
+          .classList.remove('serverPlaceholderConnected');
       });
     });
 
     this.state.socket.on('server: connected', computerID => {
-      console.log('detected server connected')
-      this.setState({ connectedToServer: true, computerID}, () => {
-        document.getElementById('inputServerIP').classList.add('serverPlaceholderConnected')
+      console.log('detected server connected');
+      this.setState({ connectedToServer: true, computerID }, () => {
+        document
+          .getElementById('inputServerIP')
+          .classList.add('serverPlaceholderConnected');
       });
     });
-    
+
     this.state.socket.on('server: connected sync id', id => {
       if (this.updateCompID) this.updateCompID(id);
       this.updateCompID = null;
@@ -801,19 +789,18 @@ class App extends React.Component {
   }
 
   /**
-   * **Update: Sentence** 
-   * Sent as a prop to components to update app-level state of 
-   * curr_sentence_index, and updates server with new index. It also updates 
+   * **Update: Sentence**
+   * Sent as a prop to components to update app-level state of
+   * curr_sentence_index, and updates server with new index. It also updates
    * url query without refreshing to reflect current index.
    * @param {string} curr_sentence
    */
   updateSentence = curr_sentence => {
     if (curr_sentence === '$next') {
-      this.setState({curr_sentence_index: this.state.currSentenceIndex + 1},
+      this.setState(
+        { curr_sentence_index: this.state.currSentenceIndex + 1 },
         () => {
-          this.updateSentence(
-            this.state.data[this.state.currSentenceIndex]
-          );
+          this.updateSentence(this.state.data[this.state.currSentenceIndex]);
           this.state.socket.emit('client: update sentence_index', {
             name: qs('name'),
             curr_sentence_index: this.state.currSentenceIndex
@@ -882,8 +869,7 @@ class App extends React.Component {
     if (this.state.computerStatus[this.state.computerID]) {
       const status = {};
       status[this.state.computerID] = recordingStatus;
-      this.setState({ computerStatus: status }, () => {
-      });
+      this.setState({ computerStatus: status }, () => {});
       this.state.socket.emit('client: update recording status', status);
     }
     this.getStatus();
@@ -916,7 +902,6 @@ class App extends React.Component {
     this.state.socket.emit('client: dummy vid, do not save');
     // cogoToast.info('Cams are reset', { hideAfter: 0.3 });
     // setTimeout(() => document.getElementById('resetCamsBtn').classList.remove('btn-active'), 1000);
-
   };
 
   admin_refreshAll = () => {
@@ -943,7 +928,7 @@ class App extends React.Component {
     }
     this.state.socket.emit('client: check for progress');
     this.state.socket.emit('client: ask for sync id');
-  }
+  };
 
   helper_toggleModal = id => {
     document.getElementById(id).click();
@@ -954,43 +939,131 @@ class App extends React.Component {
   };
 
   helper_showNoCamsConnected = () => {
-    return cogoToast.warn("No Webcams", {
+    return cogoToast.warn('No Webcams', {
       hideAfter: 0,
-      position: 'top-left', 
+      position: 'top-left',
       onClick: this.admin_resetCams
     });
-  }
+  };
 
   helper_showServerNotOnline = () => {
-    console.log('no server')
-    return cogoToast.warn("Server is offline", {
+    console.log('no server');
+    return cogoToast.warn('Server is offline', {
       hideAfter: 0,
-      position: 'top-right', 
-      onClick: hide => {this.handler_useThisCompAsServer(); hide();}
+      position: 'top-right',
+      onClick: hide => {
+        this.handler_useThisCompAsServer();
+        hide();
+      }
     });
-  }
+  };
 
   helper_setServerIP = ip => {
     this.state.socket.disconnect();
     try {
-      document.getElementsByClassName('server_status')[0].classList.remove('server_online');
-      document.getElementById('inputServerIP').classList.remove('serverPlaceholderConnected');
-    } catch(NotYetLoadedException) {
+      document
+        .getElementsByClassName('server_status')[0]
+        .classList.remove('server_online');
+      document
+        .getElementById('inputServerIP')
+        .classList.remove('serverPlaceholderConnected');
+    } catch (NotYetLoadedException) {
       //
     }
     this.setState({
       socket: io(ip),
       ip: ip
     });
-    this.state.socket.emit('client: check server connection')
+    this.state.socket.emit('client: check server connection');
     // if (hideLoadServer) {hideLoadServer()}
     setTimeout(() => {
-      if (!document.getElementsByClassName('server_status')[0].className.includes('server_online')) {
+      if (
+        !document
+          .getElementsByClassName('server_status')[0]
+          .className.includes('server_online')
+      ) {
         this.hideServerOfflineRef = this.helper_showServerNotOnline();
       }
     }, 3000);
     this.initSocketListeners();
-  }
+  };
+
+  helper_addHoverEventListeners = () => {
+    const debugHoverArea = document.getElementById('debug_hover_area');
+    const bottomHoverArea = document.getElementById('bottom_hover_area');
+    debugHoverArea.addEventListener(
+      'mouseout',
+      this.handler_hoverMouseOutDebug
+    );
+    debugHoverArea.addEventListener(
+      'mouseover',
+      this.handler_hoverMouseOverDebug
+    );
+    bottomHoverArea.addEventListener(
+      'mouseout',
+      this.handler_hoverMouseOutBottom
+    );
+    bottomHoverArea.addEventListener(
+      'mouseover',
+      this.handler_hoverMouseOverBottom
+    );
+  };
+
+  helper_removeHoverEventListeners = () => {
+    const debugHoverArea = document.getElementById('debug_hover_area');
+    const bottomHoverArea = document.getElementById('bottom_hover_area');
+    debugHoverArea.removeEventListener(
+      'mouseout',
+      this.handler_hoverMouseOutDebug
+    );
+    debugHoverArea.removeEventListener(
+      'mouseover',
+      this.handler_hoverMouseOverDebug
+    );
+    bottomHoverArea.removeEventListener(
+      'mouseout',
+      this.handler_hoverMouseOutBottom
+    );
+    bottomHoverArea.removeEventListener(
+      'mouseover',
+      this.handler_hoverMouseOverBottom
+    );
+    this.handler_hoverMouseOverBottom();
+  };
+
+  helper_toggleHideDebug = () => {
+    console.log('toggling');
+    try {
+      if (
+        document
+          .getElementsByClassName('debug-group')[0]
+          .className.includes('hideDebug')
+      ) {
+        this.handler_hoverMouseOverDebug();
+      } else {
+        this.handler_hoverMouseOutDebug();
+      }
+    } catch (NotYetLoadedException) {
+      //
+    }
+  };
+
+  helper_toggleHideBottom = () => {
+    console.log('toggling');
+    try {
+      if (
+        document
+          .getElementsByClassName('contents')[0]
+          .className.includes('hideBottom')
+      ) {
+        this.handler_hoverMouseOverBottom();
+      } else {
+        this.handler_hoverMouseOutBottom();
+      }
+    } catch (NotYetLoadedException) {
+      //
+    }
+  };
 
   helper_toggleCamState = () => {
     this.setState({ addCamState: !this.state.addCamState });
@@ -1002,11 +1075,13 @@ class App extends React.Component {
     }
   }
 
-  handler_keydown = (event) => {
+  handler_keydown = event => {
     let key = event.key;
     const inputServerIP = document.getElementById('inputServerIP');
 
-    if ([' ', 'ArrowLeft', 'ArrowRight', 'Escape', 'Enter', 's'].includes(key)) {
+    if (
+      [' ', 'ArrowLeft', 'ArrowRight', 'Escape', 'Enter', 's'].includes(key)
+    ) {
       try {
         if (key === ' ') {
           document.getElementById('testerRecordBtn').click();
@@ -1027,27 +1102,29 @@ class App extends React.Component {
         } else if (key === 'Enter') {
           console.log('detected enter key');
           if (document.getElementsByClassName('modali-button-destructive')[0]) {
-            document.getElementsByClassName('modali-button-destructive')[0].click();
+            document
+              .getElementsByClassName('modali-button-destructive')[0]
+              .click();
             this.admin_resetProgress();
           }
           if (document.activeElement === inputServerIP) {
             this.helper_setServerIP(inputServerIP.value);
             cogoToast.info('Updated IP: ' + inputServerIP.value, {
               onClick: hide => {
-                hide()
+                hide();
               }
-            })
+            });
             event.preventDefault();
           }
         } else if (key === 's') {
-
-          if (document.activeElement.nodeName.toLowerCase() !== 'input') this.helper_toggleModal('overallStatus');
+          if (document.activeElement.nodeName.toLowerCase() !== 'input')
+            this.helper_toggleModal('overallStatus');
         }
       } catch (NotYetLoadedException) {
         // console.error(NotYetLoadedException);
       }
     }
-  }
+  };
 }
 
 export default App;

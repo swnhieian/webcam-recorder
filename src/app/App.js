@@ -31,39 +31,50 @@ import down_chevron from '../assets/svg/down-chevron.svg'
 
 
 class App extends React.Component {
-  per_page = 8;
-  curr_index = qs('sentence_index');
-  ip_address = 'https://192.168.0.103:5000'
   /**
+   * **Basic Configuration**
+   */
+  sentencesPerPageInTable = 8; // sentences per page of Table 
+  curr_index = qs('sentence_index'); // extracts the curr index from URL
+  ip_address = 'https://192.168.0.103:5000' // default IP address of server
+
+  /**
+   * **CogoToast References to call to hide toasts**
+   */
+  showNoCamsRef = undefined;
+  hideServerOfflineRef = undefined;
+
+  /**
+   * **ReactJS Framework Initializing States onCreate**
    * Constructor for main react App Component
    * @param {object} props 
    */
   constructor(props) {
     super(props);
     this.state = {
-      requiredNumCams: 1,
-      curr_sentence: '',
-      curr_sentence_index: this.curr_index ? Number(this.curr_index) : 0,
-      data: [],
-      per_page: this.per_page,
-      curr_page: this.curr_index ? Math.floor(Number(this.curr_index) / this.per_page) + 1 : 1,
-      computerStatus: {},
-      recordGreenLight: false,
+      addCamState: false,
+      connectedOrderMap: {},
+      connectedToServer: false,
       computerID: -1,
+      computerStatus: {},
+      currSentence: '',
+      currSentenceIndex: this.curr_index ? Number(this.curr_index) : 0,
+      currPageInTable: this.curr_index ? Math.floor(Number(this.curr_index) / this.sentencesPerPageInTable) + 1 : 1,
+      data: [],
+      detectedNumCams: 0,
+      debugMode: true,
+      ip: this.ip_address,
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
-      connectedOrderMap: {},
-      recordedProgress: 0,
-      addCamState: false,
-      totalTime: [],
-      startTime: undefined,
-      totalWords: 0,
+      recordProgress: 0,
+      recordGreenLight: false,
       remainingWords: 0,
-      debugMode: true,
+      requiredNumCams: 1,
+      sentencesPerPageInTable: this.sentencesPerPageInTable, // sentences per page
+      startTime: undefined,
       socket: io(this.ip_address),
-      ip: this.ip_address,
-      connectedToServer: false,
-      detectedNumCams: 0
+      totalTime: [],
+      totalWords: 0,
     };
   }
 
@@ -82,8 +93,7 @@ class App extends React.Component {
     );
   }
 
-  showNoCamsRef = undefined;
-  hideServerOfflineRef = undefined;
+  
  
   /**
    * **ReactJS Framework Method**
@@ -253,7 +263,7 @@ class App extends React.Component {
    * **Component: Animation for Study Completion**
    */
   comp_completeAnimation = () => {
-    if (this.state.recordedProgress + 1 === this.state.data.length) {
+    if (this.state.recordProgress + 1 === this.state.data.length) {
       try {
         document.getElementById('testerNextBtn').disabled = true;
       } catch(NotYetLoadedException) {
@@ -271,10 +281,10 @@ class App extends React.Component {
       <DataCollection
         data={this.state.data}
         updateName={this.updateName}
-        curr_sentence={this.state.curr_sentence}
+        curr_sentence={this.state.currSentence}
         socket={this.state.socket}
-        curr_sentence_index={this.state.curr_sentence_index}
-        curr_page={this.state.curr_page}
+        curr_sentence_index={this.state.currSentenceIndex}
+        curr_page={this.state.currPageInTable}
         updatePage={this.updatePage}
       />
     );
@@ -286,10 +296,10 @@ class App extends React.Component {
       <Tester
         updateSentence={this.updateSentence}
         data={this.state.data}
-        curr_sentence_index={this.state.curr_sentence_index}
+        curr_sentence_index={this.state.currSentenceIndex}
         data_length={this.state.data.length}
-        first_sentence={this.state.data[this.state.curr_sentence_index]}
-        curr_sentence={this.state.curr_sentence}
+        first_sentence={this.state.data[this.state.currSentenceIndex]}
+        curr_sentence={this.state.currSentence}
         socket={this.state.socket}
         recordGreenLight={
           this.state.recordGreenLight &&
@@ -299,7 +309,7 @@ class App extends React.Component {
         numFilesSaved={this.state.numFilesSavedTotal}
         requiredNumCams={this.state.requiredNumCams}
         updateGreenLightStatus={this.updateGreenLightStatus}
-        recordedProgress={this.state.recordedProgress}
+        recordedProgress={this.state.recordProgress}
         updateRecordProgress={this.updateRecordProgress}
         totalTime={this.state.totalTime}
         updateTotalTime={this.updateTotalTime}
@@ -332,7 +342,7 @@ class App extends React.Component {
       <Status
         totalWords={this.state.totalWords}
         data_length={this.state.data.length}
-        recordedProgress={this.state.recordedProgress}
+        recordedProgress={this.state.recordProgress}
         helper_checkIfMobileView={this.helper_checkIfMobileView}
         recordGreenLight={this.state.recordGreenLight}
         socket={this.state.socket}
@@ -582,7 +592,7 @@ class App extends React.Component {
             if (this.helper_checkIfMobileView()) {
               // console.log('here here??');
               cogoToast.info(
-                'Completed @ Sentence [' + this.state.recordedProgress + ']', {
+                'Completed @ Sentence [' + this.state.recordProgress + ']', {
                   hideAfter: 0.75,
                   onClick: hide => {
                     hide()
@@ -795,27 +805,27 @@ class App extends React.Component {
    */
   updateSentence = curr_sentence => {
     if (curr_sentence === '$next') {
-      this.setState({curr_sentence_index: this.state.curr_sentence_index + 1},
+      this.setState({curr_sentence_index: this.state.currSentenceIndex + 1},
         () => {
           this.updateSentence(
-            this.state.data[this.state.curr_sentence_index]
+            this.state.data[this.state.currSentenceIndex]
           );
           this.state.socket.emit('client: update sentence_index', {
             name: qs('name'),
-            curr_sentence_index: this.state.curr_sentence_index
+            curr_sentence_index: this.state.currSentenceIndex
           });
         }
       );
     } else if (curr_sentence === '$prev') {
       this.setState(
         {
-          curr_sentence_index: Math.max(this.state.curr_sentence_index - 1, 0)
+          curr_sentence_index: Math.max(this.state.currSentenceIndex - 1, 0)
         },
         () => {
-          this.updateSentence(this.state.data[this.state.curr_sentence_index]);
+          this.updateSentence(this.state.data[this.state.currSentenceIndex]);
           this.state.socket.emit('client: update sentence_index', {
             name: qs('name'),
-            curr_sentence_index: this.state.curr_sentence_index
+            curr_sentence_index: this.state.currSentenceIndex
           });
         }
       );
@@ -826,7 +836,7 @@ class App extends React.Component {
         '?name=' +
           qs('name') +
           '&sentence_index=' +
-          this.state.curr_sentence_index
+          this.state.currSentenceIndex
       );
       // console.log(curr_sentence);
       this.setState({
@@ -922,7 +932,7 @@ class App extends React.Component {
     if (!this.helper_checkIfMobileView) {
       this.state.socket.emit('client: update sentence_index', {
         name: qs('name'),
-        curr_sentence_index: this.state.curr_sentence_index
+        curr_sentence_index: this.state.currSentenceIndex
       });
     } else {
       this.state.socket.emit('client: ask for recording status');

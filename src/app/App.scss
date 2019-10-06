@@ -271,22 +271,22 @@ h3 {
 }
 
 .ct-icon-loading:after {
-  border: 2px solid lightskyblue;
-  border-color: lightskyblue transparent lightskyblue transparent;
+  border: 2px solid lightskyblue !important;
+  border-color: lightskyblue transparent lightskyblue transparent !important;
 }
 .ct-icon-success {
-  color: lightgreen;
+  color: lightgreen !important;
 }
 .ct-toast-loading {
-  color: lightskyblue;
+  color: lightskyblue !important;
 }
 
 .ct-toast-success {
-  color: lightgreen;
+  color: lightgreen !important;
 }
 
 .ct-toast-info .cogo-toast {
-  color: lightskyblue;
+  color: lightskyblue !important;
 }
 
 .ct-toast-loading .cogo-toast {

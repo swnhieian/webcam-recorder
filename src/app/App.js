@@ -33,7 +33,7 @@ import down_chevron from '../assets/svg/down-chevron.svg'
 class App extends React.Component {
   per_page = 8;
   curr_index = qs('sentence_index');
-  ip_address = 'http://192.168.0.103:5000'
+  ip_address = 'https://192.168.0.103:5000'
   /**
    * Constructor for main react App Component
    * @param {object} props 
@@ -497,7 +497,7 @@ class App extends React.Component {
     ip_util.clientGetIP(ip => {
       console.log(ip);
       if (ip.split('.').length === 4) {
-        ip = 'http://' + ip + ':5000'
+        ip = 'https://' + ip + ':5000'
         cogoToast.loading(ip, {
           position: 'top-right', 
           hideAfter: 3,
@@ -1026,7 +1026,8 @@ class App extends React.Component {
             event.preventDefault();
           }
         } else if (key === 's') {
-          if (document.activeElement !== document.getElementById('name')) this.helper_toggleModal('overallStatus');
+
+          if (document.activeElement.nodeName.toLowerCase() !== 'input') this.helper_toggleModal('overallStatus');
         }
       } catch (NotYetLoadedException) {
         // console.error(NotYetLoadedException);

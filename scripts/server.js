@@ -1,8 +1,35 @@
 /* eslint-disable no-console */
 const app = require('express')();
+const fs = require('fs');
+const exec = require('child_process').exec;
+const colors = require('colors/safe');
+const ip = require('../src/utils/ip');
+
+// const crypto = require('crypto');
+const path = require('path')
+let parentDir = path.resolve(process.cwd(), '..');
+exec('getParentDirectory', {
+  cwd: parentDir
+});
+parentDir += '/webcam-recorder/server/';
+
+// const privateKey = fs.readFileSync(parentDir +'server-key.pem').toString();
+// const certificate = fs.readFileSync('server-crt.pem').toString();
+
+// const credentials = crypto.createCredentials({
+//   key: privateKey,
+//   cert: certificate
+// });
+
+const options = {
+  key: fs.readFileSync(parentDir + 'server-key.pem'),
+  cert: fs.readFileSync(parentDir + 'server-crt.pem'),
+  ca: fs.readFileSync(parentDir + 'ca-crt.pem'),
+};
+
 app.use((req, res, next) => {
-  var allowedOrigins = ['http://localhost:3000', 'https://s3and0s.github.io/webcam-recorder/'];
-  var origin = req.headers.origin;
+  const allowedOrigins = ['http://localhost:3000', 'https://s3and0s.github.io/webcam-recorder/'];
+  const origin = req.headers.origin;
   if (allowedOrigins.indexOf(origin) > -1) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
@@ -10,20 +37,11 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', true);
   next();
-})
-const https = require('https').createServer({}, app);
-const io = require('socket.io')(https, {origins: '*:*'});
-const fs = require('fs');
-const exec = require('child_process').exec;
-const path = require('path')
-const colors = require('colors/safe');
-const ip = require('../src/utils/ip');
-
-let parentDir = path.resolve(process.cwd(), '..');
-exec('getParentDirectory', {
-  cwd: parentDir
 });
-parentDir += '/webcam-recorder/server/nodejs_server/';
+const https = require('https').createServer(options, app);
+const io = require('socket.io')(https, {
+  origins: '*:*'
+});
 const RECORDING_STATUS_PATH = parentDir + 'recording_status.json'
 const PROGRESS_PATH = parentDir + 'progress.json'
 const CONNECTION_STATUS_PATH = parentDir + 'connection_status.json'

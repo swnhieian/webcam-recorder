@@ -13,34 +13,26 @@ exec('getParentDirectory', {
 });
 parentDir += '/webcam-recorder/server/';
 
-// const privateKey = fs.readFileSync(parentDir +'server-key.pem').toString();
-// const certificate = fs.readFileSync('server-crt.pem').toString();
-
-// const credentials = crypto.createCredentials({
-//   key: privateKey,
-//   cert: certificate
-// });
-
-const options = {
-  key: fs.readFileSync(parentDir + 'server-key.pem'),
-  cert: fs.readFileSync(parentDir + 'server-crt.pem'),
-  ca: fs.readFileSync(parentDir + 'ca-crt.pem'),
-};
 
 app.use((req, res, next) => {
-  const allowedOrigins = ['https://localhost:3000', 'https://s3and0s.github.io/webcam-recorder/'];
+  const allowedOrigins = ['localhost', 's3and0s.github.io/webcam-recorder/'];
   const origin = req.headers.origin;
   if (allowedOrigins.indexOf(origin) > -1) {
     res.setHeader('Access-Control-Allow-Origin', origin);
   }
+  res.header("Access-Control-Allow-Origin", "localhost");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.header('Access-Control-Allow-Credentials', true);
   next();
 });
-const https = require('https').createServer(options, app);
-const io = require('socket.io')(https, {
-  origins: '*:*', secure: true
+// ! change to https when certificate can be obtained using certbot 
+// ! https://stackoverflow.com/questions/5998694/how-to-create-an-https-server-in-node-js#14272874
+// ! https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04
+
+const http = require('http').createServer(app);
+const io = require('socket.io')(http, {
 });
 const RECORDING_STATUS_PATH = parentDir + 'recording_status.json'
 const PROGRESS_PATH = parentDir + 'progress.json'
@@ -156,10 +148,10 @@ app.get('/', function (req, res) {
   res.send('<h1>Server Started</h1>');
 });
 
-https.listen(5000, function () {
+http.listen(5000, function () {
   clearConsole(13);
   // ip.nodeGetIP();
-  console.log(colors.green(colors.bold('👂🏻 listening : ') + 'localhost:5000 or ' + my_ip + ':5000'));
+  console.log(colors.green(colors.bold('👂🏻 listening : ') + 'http://localhost:5000 or http://' + my_ip + ':5000'));
 });
 
 

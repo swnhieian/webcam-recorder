@@ -26,9 +26,32 @@ export default class NameField extends Component {
     
   }
 
+  isNameEmpty = () => {
+    try {
+      return !document.getElementById("name").value.replace(/\s/g, '').length
+    }
+    catch (NotYetLoadedException) {
+      //
+    }
+  }
+
   detectEnter = (e) => {
-    if (e.which === 13) {
-      this.saveName(e);
+    if (!this.isNameEmpty()) {
+      if (e.which === 13) {
+        this.saveName(e);
+      } 
+    } else {
+      document.getElementById('nameNotFilled').innerText='请输入名字'
+    }
+  }
+
+  startBtn = (e) => {
+    if (!this.isNameEmpty()) {
+      if (!e.buttons) {
+        this.saveName(document.getElementById("name").value);
+      }
+    } else {
+      document.getElementById('nameNotFilled').innerText = '请输入名字'
     }
   }
 
@@ -47,7 +70,8 @@ export default class NameField extends Component {
             required
           />
           <br/>
-          <button className="btn btn-center" onClick={this.saveName}>Save Name</button>
+          <button className="btn btn-center" onClick={this.startBtn}>开始实验</button>
+          {(this.isNameEmpty()) && <p className="warning_message" id="nameNotFilled"></p>}
         </div>
       </div>
     );

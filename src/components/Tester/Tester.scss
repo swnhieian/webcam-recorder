@@ -37,6 +37,8 @@
   background-color: rgba(0,0,0,0.5);
   border: 1px rgba(255,255,255,0.3) solid;
   font-size: 1.5em;
+  color: rgba(255, 255, 255, 0.7);
+
 }
 
 #name:hover {
@@ -49,7 +51,7 @@
 }
 
 #name::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  // color: rgba(255, 255, 255, 0.5);
 }
 
 #name:focus {

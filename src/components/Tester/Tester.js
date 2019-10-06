@@ -20,7 +20,7 @@ function Tester(props) {
         recordGreenLight={props.recordGreenLight}
         updateGreenLightStatus={props.updateGreenLightStatus}
         numFilesSaved={props.numFilesSaved}
-        numCams={props.numCams}
+        requiredNumCams={props.requiredNumCams}
         stopTimer={stopTimer}
         startTimer={startTimer}
         recordedProgress={props.recordedProgress}
@@ -28,6 +28,7 @@ function Tester(props) {
         showFileSavingLoader={props.showFileSavingLoader}
         debugMode={props.debugMode}
         connectedToServer={props.connectedToServer}
+        detectedNumCams={props.detectedNumCams}
       />
     );
   }
@@ -104,7 +105,7 @@ Tester.propTypes = {
   recordGreenLight: PropTypes.bool.isRequired,
   updateGreenLightStatus: PropTypes.func.isRequired,
   numFilesSaved: PropTypes.number.isRequired,
-  numCams: PropTypes.number.isRequired,
+  requiredNumCams: PropTypes.number.isRequired,
   recordedProgress: PropTypes.number.isRequired,
   updateRecordProgress: PropTypes.func.isRequired,
   totalTime: PropTypes.array.isRequired,
@@ -112,6 +113,7 @@ Tester.propTypes = {
   showFileSavingLoader: PropTypes.func.isRequired,
   debugMode: PropTypes.bool.isRequired,
   connectedToServer: PropTypes.bool.isRequired,
+  detectedNumCams: PropTypes.number.isRequired,
 }
 
 export default Tester;

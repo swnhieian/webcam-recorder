@@ -183,7 +183,7 @@ export default function InProcessScreen(props) {
             onClick={record}
             disabled={
               !props.recordGreenLight ||
-              props.numFilesSaved % props.numCams !== 0 || 
+              props.numFilesSaved % props.requiredNumCams !== 0 || 
               !props.connectedToServer
             }
           >
@@ -197,7 +197,7 @@ export default function InProcessScreen(props) {
             disabled={
               props.curr_sentence_index === 0 ||
               !props.recordGreenLight ||
-              props.numFilesSaved % props.numCams !== 0 ||
+              props.numFilesSaved % props.requiredNumCams !== 0 ||
               recording
             }
           >
@@ -210,12 +210,14 @@ export default function InProcessScreen(props) {
             disabled={
               props.curr_sentence_index === props.data_length - 1 ||
               !props.recordGreenLight ||
-              props.numFilesSaved % props.numCams !== 0 ||
+              props.numFilesSaved % props.requiredNumCams !== 0 ||
               recording
             }
           >
             下一句➡
           </button>
+          {(props.detectedNumCams === 0) && <p className="warning_message">请加摄像头</p>}
+          {(!props.connectedToServer) && <p className="warning_message">请确认您链接到服务器</p>}
         </div>
       );
     }
@@ -238,7 +240,7 @@ InProcessScreen.propTypes = {
   updateGreenLightStatus: PropTypes.func.isRequired,
   recordGreenLight: PropTypes.bool.isRequired,
   numFilesSaved: PropTypes.number.isRequired,
-  numCams: PropTypes.number.isRequired,
+  requiredNumCams: PropTypes.number.isRequired,
   stopTimer: PropTypes.func.isRequired,
   startTimer: PropTypes.func.isRequired,
   recordedProgress: PropTypes.number.isRequired,
@@ -246,4 +248,5 @@ InProcessScreen.propTypes = {
   showFileSavingLoader: PropTypes.func.isRequired,
   debugMode: PropTypes.bool.isRequired,
   connectedToServer: PropTypes.bool.isRequired,
+  detectedNumCams: PropTypes.number.isRequired,
 };

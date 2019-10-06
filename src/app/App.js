@@ -103,7 +103,7 @@ class App extends React.Component {
       this.showNoCamsRef = this.helper_showNoCamsConnected();
       setTimeout(() => {
         this.hideServerOfflineRef = this.helper_showServerNotOnline();
-      }, 3000)
+      }, 1000)
 
       // this.helper_addHoverEventListeners()
       
@@ -297,7 +297,7 @@ class App extends React.Component {
         }
         debugMode={this.state.debugMode}
         numFilesSaved={this.state.numFilesSavedTotal}
-        numCams={this.state.requiredNumCams}
+        requiredNumCams={this.state.requiredNumCams}
         updateGreenLightStatus={this.updateGreenLightStatus}
         recordedProgress={this.state.recordedProgress}
         updateRecordProgress={this.updateRecordProgress}
@@ -305,6 +305,7 @@ class App extends React.Component {
         updateTotalTime={this.updateTotalTime}
         showFileSavingLoader={this.disp_showFileSavingLoader}
         connectedToServer={this.state.connectedToServer}
+        detectedNumCams={this.state.detectedNumCams}
       />
     );
   };
@@ -413,14 +414,14 @@ class App extends React.Component {
         <span className="vert-bar">|</span>
         <div className="debug_inline_group">
           <label htmlFor="" className="debug_label">Cams: </label>
-          <input type="text" className="debug_text_input debug_sm_input" value={this.state.detectedNumCams} readOnly/>
+          <input id="numCamsInput" type="text" className="debug_text_input debug_sm_input warning_message" value={this.state.detectedNumCams} readOnly/>
         </div>
         
         <div className="debug_inline_group">
           <span className="vert-bar">|</span>
           <label htmlFor="" className="debug_label">Server: </label>
           <span className="server_status"></span>
-          <input id="inputServerIP" type="text" className="debug_text_input" value={this.state.ip} onChange={this.handler_IPOnChange}/>
+          <input id="inputServerIP" type="text" className="debug_text_input warning_message" value={this.state.ip} onChange={this.handler_IPOnChange}/>
           <button className='debug_button' onClick={this.handler_useThisCompAsServer}>🖥</button>
         </div>
 
@@ -495,17 +496,18 @@ class App extends React.Component {
       if (ip.split('.').length === 4) {
         cogoToast.loading(this.style_makeEmojiToastLayout(['Connecting to ', ip], '📡'), {
           position: 'top-right', 
+          hideAfter: 3,
           onClick: hide => {
             hide()
           }
         });
         ip = 'http://' + ip + ':5000'
         this.helper_setServerIP(ip);
-        if (!this.hideServerOfflineRef) {
-          this.hideServerOfflineRef = this.helper_showServerNotOnline();
-        } else {
-          this.hideServerOfflineRef();
-        }
+        // if (!this.hideServerOfflineRef) {
+        //   this.hideServerOfflineRef = this.helper_showServerNotOnline();
+        // } else {
+        //   this.hideServerOfflineRef();
+        // }
       }
     });
     // const [ip_v6, ip_v4] = [temp[0], temp[1]]
@@ -595,9 +597,12 @@ class App extends React.Component {
 
   updateDetectedNumCams = detectedNumCams => {
     this.setState({ detectedNumCams });
+    this.updateGreenLightStatus(true);
     this.showNoCamsRef();
     try {
       document.getElementsByClassName('debug_sm_input')[0].className += (this.state.detectedNumCams > 0) ? " serverPlaceholderConnected" : ""
+      document.getElementById('numCamsInput').classList.remove("warning_message");
+      
     } catch (NotYetLoadedException) {
       //
     }
@@ -648,6 +653,7 @@ class App extends React.Component {
   disp_showFileSavingLoader = () => {
     this.ref_hideLoader = cogoToast.loading(
       this.style_makeEmojiToastLayout(['视频正在保存', '请耐心等待'], '⌛️'), {
+        hideAfter: 0,
         onClick: hide => {
           hide()
         }
@@ -677,7 +683,7 @@ class App extends React.Component {
     this.state.socket.on('server: online', () => {
       cogoToast.success('Server is online.', {
         position: 'top-right', 
-        hideAfter: 0, 
+        hideAfter: 3, 
         onClick: hide => {
           hide();
         }
@@ -685,7 +691,8 @@ class App extends React.Component {
       if (this.hideServerOfflineRef) this.hideServerOfflineRef();
       document.getElementsByClassName('server_status')[0].classList.add('server_online');
       document.getElementById('inputServerIP').classList.add('serverPlaceholderConnected');
-      
+      document.getElementById('inputServerIP').classList.remove('warning_message');
+  
     });
     if (!this.hideServerOfflineRef) {
       this.hideServerOfflineRef = this.helper_showServerNotOnline();
@@ -703,7 +710,6 @@ class App extends React.Component {
     this.state.socket.on('server: connected', computerID => {
       console.log('detected server connected')
       this.setState({ connectedToServer: true, computerID}, () => {
-        document.getElementsByClassName('server_status')[0].classList.add('server_online');
         document.getElementById('inputServerIP').classList.add('serverPlaceholderConnected')
       });
     });
@@ -883,7 +889,7 @@ class App extends React.Component {
   admin_resetCams = () => {
     // cogoToast.info('Adding Cam', {hideAfter: 1})
     // this.state.socket.emit('client: stop cams');
-    this.updateGreenLightStatus(true);
+    // this.updateGreenLightStatus(true);
     this.state.socket.emit('client: reset cams');
     try {
       document.getElementById('addCamBtn').click();
@@ -942,7 +948,8 @@ class App extends React.Component {
     console.log('no server')
     return cogoToast.warn("Server is offline", {
       hideAfter: 0,
-      position: 'top-right'
+      position: 'top-right', 
+      onClick: hide => {this.handler_useThisCompAsServer(); hide();}
     });
   }
 

@@ -205,14 +205,20 @@ export default function CameraList(props) {
           let temp = availableCams;
           temp.push(newCamDevice);
           setAvailableCams(temp);
-          cogoToast.success(
-            'New camera: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.'
-          ), {
-            hideAfter: 0.5,
-            onClick: hide => {
-              hide();
-            }
-          };
+          // cogoToast.success(
+          //   'New webcam: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.'
+          // ), {
+          //   hideAfter: 0.5,
+          //   position: 'top-left',
+          //   onClick: hide => {
+          //     hide();
+          //   }
+          // };
+          cogoToast.success('Webcam: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.', {
+            hideAfter: 1,
+            position: 'top-left',
+            onClick: hide => hide()
+          });
           document.getElementById('startBtn').disabled = false;
           initCams();
           setPluggedInDevices(idAoni);

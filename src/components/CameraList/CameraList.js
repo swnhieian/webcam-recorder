@@ -186,6 +186,7 @@ export default function CameraList(props) {
       const newPluggedInID = idAoni.diff(pluggedInDevices);
       if (newPluggedInID.length === 0) {
         // console.log('no new devices detected');
+        cogoToast.warn('No additional webcams detected.', {hideAfter: 1});
       } else if (newPluggedInID.length === 2) {
         detectedTwoDevices = true;
         // console.log(
@@ -424,10 +425,9 @@ export default function CameraList(props) {
     }
   }
 
-  const renderCams = () => {
+  const renderCams = addCam => {
 
-    // initMics();
-
+    // initMics()
     const debug = true;
     let i = 0; 
     const comp_camsList = availableCams.map(cam => {
@@ -439,12 +439,6 @@ export default function CameraList(props) {
         />
       );
     });
-
-    const noCamsMessage = () => {
-      if (comp_camsList.length === 0) {
-        return <p style={{marginTop: '40%'}}>No Cams</p>
-      }
-    }
       
 
     return (
@@ -452,11 +446,11 @@ export default function CameraList(props) {
         {debugControls(debug)}
         <div>
           <div className='cameras'>{comp_camsList}</div>
-          {noCamsMessage()}
+          <button className='debug_button' style={{ marginTop: '1em'}} onClick={addCam}>Add Webcam</button>
         </div>
       </div>
     );
   };
   
-  return renderCams();
+  return renderCams(props.addCam);
 }

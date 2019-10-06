@@ -22,7 +22,13 @@ import CompleteAnimation from '../components/CompleteAnimation/CompleteAnimation
 import sentences from '../assets/data/sentences.txt';
 // import sentences from '../assets/data/sentences-english-test.txt';
 
+// util
 import ip_util from '../utils/ip'
+
+// chevron
+import up_chevron from '../assets/svg/up-chevron.svg'
+import down_chevron from '../assets/svg/down-chevron.svg'
+
 
 class App extends React.Component {
   per_page = 8;
@@ -112,7 +118,7 @@ class App extends React.Component {
     debugHoverArea.addEventListener('mouseout', this.handler_hoverMouseOutDebug);
     debugHoverArea.addEventListener('mouseover', this.handler_hoverMouseOverDebug);
     bottomHoverArea.addEventListener('mouseout', this.handler_hoverMouseOutBottom);
-    bottomHoverArea.addEventListener('mouseover', this.handler_hoverMouseOverHover);
+    bottomHoverArea.addEventListener('mouseover', this.handler_hoverMouseOverBottom);
   }
   helper_removeHoverEventListeners = () => {
     const debugHoverArea = document.getElementById('debug_hover_area');
@@ -120,13 +126,12 @@ class App extends React.Component {
     debugHoverArea.removeEventListener('mouseout', this.handler_hoverMouseOutDebug);
     debugHoverArea.removeEventListener('mouseover', this.handler_hoverMouseOverDebug);
     bottomHoverArea.removeEventListener('mouseout', this.handler_hoverMouseOutBottom);
-    bottomHoverArea.removeEventListener('mouseover', this.handler_hoverMouseOverHover);
-    this.handler_hoverMouseOverHover();
+    bottomHoverArea.removeEventListener('mouseover', this.handler_hoverMouseOverBottom);
+    this.handler_hoverMouseOverBottom();
   }
 
   handler_hoverMouseOutDebug = () => {
     try {
-      console.log('debug mouse out')
       document.getElementsByClassName('debug-group')[0].className += ' ' + 'hideDebug'
     } catch (NotYetLoadedException) {
       console.error(NotYetLoadedException)
@@ -135,7 +140,6 @@ class App extends React.Component {
 
   handler_hoverMouseOverDebug = () => {
     try {
-      console.log('debug mouse over')
       document.getElementsByClassName('debug-group')[0].classList.remove('hideDebug');
     } catch (NotYetLoadedException) {
       console.error(NotYetLoadedException)
@@ -150,11 +154,37 @@ class App extends React.Component {
     } 
   }
 
-  handler_hoverMouseOverHover = () => {
+  handler_hoverMouseOverBottom = () => {
     try {
       document.getElementsByClassName('contents')[0].classList.remove('hideBottom');
     } catch (NotYetLoadedException) {
       console.error(NotYetLoadedException)
+    }
+  }
+
+  helper_toggleHideDebug = () => {
+    console.log('toggling')
+    try {
+      if (document.getElementsByClassName('debug-group')[0].className.includes('hideDebug')) {
+        this.handler_hoverMouseOverDebug();
+      } else {
+        this.handler_hoverMouseOutDebug();
+      }
+    } catch (NotYetLoadedException) {
+      // 
+    }
+  }
+  
+  helper_toggleHideBottom = () => {
+    console.log('toggling')
+    try {
+      if (document.getElementsByClassName('contents')[0].className.includes('hideBottom')) {
+        this.handler_hoverMouseOverBottom();
+      } else {
+        this.handler_hoverMouseOutBottom();
+      }
+    } catch (NotYetLoadedException) {
+      // 
     }
   }
 
@@ -172,17 +202,22 @@ class App extends React.Component {
   main_userView = () => {
     return (
       <div className='container'>
-        <span id = "debug_hover_area" > 
+        <span id="debug_hover_area" > 
           {this.comp_debug()} 
         </span> 
         {this.comp_tester()}
         <span id="bottom_hover_area">
           <div className='contents'>
-            <div className='left_panel'>{this.comp_dataCollection()}</div>
-            <div className='right_panel'>
-              <h3>Cameras</h3>
-              <div className='cameras_container'>
-                {this.comp_cameraList()}
+            <div style={{width: '100%', height: '100%'}} onClick={this.helper_toggleHideBottom}>
+              <img className="chevron" src={down_chevron}></img>
+            </div>
+            <div className="panel_container">
+              <div className='left_panel'>{this.comp_dataCollection()}</div>
+              <div className='right_panel'>
+                <h3>Cameras</h3>
+                <div className='cameras_container' >
+                  {this.comp_cameraList()}
+                </div>
               </div>
             </div>
           </div>
@@ -285,6 +320,7 @@ class App extends React.Component {
         addCamState={this.state.addCamState}
         toggleCamState={this.helper_toggleCamState}
         updateDetectedNumCams={this.updateDetectedNumCams}
+        addCam={this.admin_resetCams}
       />
     );
   };
@@ -355,7 +391,7 @@ class App extends React.Component {
           className='debug_button'
           onClick={this.admin_resetCams}
         >
-          Reset Cams
+          Add Webcam
         </button>
         <button
           className='debug_button'
@@ -391,6 +427,11 @@ class App extends React.Component {
 
 
         <span className="vert-bar">|</span>
+
+        
+        <div style={{width: '100%', height: '100%'}} onClick={this.helper_toggleHideDebug}>
+          <img className="chevron" src={up_chevron}></img>
+        </div>
         
         {/* <button className='debug_button' onClick={this.admin_refreshAll}>
           Refresh All
@@ -840,6 +881,7 @@ class App extends React.Component {
   };
 
   admin_resetCams = () => {
+    // cogoToast.info('Adding Cam', {hideAfter: 1})
     // this.state.socket.emit('client: stop cams');
     this.updateGreenLightStatus(true);
     this.state.socket.emit('client: reset cams');
@@ -850,12 +892,7 @@ class App extends React.Component {
     }
     this.state.socket.emit('client: dummy vid, do not save');
     // cogoToast.info('Cams are reset', { hideAfter: 0.3 });
-
-    const resetBtn = document.getElementById('resetCamsBtn');
-    if (!resetBtn.className.includes('btn-active')) {
-      document.getElementById('resetCamsBtn').className += (' btn-active');
-    }
-    setTimeout(() => document.getElementById('resetCamsBtn').classList.remove('btn-active'), 1000);
+    // setTimeout(() => document.getElementById('resetCamsBtn').classList.remove('btn-active'), 1000);
 
   };
 
@@ -894,7 +931,6 @@ class App extends React.Component {
   };
 
   helper_showNoCamsConnected = () => {
-    console.log('no cams')
     return cogoToast.warn("No Webcams", {
       hideAfter: 0,
       position: 'top-left'

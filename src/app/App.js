@@ -545,7 +545,7 @@ class App extends React.Component {
       () => {
         console.log(
           'this occured: ' + this.state.numFilesSavedInd + ' times.'
-        );
+        )
         try {
           document.getElementById('testerNextBtn').disabled = true;
         } catch (NotYetLoadedException) {

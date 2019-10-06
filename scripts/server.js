@@ -1,12 +1,18 @@
 /* eslint-disable no-console */
 const app = require('express')();
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "localhost");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  var allowedOrigins = ['http://localhost:3000', 'https://s3and0s.github.io/webcam-recorder/'];
+  var origin = req.headers.origin;
+  if (allowedOrigins.indexOf(origin) > -1) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.header('Access-Control-Allow-Credentials', true);
   next();
 })
-const http = require('http').createServer(app);
-const io = require('socket.io')(http, {origins: '*:*'});
+const https = require('https').createServer({}, app);
+const io = require('socket.io')(https, {origins: '*:*'});
 const fs = require('fs');
 const exec = require('child_process').exec;
 const path = require('path')
@@ -132,7 +138,7 @@ app.get('/', function (req, res) {
   res.send('<h1>Server Started</h1>');
 });
 
-http.listen(5000, function () {
+https.listen(5000, function () {
   clearConsole(13);
   // ip.nodeGetIP();
   console.log(colors.green(colors.bold('👂🏻 listening : ') + 'localhost:5000 or ' + my_ip + ':5000'));

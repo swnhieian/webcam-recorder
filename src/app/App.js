@@ -36,7 +36,7 @@ class App extends React.Component {
    */
   sentencesPerPageInTable = 8; // sentences per page of Table 
   curr_index = qs('sentence_index'); // extracts the curr index from URL
-  ip_address = 'https://192.168.0.103:5000' // default IP address of server
+  ip_address = 'http://192.168.0.103:5000' // default IP address of server
 
   /**
    * **CogoToast References to call to hide toasts**
@@ -495,9 +495,13 @@ class App extends React.Component {
     this.setState({
       numFilesSavedTotal: numFiles
     });
+    if (successMessage === ' (successful)') {
+      this.updateGreenLightStatus(true);
+    }
     try {
       document.getElementById('num_files_saved').innerHTML =
         'Total Files Saved: ' + numFiles + successMessage;
+      
     } catch (NotYetLoadedException) {
       // console.error(NotYetLoadedException);
     }
@@ -507,7 +511,7 @@ class App extends React.Component {
     ip_util.clientGetIP(ip => {
       console.log(ip);
       if (ip.split('.').length === 4) {
-        ip = 'https://' + ip + ':5000'
+        ip = 'http://' + ip + ':5000'
         cogoToast.loading(ip, {
           position: 'top-right', 
           hideAfter: 3,

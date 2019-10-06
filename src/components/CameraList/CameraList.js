@@ -51,6 +51,7 @@ export default function CameraList(props) {
     props.updateDetectedNumCams(num);
     return num;
   }
+
   const initCams = () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       console.log('enumerateDevices() not supported.');
@@ -143,6 +144,8 @@ export default function CameraList(props) {
     })
   }
 
+  let isMac = false;
+
   const startFaceTimeCam = (faceTimeDevice, defaultMic) => {
     if (faceTimeDevice) {
       const device = helper_extractRelevantCamInfo(faceTimeDevice)
@@ -153,15 +156,20 @@ export default function CameraList(props) {
       document.getElementById('dummyBtn').disabled = false;
       document.getElementById('dummyBtn').click();
       cogoToast.success('Mac FaceTime Camera started', {
-        hideAfter: 0.3,
+        position: 'top-left',
+        hideAfter: 1,
         onClick: hide => {
           hide()
         }
       });
+      props.updateDetectedNumCams(1);
+      isMac = true;
     }
   }
 
+
   const addNewCamMic = () => {
+    // let isMac = false;
     try {
       checkIfMac(startFaceTimeCam);
     } catch (Exception) {
@@ -186,7 +194,8 @@ export default function CameraList(props) {
       const newPluggedInID = idAoni.diff(pluggedInDevices);
       if (newPluggedInID.length === 0) {
         // console.log('no new devices detected');
-        cogoToast.warn('No additional webcams detected.', {hideAfter: 1});
+        if (!isMac) 
+          cogoToast.warn('No additional webcams detected.', {hideAfter: 1});
       } else if (newPluggedInID.length === 2) {
         detectedTwoDevices = true;
         // console.log(

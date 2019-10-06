@@ -933,7 +933,8 @@ class App extends React.Component {
   helper_showNoCamsConnected = () => {
     return cogoToast.warn("No Webcams", {
       hideAfter: 0,
-      position: 'top-left'
+      position: 'top-left', 
+      onClick: this.admin_resetCams
     });
   }
 

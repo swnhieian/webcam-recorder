@@ -422,7 +422,10 @@ class App extends React.Component {
           <label htmlFor="" className="debug_label">Server: </label>
           <span className="server_status"></span>
           <input id="inputServerIP" type="text" className="debug_text_input warning_message" value={this.state.ip} onChange={this.handler_IPOnChange}/>
-          <button className='debug_button' onClick={this.handler_useThisCompAsServer}>🖥</button>
+          < button className = 'debug_button'
+          onClick = {
+            this.handler_useThisCompAsServer
+          } > 📡 < /button>
         </div>
 
 
@@ -494,14 +497,14 @@ class App extends React.Component {
     ip_util.clientGetIP(ip => {
       console.log(ip);
       if (ip.split('.').length === 4) {
-        cogoToast.loading(this.style_makeEmojiToastLayout(['Connecting to ', ip], '📡'), {
+        ip = 'http://' + ip + ':5000'
+        cogoToast.loading(ip, {
           position: 'top-right', 
           hideAfter: 3,
           onClick: hide => {
             hide()
           }
         });
-        ip = 'http://' + ip + ':5000'
         this.helper_setServerIP(ip);
         // if (!this.hideServerOfflineRef) {
         //   this.hideServerOfflineRef = this.helper_showServerNotOnline();
@@ -683,7 +686,7 @@ class App extends React.Component {
     this.state.socket.on('server: online', () => {
       cogoToast.success('Server is online.', {
         position: 'top-right', 
-        hideAfter: 3, 
+        hideAfter: 0, 
         onClick: hide => {
           hide();
         }

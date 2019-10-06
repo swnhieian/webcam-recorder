@@ -263,18 +263,46 @@ h3 {
 
 
 .ct-toast {
-  background-color: rgba(0,0,0,0.8);
-  color: white;
+  // background: #1F2736;
+  background: rgb(95, 92, 92);
+  border-radius: 0.5em;
+  // background: linear-gradient(#121823, #161d2b);
+  // color: white;
 }
 
-.ct-toast-success .cogo-toast {
-  border-left: 1px dashed green;
+.ct-icon-loading:after {
+  border: 2px solid lightskyblue;
+  border-color: lightskyblue transparent lightskyblue transparent;
 }
+.ct-icon-success {
+  color: lightgreen;
+}
+.ct-toast-loading {
+  color: lightskyblue;
+}
+
+.ct-toast-success {
+  color: lightgreen;
+}
+
 .ct-toast-info .cogo-toast {
-  border-left: 1px dashed rgb(18, 113, 236)
+  color: lightskyblue;
 }
+
 .ct-toast-loading .cogo-toast {
-  border-left: 1px dashed rgb(18, 113, 236);
+  color: lightskyblue;
+}
+.ct-toast-loading {
+  border-left: 3px solid lightskyblue !important;
+}
+
+
+.ct-toast-warn .ct-text {
+  color: #FFDA44
+}
+.ct-text {
+  font-weight: medium;
+
 }
 
 .cogo-toast {
@@ -282,7 +310,8 @@ h3 {
   grid-template-columns: 20% auto 20%;
   text-align: center;
   width: 200px;
-  color: white;
+  // color: white;
+
 }
 .emoji-layout-container {
   display: grid;

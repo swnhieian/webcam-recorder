@@ -34,7 +34,7 @@ class App extends React.Component {
   /**
    * **Basic Configuration**
    */
-  sentencesPerPageInTable = 8; // sentences per page of Table
+  sentencesPerPageInTable = 4; // sentences per page of Table
   curr_index = qs('sentence_index'); // extracts the curr index from URL
   ip_address = 'http://192.168.0.103:5000'; // default IP address of server
 
@@ -230,6 +230,7 @@ class App extends React.Component {
         curr_sentence_index={this.state.currSentenceIndex}
         curr_page={this.state.currPageInTable}
         updatePage={this.updatePage}
+        sentencesPerPageInTable={this.state.sentencesPerPageInTable}
       />
     );
   };
@@ -438,10 +439,10 @@ class App extends React.Component {
       .then(response => response.text())
       .then(text => {
         this.setState({ data: text.split('\n') }, () => {
-          let curr_sentence = qs('sentence_index')
+          let currSentence = qs('sentence_index')
             ? this.state.data[Number(qs('sentence_index'))]
             : this.state.data[0];
-          this.setState({ curr_sentence }, () => {
+          this.setState({ currSentence }, () => {
             // console.log(this.state.curr_sentence)
           });
           this.setState({
@@ -742,7 +743,7 @@ class App extends React.Component {
     });
 
     this.state.socket.on('server: response for progress', progress => {
-      this.setState({ recordedProgress: progress ? progress : 0 });
+      this.setState({ recordProgress: progress ? progress : 0 });
     });
 
     this.state.socket.on('server: response for numFilesSaved', numFiles => {
@@ -795,28 +796,28 @@ class App extends React.Component {
    * url query without refreshing to reflect current index.
    * @param {string} curr_sentence
    */
-  updateSentence = curr_sentence => {
-    if (curr_sentence === '$next') {
+  updateSentence = currSentence => {
+    if (currSentence === '$next') {
       this.setState(
-        { curr_sentence_index: this.state.currSentenceIndex + 1 },
+        { currSentenceIndex: this.state.currSentenceIndex + 1 },
         () => {
           this.updateSentence(this.state.data[this.state.currSentenceIndex]);
           this.state.socket.emit('client: update sentence_index', {
             name: qs('name'),
-            curr_sentence_index: this.state.currSentenceIndex
+            currSentenceIndex: this.state.currSentenceIndex
           });
         }
       );
-    } else if (curr_sentence === '$prev') {
+    } else if (currSentence === '$prev') {
       this.setState(
         {
-          curr_sentence_index: Math.max(this.state.currSentenceIndex - 1, 0)
+          currSentenceIndex: Math.max(this.state.currSentenceIndex - 1, 0)
         },
         () => {
           this.updateSentence(this.state.data[this.state.currSentenceIndex]);
           this.state.socket.emit('client: update sentence_index', {
             name: qs('name'),
-            curr_sentence_index: this.state.currSentenceIndex
+            currSentenceIndex: this.state.currSentenceIndex
           });
         }
       );
@@ -831,10 +832,10 @@ class App extends React.Component {
       );
       // console.log(curr_sentence);
       this.setState({
-        curr_sentence,
-        curr_page:
+        currSentence,
+        currPageInTable:
           Math.floor(
-            Number(this.state.curr_sentence_index) / this.state.per_page
+            Number(this.state.currSentenceIndex) / this.state.sentencesPerPageInTable
           ) + 1
       });
     }
@@ -846,20 +847,20 @@ class App extends React.Component {
     }
     console.log('update page', new_page);
     this.setState({
-      curr_page: new_page >= 1 ? new_page : 1
+      currPageInTable: new_page >= 1 ? new_page : 1
     });
   };
 
-  updateRecordProgress = curr_sentence_index => {
+  updateRecordProgress = currSentenceIndex => {
     // { <sentence_index> : <bool: recorded/not> }
     this.setState(
       {
-        recordedProgress: curr_sentence_index
+        recordProgress: currSentenceIndex
       },
       () => {
         this.state.socket.emit(
           'client: update recording progress',
-          curr_sentence_index
+          currSentenceIndex
         );
       }
     );
@@ -921,7 +922,7 @@ class App extends React.Component {
     if (!this.helper_checkIfMobileView) {
       this.state.socket.emit('client: update sentence_index', {
         name: qs('name'),
-        curr_sentence_index: this.state.currSentenceIndex
+        currSentenceIndex: this.state.currSentenceIndex
       });
     } else {
       this.state.socket.emit('client: ask for recording status');

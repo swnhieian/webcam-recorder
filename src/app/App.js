@@ -106,7 +106,7 @@ class App extends React.Component {
         this.hideServerOfflineRef = this.helper_showServerNotOnline();
       }, 1000);
     } catch (NotYetLoadedException) {
-      //
+      console.error(NotYetLoadedException)
     }
   }
 
@@ -131,7 +131,7 @@ class App extends React.Component {
 
   handler_hoverMouseOutBottom = () => {
     try {
-      document.getElementsByClassName('contents')[0].className +=
+      document.getElementsByClassName('panel_BG')[0].className +=
         ' ' + 'hideBottom';
     } catch (NotYetLoadedException) {
       console.error(NotYetLoadedException);
@@ -141,7 +141,7 @@ class App extends React.Component {
   handler_hoverMouseOverBottom = () => {
     try {
       document
-        .getElementsByClassName('contents')[0]
+        .getElementsByClassName('panel_BG')[0]
         .classList.remove('hideBottom');
     } catch (NotYetLoadedException) {
       console.error(NotYetLoadedException);
@@ -162,27 +162,32 @@ class App extends React.Component {
   main_userView = () => {
     return (
       <div className='container'>
-        <span id='debug_hover_area'>{this.comp_debug()}</span>
+        {/* <span id='debug_hover_area'> */}
+          {this.comp_debug()}
+        {/* </span> */}
         {this.comp_tester()}
-        <span id='bottom_hover_area'>
+        {/* <span id='bottom_hover_area'> */}
           <div className='contents'>
-            <div
-              style={{ width: '100%', height: '100%' }}
-              onClick={this.helper_toggleHideBottom}
-            >
-              <img className='chevron' src={down_chevron}></img>
             </div>
-            <div className='panel_container'>
-              <div className='left_panel'>{this.comp_dataCollection()}</div>
-              <div className='right_panel'>
-                <h3>Cameras</h3>
-                <div className='cameras_container'>
-                  {this.comp_cameraList()}
+            < div className = "panel_BG hideBottom" >
+              <div
+                style={{ width: '100%', height: '100%' }}
+                onClick={this.helper_toggleHideBottom}
+              >
+              <img className='chevron' src={down_chevron}></img>
+              <div className='panel_container'>
+                <div className='left_panel'>{this.comp_dataCollection()}</div>
+                <div className='right_panel'>
+                  <h3>Cameras</h3>
+                  <div className='cameras_container'>
+                    {this.comp_cameraList()}
+                  </div>
                 </div>
               </div>
             </div>
+            
           </div>
-        </span>
+        {/* </span> */}
       </div>
     );
   };
@@ -329,8 +334,7 @@ class App extends React.Component {
   // * COMPONENT * //
   comp_debug = () => {
     return (
-      <div className='debug-group'>
-        <span className='vert-bar'>|</span>
+      < div className = 'debug-group hideDebug' >
         <label className='debug_label'>Admin: </label>
 
         <button
@@ -357,7 +361,6 @@ class App extends React.Component {
         >
           Reset Progress
         </button>
-        <span className='vert-bar'>|</span>
 
         <div className='debug_inline_group'>
           <label className='debug_label'>Debug: </label>
@@ -368,10 +371,8 @@ class App extends React.Component {
             updateDebugMode={this.updateDebugMode}
           />
         </div>
-        <span className='vert-bar'>|</span>
 
         <br />
-        <span className='vert-bar'>|</span>
         <div className='debug_inline_group'>
           <label htmlFor='' className='debug_label'>
             Cams:{' '}
@@ -386,8 +387,7 @@ class App extends React.Component {
         </div>
 
         <div className='debug_inline_group'>
-          <span className='vert-bar'>|</span>
-          <label htmlFor='' className='debug_label'>
+            <label htmlFor='' className='debug_label'>
             Server:{' '}
           </label>
           <span className='server_status'></span>
@@ -407,13 +407,13 @@ class App extends React.Component {
           </button>
         </div>
 
-        <span className='vert-bar'>|</span>
 
         <div
           style={{ width: '100%', height: '100%' }}
           onClick={this.helper_toggleHideDebug}
         >
-          <img className='chevron' src={up_chevron}></img>
+          <img className='chevron top-chevron' src={up_chevron}></img>
+          <div style={{height: '0.3em'}}></div>
         </div>
 
         {/* <button className='debug_button' onClick={this.admin_refreshAll}>
@@ -514,7 +514,7 @@ class App extends React.Component {
         this.helper_removeHoverEventListeners();
       } else {
         this.setState({ requiredNumCams: 8 });
-        this.helper_addHoverEventListeners();
+        // this.helper_addHoverEventListeners();
         this.handler_hoverMouseOutBottom();
       }
     });
@@ -1054,7 +1054,7 @@ class App extends React.Component {
     try {
       if (
         document
-          .getElementsByClassName('contents')[0]
+          .getElementsByClassName('panel_BG')[0]
           .className.includes('hideBottom')
       ) {
         this.handler_hoverMouseOverBottom();

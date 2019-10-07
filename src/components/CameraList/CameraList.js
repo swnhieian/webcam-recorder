@@ -460,8 +460,8 @@ export default function CameraList(props) {
       <div id='camera_list'>
         {debugControls(debug)}
         <div>
+          <button className='debug_button' style={{marginBottom: '1em'}} onClick={addCam}>Add Webcam</button>
           <div className='cameras'>{comp_camsList}</div>
-          <button className='debug_button' style={{ marginTop: '1em'}} onClick={addCam}>Add Webcam</button>
         </div>
       </div>
     );

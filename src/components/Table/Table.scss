@@ -1,9 +1,9 @@
 .table_header_footer {
-  background: #00000007;
+  // background: #00000007;
   display: grid;
   // grid-template-columns: 45% 25% 30%;
   padding-top: 0.7em;
-  border: #00000010 solid 1px;
+  // border: #00000010 solid 1px;
   font-weight: 800;
   padding-left: 0.5em;
   color: lightgray;
@@ -11,7 +11,7 @@
 
 .table {
   color: lightgray;
-  border: #00000010 solid 1px;
+  // border: #00000010 solid 1px;
   background: #1F2736;
   background: linear-gradient(#121823, #161d2b);
   border-radius: 2em;
@@ -19,7 +19,7 @@
   inset 0 1px 0 rgba(0, 0, 0, 0.5),
   0 1px 0 rgba(255, 255, 255, 0.2);
   margin: auto;
-  padding-top: 1em;
-  padding-bottom: 1em;
+  // padding-top: 1em;
+  // padding-bottom: 1em;
   width: 90%;
 }

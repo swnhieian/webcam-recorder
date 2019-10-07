@@ -4,12 +4,14 @@ html,
 body {
   // height: 100%;
   margin: 0;
+  padding: 0;
   // background: #202838;
   color: rgb(59, 184, 206);
   font-family: 'Nunito', 'Courier New', Courier, monospace;
   font-weight: 300;
   background: rgba(0, 0, 0, 0.7);
   height: 100%;
+  overflow:hidden;
 }
 
 .hideDebug {
@@ -19,7 +21,7 @@ body {
 }
 
 .hideBottom {
-  transform: translate(0, 470px);
+  transform: translate(0, 300px);
   transition: all 1s ease-in;
 }
 
@@ -32,7 +34,8 @@ body {
   // transform: rotate(1turn);  
   height: 15px;
   display: block;
-  margin: auto;
+  margin-left: auto;
+  margin-right: auto;
   margin-top: 1em;
   transition: all 1s ease;
   background: transparent;
@@ -52,30 +55,31 @@ h3 {
   top: 0;
   z-index: 6;
   color: transparent;
+  background-color: #121823, #161d2b;
 }
 
 #bottom_hover_area {
   position: absolute;
   // border: blue 1px solid;
   width: 100%;
-  height: 510px;
+  height: 400px;
   left: 0;
   bottom: 0;
   z-index: 100;
-  color: transparent;
+  // color: transparent;
 }
 
 .panel_container {
   display: grid;
   grid-template-columns: 50% 50%;
   transition: all 1s ease-in;
-
+  background-color: #121823;
 }
 
 .contents {
   // margin-top: ;
-  padding-left: 0.5em;
-  padding-right: 0.5em;
+  // padding-left: 0.5em;
+  // padding-right: 0.5em;
   color: lightgray;
   transition: all 0.5s ease;
   // width: 95vh;
@@ -315,7 +319,7 @@ h3 {
 }
 .emoji-layout-container {
   display: grid;
-  grid-template-columns: 20% auto 20%;
+  grid-template-columns: 10% auto 10%;
   text-align: center;
   // width: 200px;
   color: lightgray;
@@ -356,7 +360,7 @@ h3 {
   flex-flow: row wrap;
   align-content: flex-start;
   justify-content: space-evenly;
-  max-height: 82vh;
+  // max-height: 82vh;
   overflow: scroll;
 }
 
@@ -373,9 +377,28 @@ h3 {
 
 .name_field {
   padding: 0.5em;
-  margin-bottom: 2em;
+  // margin-bottom: 2em;
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 
 
 // ::-webkit-scrollbar {

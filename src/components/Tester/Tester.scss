@@ -11,7 +11,11 @@
   // display: absolute;
   // padding-top: 23vh;
   // margin: 1em;
-  top: 15%;
+  top: 150px;
+}
+
+.emoji-layout-container {
+  font-size: 1.5em;
 }
 
 .btn_highlight_green {
@@ -30,6 +34,7 @@
 }
 
 #name {
+  margin-top: 3em;
   width: 80%;
   height: 56px;
   border-radius: 4px;
@@ -120,13 +125,13 @@
 
 #total_timer {
   // margin: 0;
-  margin-bottom: -0.5em;
+  // margin-bottom: -0.5em;
 }
 
 .sentence_to_be_read {
   font-size: 3em;
   line-height: 1.5;
-  margin-bottom: 0.5em;
+  // margin-bottom: 0.5em;
   color: white;
 }
 .recording_hint {

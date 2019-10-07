@@ -1,36 +1,25 @@
 /* eslint-disable no-console */
+const app = require('express')();
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "localhost");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+})
+const http = require('http').createServer(app);
+const io = require('socket.io')(http, {
+  origins: '*:*'
+});
 const fs = require('fs');
 const exec = require('child_process').exec;
+const path = require('path')
 const colors = require('colors/safe');
 const ip = require('../src/utils/ip');
-// const crypto = require('crypto');
-const path = require('path')
+
 let parentDir = path.resolve(process.cwd(), '..');
 exec('getParentDirectory', {
   cwd: parentDir
 });
-parentDir += '/webcam-recorder/server/';
-const app = require('express')();
-app.use((req, res, next) => {
-  // const allowedOrigins = ['localhost', 's3and0s.github.io/webcam-recorder/'];
-  // const origin = req.headers.origin;
-  // if (allowedOrigins.indexOf(origin) > -1) {
-  //   res.setHeader('Access-Control-Allow-Origin', origin);
-  // }
-  res.header("Access-Control-Allow-Origin", "localhost");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  // res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  // res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  // res.header('Access-Control-Allow-Credentials', true);
-  next();
-});
-// ! change to https when certificate can be obtained using certbot 
-// ! https://stackoverflow.com/questions/5998694/how-to-create-an-https-server-in-node-js#14272874
-// ! https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-16-04
-
-const http = require('http').createServer(app);
-const io = require('socket.io')(http, {origins:'*'});
-
+parentDir += '/webcam-recorder/server/nodejs_server/';
 const RECORDING_STATUS_PATH = parentDir + 'recording_status.json'
 const PROGRESS_PATH = parentDir + 'progress.json'
 const CONNECTION_STATUS_PATH = parentDir + 'connection_status.json'
@@ -44,7 +33,7 @@ let recordedStart = undefined;
 const my_ip = ip.nodeGetIP();
 
 function saveData(data, path) {
-try {
+  try {
     fs.writeFileSync(path, JSON.stringify(data))
   } catch (err) {
     console.error(err)
@@ -52,18 +41,18 @@ try {
 }
 
 function readData(path, callback) {
-  fs.readFile(path, function(err, content) {
+  fs.readFile(path, function (err, content) {
     if (err) return callback(err);
     callback(null, content);
   });
-} 
+}
 
 function updateRecordingStatus(data, path) {
   try {
     return JSON.parse(fs.readFileSync(path, 'utf8'))
   } catch (err) {
     data = {
-      name: data.name, 
+      name: data.name,
       sentence_index: data.sentence_index
     }
     saveData(data, path);
@@ -86,7 +75,7 @@ function sendProgressUpdate() {
       saveData({}, PROGRESS_PATH)
       // console.error("file DNE at " + PROGRESS_PATH + ", so created anew.");
     }
-  }); 
+  });
 }
 
 function displayOnline() {
@@ -148,13 +137,13 @@ app.get('/', function (req, res) {
 http.listen(5000, function () {
   clearConsole(13);
   // ip.nodeGetIP();
-  console.log(colors.green(colors.bold('👂🏻 listening : ') + 'http://localhost:5000 or http://' + my_ip + ':5000'));
+  console.log(colors.green(colors.bold('👂🏻 listening : ') + 'localhost:5000 or ' + my_ip + ':5000'));
 });
 
 
 
 
-io.on('connection', function(socket) {
+io.on('connection', function (socket) {
   online.push(socket.id)
   displayOnline();
 
@@ -164,27 +153,29 @@ io.on('connection', function(socket) {
   // io.emit('server: computer connected order', temp);
   io.to(socket.id).emit('server: connected', socket.id);
 
-  socket.on('client: check server connection', function() {
+  socket.on('client: check server connection', function () {
     setTimeout(() => {
-      console.log('server online')
+      // console.log('server online')
       io.emit('server: online')
     }, 3000);
   });
 
-  socket.on('client: ask for sync id', function() {
+  socket.on('client: ask for sync id', function () {
     io.emit('server: connected sync id', socket.id);
   })
 
-  socket.on('client: reset cams', function() {
+  socket.on('client: reset cams', function () {
     io.emit('server: reset cams');
   });
 
   socket.on('client: save total start time', startTime => {
-    saveData({ startTime }, START_TIME_PATH);
+    saveData({
+      startTime
+    }, START_TIME_PATH);
   });
 
-  socket.on('client: ask for start time', function() {
-    readData(START_TIME_PATH, function(err, content) {
+  socket.on('client: ask for start time', function () {
+    readData(START_TIME_PATH, function (err, content) {
       try {
         io.emit(
           'server: response for start time',
@@ -192,30 +183,34 @@ io.on('connection', function(socket) {
         );
       } catch (FileDNEError) {
         const startTime = new Date();
-        saveData({ startTime }, START_TIME_PATH);
+        saveData({
+          startTime
+        }, START_TIME_PATH);
         io.emit('server: response for start time', startTime);
       }
     });
   });
-  
-  socket.on('client: get total time', function() {
-    readData(TOTAL_TIME_PATH, function(err, content) {
+
+  socket.on('client: get total time', function () {
+    readData(TOTAL_TIME_PATH, function (err, content) {
       try {
         io.emit('server: response for total time', JSON.parse(content).time);
       } catch (FileDNEError) {
-        saveData({time: [0, 0, 0]}, TOTAL_TIME_PATH);
-        io.emit('server: response for total time', [0,0,0]);
+        saveData({
+          time: [0, 0, 0]
+        }, TOTAL_TIME_PATH);
+        io.emit('server: response for total time', [0, 0, 0]);
       }
     })
   });
 
-  socket.on('client: delete total time', function() {
+  socket.on('client: delete total time', function () {
     fs.unlinkSync(TOTAL_TIME_PATH, err => {
       if (err) throw err;
     });
   });
 
-  socket.on('disconnect', function() {
+  socket.on('disconnect', function () {
     io.to(socket.id).emit('server: you disconnected'); // when would this ever show up??
     disconnect(socket.id);
     const socketid = socket.id
@@ -223,11 +218,11 @@ io.on('connection', function(socket) {
     saveData(connection_status, CONNECTION_STATUS_PATH);
   });
 
-  socket.on('client: ping for progress', function() {
+  socket.on('client: ping for progress', function () {
     sendProgressUpdate();
   })
 
-  socket.on('client: ping for numFilesSaved', function() {
+  socket.on('client: ping for numFilesSaved', function () {
     try {
       io.emit('server: response for numFilesSaved', numSaved);
     } catch (SyntaxErrorException) {
@@ -235,28 +230,30 @@ io.on('connection', function(socket) {
     }
   })
 
-  socket.on('client: refresh all', function() {
+  socket.on('client: refresh all', function () {
     io.emit('server: refresh all');
   });
 
-  socket.on('client: reset total files', function() {
+  socket.on('client: reset total files', function () {
     numSaved = 0;
   });
 
-  socket.on('client: update recording progress', function(progress) {
-    saveData({progress}, PROGRESS_PATH);
+  socket.on('client: update recording progress', function (progress) {
+    saveData({
+      progress
+    }, PROGRESS_PATH);
     sendProgressUpdate();
   });
 
-  socket.on('client: check for progress', function() {
+  socket.on('client: check for progress', function () {
     sendProgressUpdate();
   });
 
-  socket.on('client: ping for connection status', function() {
-    readData(CONNECTION_STATUS_PATH, function(err, content) {
+  socket.on('client: ping for connection status', function () {
+    readData(CONNECTION_STATUS_PATH, function (err, content) {
       try {
         io.emit('server: response for connection status', JSON.parse(content));
-      } catch(SyntaxErrorException) {
+      } catch (SyntaxErrorException) {
         saveData({}, CONNECTION_STATUS_PATH)
         // console.error(SyntaxErrorException);
       }
@@ -264,33 +261,33 @@ io.on('connection', function(socket) {
   });
 
 
-  socket.on('client: update recording status', function(status) {
+  socket.on('client: update recording status', function (status) {
     saveConnection(socket, status[socket.id])
   });
-  
-  socket.on('client: dummy vid, do not save', function() {
+
+  socket.on('client: dummy vid, do not save', function () {
     io.emit('server: dummy vid, do not save');
   });
 
-  socket.on('client: start cams', function() {
+  socket.on('client: start cams', function () {
     console.log(colors.yellow(colors.bold('✨ cmd    : ') + 'start cams'));
     recordedStart = new Date();
     io.emit('server: start cams')
   });
-  
-  socket.on('client: stop cams', function() {
+
+  socket.on('client: stop cams', function () {
     console.log(colors.yellow(colors.bold('✨ cmd    : ') + 'stop cams'));
     getTimeRecorded();
     io.emit('server: stop cams');
   });
 
-  socket.on('client: start testing', function(data) {
+  socket.on('client: start testing', function (data) {
     console.log(colors.green.bold('👩🏻‍💻 user      : ') + colors.white(data.name));
     printLineMessage('starting recording process');
     saveData(data, RECORDING_STATUS_PATH);
   });
 
-  socket.on('client: ask for recording status', function() {
+  socket.on('client: ask for recording status', function () {
     readData(RECORDING_STATUS_PATH, function (err, content) {
       try {
         io.emit('server: response for recording status', JSON.parse(content));
@@ -300,7 +297,7 @@ io.on('connection', function(socket) {
     });
   });
 
-  socket.on('client: update sentence_index', function(data) {
+  socket.on('client: update sentence_index', function (data) {
     let newStatus = {
       name: data.name,
       sentence_index: data.curr_sentence_index
@@ -309,20 +306,24 @@ io.on('connection', function(socket) {
   });
 
   let resetTime = false;
-  socket.on('client: save total time', function(time) {
+  socket.on('client: save total time', function (time) {
     if (resetTime) {
-      saveData({ time: [0, 0, 0]}, TOTAL_TIME_PATH);
+      saveData({
+        time: [0, 0, 0]
+      }, TOTAL_TIME_PATH);
       resetTime = false;
     } else {
-      time = {time}
+      time = {
+        time
+      }
       saveData(time, TOTAL_TIME_PATH);
     }
     if (time === 'reset') {
       resetTime = true;
-    } 
+    }
   });
 
-  socket.on('client: save data', function(data) {
+  socket.on('client: save data', function (data) {
     numSaved += 1;
     let status = updateRecordingStatus(data, RECORDING_STATUS_PATH);
 
@@ -339,17 +340,17 @@ io.on('connection', function(socket) {
     if (!fs.existsSync(nameDir)) {
       fs.mkdirSync(nameDir)
     }
-    
+
     if (!fs.existsSync(nameDir + sentenceDir)) {
       fs.mkdirSync(nameDir + sentenceDir)
     }
 
     const fullPath = nameDir + sentenceDir + fileName
-    fs.writeFile(fullPath, blob, function(err) {
+    fs.writeFile(fullPath, blob, function (err) {
       if (err) {
         return console.log(err)
       }
-      console.log(colors.magenta( 
+      console.log(colors.magenta(
         colors.bold('📂 file   : /') + fullPath.substring(1)
       ));
     });
@@ -357,7 +358,7 @@ io.on('connection', function(socket) {
     io.emit('server: save files successful', numSaved);
   });
 
-  
+
 });
 
 

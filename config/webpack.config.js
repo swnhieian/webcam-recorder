@@ -127,14 +127,14 @@ module.exports = function(webpackEnv) {
   // console.log(parentDir);
   parentDir += '/webcam-recorder/server/';
   return {
-    devServer: {
-      http2: true,
-      https: {
-        key: fs.readFileSync(parentDir + 'server-key.pem'),
-        cert: fs.readFileSync(parentDir + 'server-crt.pem'),
-        ca: fs.readFileSync(parentDir + 'ca-crt.pem'),
-      }
-    },
+    // devServer: {
+    //   http2: true,
+    //   https: {
+    //     key: fs.readFileSync(parentDir + 'server-key.pem'),
+    //     cert: fs.readFileSync(parentDir + 'server-crt.pem'),
+    //     ca: fs.readFileSync(parentDir + 'ca-crt.pem'),
+    //   }
+    // },
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
     bail: isEnvProduction,

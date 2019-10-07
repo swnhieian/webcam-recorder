@@ -1,6 +1,6 @@
 {
-  "short_name": "s3and0s: webcam-recorder",
-  "name": "Create React App Sample",
+  "short_name": "webcam-recorder",
+  "name": "s3and0s: webcam-recorder",
   "icons": [
     {
       "src": "favicon.ico",

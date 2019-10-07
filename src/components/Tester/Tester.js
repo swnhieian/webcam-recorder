@@ -72,12 +72,12 @@ function Tester(props) {
 
   return (
     <div className='testing_screen'>
-      <ProgressBar
+      {qs('name') && <ProgressBar
         curr={props.recordedProgress}
         total={props.data_length - 1}
         align={'center'}
         strokeWidth={2}
-      />
+      />}
       <div className='middle'>
         <div className='inner'>{comp_inProcessScreen()}</div>
       </div>

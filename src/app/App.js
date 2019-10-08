@@ -506,14 +506,32 @@ class App extends React.Component {
     this.setState({ ip: e.target.value });
   };
 
+  debugCogoToastOnRef = undefined;
+  debugCogoToastOffRef = undefined;
+  
+  showDebugOn = () => {
+    return cogoToast.success(<p>Debug on. <br/>Required Cams: 1</p>, { hideAfter: 1, onClick: hide => hide() });
+  }
+
+  showDebugOff = () => {
+    return cogoToast.warn(<p>Debug off. <br/>Required Cams: 8</p>, { hideAfter: 1, onClick: hide => hide() });
+  }
+
   handler_debugToggle = debugMode => {
     console.log('toggling debug mode');
     this.setState({ debugMode }, () => {
       if (debugMode) {
         this.setState({ requiredNumCams: 1 });
-        this.helper_removeHoverEventListeners();
+        this.debugCogoToastOnRef = this.showDebugOn();
+        {/* if (this.debugCogoToastOffRef) {this.debugCogoToastOffRef()} */}
+        {/* console.log(this.debugCogoToastOffRef); */}
+        {/* this.helper_removeHoverEventListeners(); */}
       } else {
         this.setState({ requiredNumCams: 8 });
+        this.debugCogoToastOffRef = this.showDebugOff();
+        {/* if (this.debugCogoToastOnRef) {this.debugCogoToastOnRef()} */}
+        {/* console.log(this.debugCogoToastOnRef); */}
+
         // this.helper_addHoverEventListeners();
         this.handler_hoverMouseOutBottom();
       }

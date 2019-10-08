@@ -34,7 +34,7 @@ export default function Toggle(props) {
       <div className="switch">
       <div className="invisible_pushdown"></div>
         <input type="checkbox" name="toggle" id={props.id}  checked={props.checked} onChange={props.updateDebugMode}/>
-        <label htmlFor="toggle" className="inset-toggle"><i>🕷</i></label>
+        <label htmlFor="toggle" className="inset-toggle"><i></i></label>
       </div>  
     </div>
   )

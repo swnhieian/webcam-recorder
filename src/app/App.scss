@@ -16,12 +16,12 @@ body {
 
 .hideDebug {
   // position: absolute;
-  transform: translate(0, -112px);
+  transform: translate(0, -11vh);
   transition: all 3s ease-in;
 }
 
 .hideBottom {
-  transform: translate(0, 240px);
+  transform: translate(0, 23vh);
   transition: all 0.3s ease-in;
 }
 
@@ -276,6 +276,15 @@ h3 {
   // background: linear-gradient(#121823, #161d2b);
   // color: white;
 }
+
+.ct-toast-info {
+  color: lightskyblue !important;
+  border-color: lightskyblue !important;
+}
+.ct-toast-info path {
+  fill: lightskyblue !important;
+}
+
 
 .ct-icon-loading:after {
   border: 2px solid lightskyblue !important;

@@ -92,7 +92,7 @@ class App extends React.Component {
 
   Tablet = ({ children }) => {
     const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 991 });
-    console.log('isTablet: ', isTablet);
+    // console.log('isTablet: ', isTablet);
     // if (isTablet) {this.setState({viewMode: 'tablet'})}
     return isTablet ? children : null
   }

@@ -7,7 +7,7 @@ body {
   padding: 0;
   // background: #202838;
   color: rgb(59, 184, 206);
-  font-family: 'Nunito', 'Courier New', Courier, monospace;
+  // font-family: 'Nunito', 'Courier New', Courier, monospace;
   font-weight: 300;
   background: rgba(0, 0, 0, 0.7);
   height: 100%;
@@ -97,7 +97,7 @@ h3 {
 
   .hideDebug {
     // color: red;
-    transform: translate(0, -112px);
+    transform: translate(0, -115px);
   }
   .hideBottom {
     transform: translate(0, 260px);

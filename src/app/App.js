@@ -39,7 +39,7 @@ class App extends React.Component {
    */
   sentencesPerPageInTable = 4; // sentences per page of Table
   curr_index = qs('sentence_index'); // extracts the curr index from URL
-  ip_address = 'http://192.168.0.101:5000'; // default IP address of server
+  ip_address = 'http://192.168.0.103:5000'; // default IP address of server
 
   /**
    * **CogoToast References to call to hide toasts**
@@ -562,7 +562,7 @@ class App extends React.Component {
     const successMessage =
       numFiles % this.state.requiredNumCams === 0
         ? ' (successful)'
-        : ' (not all cams saved!!)';
+        : ' (not all saved)';
     this.setState({
       numFilesSavedTotal: numFiles
     });
@@ -639,6 +639,36 @@ class App extends React.Component {
 
   handler_fileSaveSuccess = numFiles => {
     this.updateFilesSaved(numFiles);
+    if (this.state.numFilesSavedInd === this.state.requiredNumCams) {
+      {
+        /* console.log('correct number of files saved'); */ }
+      try {
+        document.getElementById('showSavedFilesBtn').click();
+        document.getElementById('showSavedFilesBtn').disabled = true;
+        this.setState({
+            numFilesSavedInd: 0
+          },
+          () => {
+            cogoToast.success(
+              this.style_makeEmojiToastLayout(
+                ['视频已成功保存', '可继续录'],
+                '🔥'
+              ), {
+                hideAfter: 1,
+                onClick: hide => {
+                  hide();
+                }
+              }
+            );
+          }
+        );
+
+        this.updateGreenLightStatus(true);
+      } catch (Exception) {
+        console.error(Exception);
+      }
+    }
+
     this.setState(
       {
         numFilesSavedInd: this.state.numFilesSavedInd + 1
@@ -651,52 +681,7 @@ class App extends React.Component {
         } catch (NotYetLoadedException) {
           //
         }
-        if (this.state.numFilesSavedInd === this.state.requiredNumCams) {
-          {/* console.log('correct number of files saved'); */}
-          try {
-            document.getElementById('showSavedFilesBtn').click();
-            document.getElementById('showSavedFilesBtn').disabled = true;
-            this.setState(
-              {
-                numFilesSavedInd: 0
-              },
-              () => {
-                cogoToast.success(
-                  this.style_makeEmojiToastLayout(
-                    ['视频已成功保存', '可继续录'],
-                    '🔥'
-                  ),
-                  {
-                    hideAfter: 1,
-                    onClick: hide => {
-                      hide();
-                    }
-                  }
-                );
-              }
-            );
-
-            this.updateGreenLightStatus(true);
-          } catch (Exception) {
-            console.error(Exception);
-          }
-          try {
-            if (this.helper_checkIfMobileView()) {
-              // console.log('here here??');
-              cogoToast.info(
-                'Completed @ Sentence [' + this.state.recordProgress + ']',
-                {
-                  hideAfter: 0.75,
-                  onClick: hide => {
-                    hide();
-                  }
-                }
-              );
-            }
-          } catch (NotYetLoadedException) {
-            console.error(NotYetLoadedException);
-          }
-        }
+        
       }
     );
   };
@@ -705,7 +690,7 @@ class App extends React.Component {
     this.setState({ detectedNumCams });
     this.state.socket.emit('client: updateTotalCams', () => [this.state.computerID, detectedNumCams]);
     this.updateGreenLightStatus(true);
-    this.showNoCamsRef();
+    if (this.showNoCamsRef) {this.showNoCamsRef();}
     try {
       document.getElementsByClassName('debug_sm_input')[0].className +=
         this.state.detectedNumCams > 0 ? ' serverPlaceholderConnected' : '';

@@ -26,5 +26,5 @@ yarn-error.log*
 server/nodejs_server/status.json
 
 # saved data
-server/nodejs_server/**
+server/data/*
 

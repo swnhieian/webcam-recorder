@@ -19,13 +19,13 @@ let parentDir = path.resolve(process.cwd(), '..');
 exec('getParentDirectory', {
   cwd: parentDir
 });
-parentDir += '/webcam-recorder/server/nodejs_server/';
-const RECORDING_STATUS_PATH = parentDir + 'recording_status.json'
-const PROGRESS_PATH = parentDir + 'progress.json'
-const CONNECTION_STATUS_PATH = parentDir + 'connection_status.json'
-const TOTAL_TIME_PATH = parentDir + 'time.json'
-const START_TIME_PATH = parentDir + 'start_time.json'
-const TOTAL_CAMS_PATH = parentDir + 'total_cams.json'
+parentDir += '/webcam-recorder/server/';
+const RECORDING_STATUS_PATH = parentDir + 'util/recording_status.json'
+const PROGRESS_PATH = parentDir + 'util/progress.json'
+const CONNECTION_STATUS_PATH = parentDir + 'util/connection_status.json'
+const TOTAL_TIME_PATH = parentDir + 'util/ltime.json'
+const START_TIME_PATH = parentDir + 'util/start_time.json'
+const TOTAL_CAMS_PATH = parentDir + 'util/total_cams.json'
 
 let connection_status = {};
 let numSaved = 0;
@@ -51,6 +51,7 @@ function readData(path, callback) {
 function updateRecordingStatus(data, path) {
   try {
     return JSON.parse(fs.readFileSync(path, 'utf8'))
+
   } catch (err) {
     data = {
       name: data.name,
@@ -155,18 +156,18 @@ io.on('connection', function (socket) {
   io.to(socket.id).emit('server: connected', socket.id);
 
   socket.on('client: updateTotalCams', compID_numCams => {
-    const [compID, numCams] = compID_numCams;
+    // const [compID, numCams] = compID_numCams;
     // let existingTotalCams = {}
     readData(TOTAL_CAMS_PATH, function(err, content) {
       try {
-        existingTotalCams = JSON.parse(content);
+        // existingTotalCams = JSON.parse(content);
       } catch(FileDNEError) {
         saveData({}, TOTAL_TIME_PATH);
       }
     });
 
-    existingTotalCams[]
-    saveData(, TOTAL_CAMS_PATH)
+    // existingTotalCams[]
+    // saveData(, TOTAL_CAMS_PATH)
 
   });
   socket.on('client: check server connection', function () {
@@ -316,7 +317,7 @@ io.on('connection', function (socket) {
   socket.on('client: update sentence_index', function (data) {
     let newStatus = {
       name: data.name,
-      sentence_index: data.curr_sentence_index
+      sentence_index: data.currSentenceIndex
     }
     saveData(newStatus, RECORDING_STATUS_PATH);
   });
@@ -349,9 +350,11 @@ io.on('connection', function (socket) {
     const camera_id = data.camera_id.substring(0, 15);
     const blob = data.blob;
 
-    let nameDir = parentDir + name;
+    let nameDir = parentDir + 'data/' + name;
     let sentenceDir = "/" + sentence_index
     const fileName = "/" + camera_id + ".webm"
+
+    // console.log()
 
     if (!fs.existsSync(nameDir)) {
       fs.mkdirSync(nameDir)
@@ -360,7 +363,7 @@ io.on('connection', function (socket) {
     if (!fs.existsSync(nameDir + sentenceDir)) {
       fs.mkdirSync(nameDir + sentenceDir)
     }
-
+    
     const fullPath = nameDir + sentenceDir + fileName
     fs.writeFile(fullPath, blob, function (err) {
       if (err) {

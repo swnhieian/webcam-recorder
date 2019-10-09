@@ -1,5 +1,6 @@
 /* eslint-disable no-console */
 import React from 'react';
+import { Helmet } from 'react-helmet'
 import update from 'react-addons-update'
 import qs from '../utils/qs'
 import cogoToast from 'cogo-toast';
@@ -36,7 +37,7 @@ class App extends React.Component {
    */
   sentencesPerPageInTable = 4; // sentences per page of Table
   curr_index = qs('sentence_index'); // extracts the curr index from URL
-  ip_address = 'http://192.168.0.103:5000'; // default IP address of server
+  ip_address = 'http://192.168.0.101:5000'; // default IP address of server
 
   /**
    * **CogoToast References to call to hide toasts**
@@ -64,7 +65,7 @@ class App extends React.Component {
         : 1,
       data: [],
       detectedNumCams: 0,
-      debugMode: true,
+      debugMode: false,
       ip: this.ip_address,
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
@@ -83,6 +84,7 @@ class App extends React.Component {
   render() {
     return (
       <Router>
+        <Helmet><title>s3and0s—webcam recorder</title></Helmet>
         <Route path='/' exact component={this.main_userView} />
         <Route path='/admin' exact component={this.main_adminView} />
         <Route path='/playground' exact component={this.main_playground} />
@@ -103,7 +105,13 @@ class App extends React.Component {
       window.addEventListener('keyup', this.handler_keyup);
       this.showNoCamsRef = this.helper_showNoCamsConnected();
       setTimeout(() => {
-        this.hideServerOfflineRef = this.helper_showServerNotOnline();
+        if (
+          !document
+          .getElementsByClassName('server_status')[0]
+          .className.includes('server_online')
+        ) {
+          this.hideServerOfflineRef = this.helper_showServerNotOnline();
+        }
       }, 1000);
     } catch (NotYetLoadedException) {
       console.error(NotYetLoadedException)
@@ -168,13 +176,13 @@ class App extends React.Component {
         {this.comp_tester()}
         {/* <span id='bottom_hover_area'> */}
           <div className='contents'>
-            </div>
-            < div className = "panel_BG hideBottom" >
-              <div
-                style={{ width: '100%', height: '100%' }}
-                onClick={this.helper_toggleHideBottom}
-              >
-              <img className='chevron' src={down_chevron}></img>
+            <div className="panel_BG hideBottom">
+              <div style= {{marginTop: '-50px'}}>
+                <div style={{ width: '100vh', height: '50px', position: 'relative', top: '50px', left: '0'}} onClick={this.helper_toggleHideBottom}> </div>
+                <img style={{ position: 'relative', top: '0', left: '0'}} className='chevron' src={down_chevron}></img>
+              </div>
+
+
               <div className='panel_container'>
                 <div className='left_panel'>{this.comp_dataCollection()}</div>
                 <div className='right_panel'>
@@ -185,7 +193,6 @@ class App extends React.Component {
                 </div>
               </div>
             </div>
-            
           </div>
         {/* </span> */}
       </div>
@@ -687,29 +694,35 @@ class App extends React.Component {
     }
   };
 
+  disp_showServerConencted = () => {
+    cogoToast.success('Server is online.', {
+      position: 'top-right',
+      hideAfter: 0,
+      onClick: hide => {
+        hide();
+      }
+    });
+    if (this.hideServerOfflineRef) this.hideServerOfflineRef();
+    document
+      .getElementsByClassName('server_status')[0]
+      .classList.add('server_online');
+    document
+      .getElementById('inputServerIP')
+      .classList.add('serverPlaceholderConnected');
+    document
+      .getElementById('inputServerIP')
+      .classList.remove('warning_message');
+  }
+
+
   /**
    * Socket Listeners — adds socket listeners to the page to respond to 
    * messages sent from server
    */
   initSocketListeners = () => {
     this.state.socket.on('server: online', () => {
-      cogoToast.success('Server is online.', {
-        position: 'top-right',
-        hideAfter: 0,
-        onClick: hide => {
-          hide();
-        }
-      });
-      if (this.hideServerOfflineRef) this.hideServerOfflineRef();
-      document
-        .getElementsByClassName('server_status')[0]
-        .classList.add('server_online');
-      document
-        .getElementById('inputServerIP')
-        .classList.add('serverPlaceholderConnected');
-      document
-        .getElementById('inputServerIP')
-        .classList.remove('warning_message');
+      {/* console.log('did this happen?') */}
+      this.disp_showServerConencted();
     });
 
     if (!this.hideServerOfflineRef) {
@@ -731,6 +744,8 @@ class App extends React.Component {
 
     this.state.socket.on('server: connected', computerID => {
       console.log('detected server connected');
+      this.disp_showServerConencted();
+      
       this.setState({ connectedToServer: true, computerID }, () => {
         document
           .getElementById('inputServerIP')
@@ -1068,7 +1083,7 @@ class App extends React.Component {
   };
 
   helper_toggleHideBottom = () => {
-    console.log('toggling');
+    console.log('toggling hide bottom');
     try {
       if (
         document

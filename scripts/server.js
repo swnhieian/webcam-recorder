@@ -25,6 +25,7 @@ const PROGRESS_PATH = parentDir + 'progress.json'
 const CONNECTION_STATUS_PATH = parentDir + 'connection_status.json'
 const TOTAL_TIME_PATH = parentDir + 'time.json'
 const START_TIME_PATH = parentDir + 'start_time.json'
+const TOTAL_CAMS_PATH = parentDir + 'total_cams.json'
 
 let connection_status = {};
 let numSaved = 0;
@@ -153,6 +154,21 @@ io.on('connection', function (socket) {
   // io.emit('server: computer connected order', temp);
   io.to(socket.id).emit('server: connected', socket.id);
 
+  socket.on('client: updateTotalCams', compID_numCams => {
+    const [compID, numCams] = compID_numCams;
+    // let existingTotalCams = {}
+    readData(TOTAL_CAMS_PATH, function(err, content) {
+      try {
+        existingTotalCams = JSON.parse(content);
+      } catch(FileDNEError) {
+        saveData({}, TOTAL_TIME_PATH);
+      }
+    });
+
+    existingTotalCams[]
+    saveData(, TOTAL_CAMS_PATH)
+
+  });
   socket.on('client: check server connection', function () {
     setTimeout(() => {
       // console.log('server online')

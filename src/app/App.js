@@ -347,7 +347,7 @@ class App extends React.Component {
         socket={this.state.socket}
         recordGreenLight={
           this.state.recordGreenLight &&
-          this.state.numFilesSavedTotal % this.state.requiredNumCams === 0 && this.state.detectedNumCams !== 0
+          this.state.numFilesSavedTotal % this.state.requiredNumCams === 0
         }
         debugMode={this.state.debugMode}
         numFilesSaved={this.state.numFilesSavedTotal}

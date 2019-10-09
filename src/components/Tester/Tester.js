@@ -3,7 +3,7 @@ import './Tester.scss';
 import PropTypes from 'prop-types';
 import InProcessScreen from './InProcessScreen.js';
 import qs from '../../utils/qs'
-import ProgressBar from '../ProgressBar'
+// import ProgressBar from '../ProgressBar'
 
 function Tester(props) {
   const [intervalID, setIntervalID] = useState(undefined);
@@ -72,15 +72,7 @@ function Tester(props) {
 
   return (
     <div className='testing_screen'>
-      {qs('name') && <ProgressBar
-        shape='line'
-        title={'读完句子的进度'}
-        curr={props.recordedProgress}
-        total={props.data_length - 1}
-        align={'center'}
-        strokeWidth={1.5}
-        strokeColor='#3bb8ce'
-      />}
+      {props.comp_totalProgress(false, 1.5)}
       <div></div>
       {/* <span/> */}
       {props.comp_saveProgress()}
@@ -121,6 +113,7 @@ Tester.propTypes = {
   connectedToServer: PropTypes.bool.isRequired,
   detectedNumCams: PropTypes.number.isRequired,
   comp_saveProgress: PropTypes.func.isRequired,
+  comp_totalProgress: PropTypes.func.isRequired,
 }
 
 export default Tester;

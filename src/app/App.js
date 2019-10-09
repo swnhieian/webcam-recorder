@@ -6,7 +6,7 @@ import qs from '../utils/qs'
 import cogoToast from 'cogo-toast';
 import { HashRouter as Router, Route } from "react-router-dom";
 import io from 'socket.io-client';
-
+import { useMediaQuery } from'react-responsive'
 // scss
 import './App.scss';
 
@@ -22,6 +22,7 @@ import ProgressBar from '../components/ProgressBar'
 
 // data
 import sentences from '../assets/data/sentences.txt';
+import pinyin from '../assets/data/sentences-pinyin-accent-nospecialchar.txt'
 // import sentences from '../assets/data/sentences-english-test.txt';
 
 // util
@@ -38,7 +39,7 @@ class App extends React.Component {
    */
   sentencesPerPageInTable = 4; // sentences per page of Table
   curr_index = qs('sentence_index'); // extracts the curr index from URL
-  ip_address = 'http://192.168.0.103:5000'; // default IP address of server
+  ip_address = 'http://192.168.0.101:5000'; // default IP address of server
 
   /**
    * **CogoToast References to call to hide toasts**
@@ -82,13 +83,62 @@ class App extends React.Component {
     };
   }
 
+  Desktop = ({ children }) => {
+  const isDesktop = useMediaQuery({ minWidth: 992 });
+  // if (isDesktop) {this.setState({viewMode: 'desktop'});}
+  // console.log('This is desktop mode');
+  return isDesktop ? children : null
+  }
+
+  Tablet = ({ children }) => {
+    const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 991 });
+    console.log('isTablet: ', isTablet);
+    // if (isTablet) {this.setState({viewMode: 'tablet'})}
+    return isTablet ? children : null
+  }
+  Mobile = ({ children }) => {
+    const isMobile = useMediaQuery({ maxWidth: 767 });
+    // if (isMobile) {this.setState({viewMode: 'mobile'})}
+    return isMobile ? children : null
+  }
+  Default = ({ children }) => {
+    // console.log('This is not mobile mode');
+    const isNotMobile = useMediaQuery({ minWidth: 768 });
+    // if (isNotMobile) {this.setState({viewMode: 'default'})}
+    return isNotMobile ? children : null
+  }
+
   render() {
     return (
       <Router>
         <Helmet><title>s3and0s—webcam recorder</title></Helmet>
-        <Route path='/' exact component={this.main_userView} />
+        {/* <Route path='/' exact component={} /> */}
         <Route path='/admin' exact component={this.main_adminView} />
-        <Route path='/playground' exact component={this.main_playground} />
+         <div>
+          <this.Desktop>{this.main_userView()}</this.Desktop>
+          <this.Tablet>Tablet</this.Tablet>
+          <this.Mobile>
+            {this.main_adminView()}
+            <div className='mobileAdminView' style={{textAlign: 'center'}}>
+              {/* <hr/> */}
+              {/* <p><strong>Sentence: </strong></p> */}
+              <p style={{fontSize: '0.8em'}}>[{this.state.currSentenceIndex}]</p>
+              {/* <hr/> */}
+              {(this.state.pinyin) ? this.state.pinyin[this.state.currSentenceIndex]: ''}
+              <br/>
+              {this.state.currSentence}
+              {/* <hr/> */}
+              {this.comp_totalProgress(true, 4)}
+              {/* <hr/> */}
+              {this.comp_saveProgress(true)}
+              {/* <hr/> */}
+              {this.terminal()}
+            </div>
+
+            {this.comp_bottomAdmin()}
+            </this.Mobile>
+          <this.Default>Not mobile (desktop or laptop or tablet)</this.Default>
+        </div>
         {this.comp_modals()}
         {this.comp_completeAnimation()}
       </Router>
@@ -98,13 +148,17 @@ class App extends React.Component {
   componentDidMount() {
     try {
       this.helper_emitInitialSocketMessages();
-      this.readTextFile(sentences);
+      this.readTextFile(sentences, 'data');
+      this.readTextFile(pinyin, 'pinyin');
+
       this.initSocketListeners();
       document.getElementById('debug_mode').checked =
         this.state.requiredNumCams === 1;
       window.addEventListener('keydown', this.handler_keydown);
       window.addEventListener('keyup', this.handler_keyup);
-      this.showNoCamsRef = this.helper_showNoCamsConnected();
+      if (useMediaQuery({ minWidth: 768 })) {
+        this.showNoCamsRef = this.helper_showNoCamsConnected();
+      }
       setTimeout(() => {
         if (
           !document
@@ -115,9 +169,11 @@ class App extends React.Component {
         }
       }, 1000);
     } catch (NotYetLoadedException) {
-      console.error(NotYetLoadedException)
+      // console.error(NotYetLoadedException)
     }
   }
+
+  terminal = () => {}
 
   handler_hoverMouseOutDebug = () => {
     try {
@@ -164,8 +220,8 @@ class App extends React.Component {
     window.removeEventListener('keydown', this.handler_keydown);
   }
 
-  comp_saveProgress = () => {
-    return qs('name') ? <ProgressBar
+  comp_saveProgress = override => {
+    return qs('name') || override ? <ProgressBar
           title="视频文件已保存"
           curr={this.state.numFilesSavedInd}
           total={this.state.requiredNumCams - 1}
@@ -189,27 +245,45 @@ class App extends React.Component {
         {this.comp_tester()}
         {/* <span id='bottom_hover_area'> */}
         
-        <div className='contents'>
+        {this.comp_bottomAdmin(true)}
+        {/* </span> */}
+      </div>
+    );
+  };
+
+  comp_totalProgress = (override, strokeWidth) => {
+    return (qs('name') || override) ? <ProgressBar
+        shape='line'
+        title={'读完句子的进度'}
+        curr={this.state.recordProgress}
+        total={this.state.data.length - 1}
+        align={'center'}
+        strokeWidth={strokeWidth}
+        strokeColor='#3bb8ce'
+      /> : <></>
+  }
+
+  comp_bottomAdmin = (isMobile) => {
+    return <div className='contents'>
             <div className="panel_BG hideBottom">
               <div style= {{marginTop: '-50px'}}>
-                <div style={{ width: '100vh', height: '50px', position: 'relative', top: '50px', left: '0'}} onClick={this.helper_toggleHideBottom}> </div>
+                <div style={{ width: '100vw', height: '50px', position: 'relative', top: '50px', left: '0'}} onClick={this.helper_toggleHideBottom}> </div>
                 <img style={{ position: 'relative', top: '0', left: '0'}} className='chevron' src={down_chevron}></img>
               </div>
               <div className='panel_container'>
                 <div className='left_panel'>{this.comp_dataCollection()}</div>
+                {isMobile &&
                 <div className='right_panel'>
                   <h3>Cameras</h3>
                   <div className='cameras_container'>
                     {this.comp_cameraList()}
                   </div>
                 </div>
+                }
               </div>
             </div>
           </div>
-        {/* </span> */}
-      </div>
-    );
-  };
+  }
 
   /**
    * **Component: Admin Page**
@@ -286,6 +360,7 @@ class App extends React.Component {
         connectedToServer={this.state.connectedToServer}
         detectedNumCams={this.state.detectedNumCams}
         comp_saveProgress={this.comp_saveProgress}
+        comp_totalProgress={this.comp_totalProgress}
       />
     );
   };
@@ -391,8 +466,7 @@ class App extends React.Component {
             updateDebugMode={this.updateDebugMode}
           />
         </div>
-
-        <br />
+       {/* {(useMediaQuery({ minWidth: 768 })) &&<br/> } */}
         <div className='debug_inline_group'>
           <label htmlFor='' className='debug_label'>
             Cams:{' '}
@@ -454,24 +528,28 @@ class App extends React.Component {
   };
 
   // * UTILITY * //
-  readTextFile(file) {
-    return fetch(file)
+  readTextFile(file, stateName) {
+    fetch(file)
       .then(response => response.text())
       .then(text => {
-        this.setState({ data: text.split('\n') }, () => {
-          let currSentence = qs('sentence_index')
-            ? this.state.data[Number(qs('sentence_index'))]
-            : this.state.data[0];
-          this.setState({ currSentence }, () => {
-            // console.log(this.state.curr_sentence)
+        if (stateName === 'data') {
+          this.setState({ data: text.split('\n') }, () => {
+            let currSentence = qs('sentence_index')
+              ? this.state.data[Number(qs('sentence_index'))]
+              : this.state.data[0];
+            this.setState({ currSentence }, () => {
+              // console.log(this.state.curr_sentence)
+            });
+            this.setState({
+              totalWords: this.state.data.reduce(
+                (sum, sentence) => sum + sentence.length,
+                0
+              )
+            });
           });
-          this.setState({
-            totalWords: this.state.data.reduce(
-              (sum, sentence) => sum + sentence.length,
-              0
-            )
-          });
-        });
+        } else {
+          this.setState({ pinyin: text.split('\n') })
+        }
       });
   }
 
@@ -717,15 +795,19 @@ class App extends React.Component {
       }
     });
     if (this.hideServerOfflineRef) this.hideServerOfflineRef();
-    document
-      .getElementsByClassName('server_status')[0]
-      .classList.add('server_online');
-    document
-      .getElementById('inputServerIP')
-      .classList.add('serverPlaceholderConnected');
-    document
-      .getElementById('inputServerIP')
-      .classList.remove('warning_message');
+    try {
+      document
+        .getElementsByClassName('server_status')[0]
+        .classList.add('server_online');
+      document
+        .getElementById('inputServerIP')
+        .classList.add('serverPlaceholderConnected');
+      document
+        .getElementById('inputServerIP')
+        .classList.remove('warning_message');
+    } catch (NotYetLoadedException) {
+      //
+    }
   }
 
 
@@ -736,7 +818,9 @@ class App extends React.Component {
   initSocketListeners = () => {
     this.state.socket.on('server: online', () => {
       {/* console.log('did this happen?') */}
-      this.disp_showServerConencted();
+      {/* if (useMediaQuery({ minWidth: 768 })) { */}
+        this.disp_showServerConencted();
+      {/* } */}
     });
 
     if (!this.hideServerOfflineRef) {
@@ -758,12 +842,18 @@ class App extends React.Component {
 
     this.state.socket.on('server: connected', computerID => {
       {/* console.log('detected server connected'); */}
-      this.disp_showServerConencted();
+      {/* if (useMediaQuery({ minWidth: 768 })) { */}
+        this.disp_showServerConencted();
+      {/* } */}
       
       this.setState({ connectedToServer: true, computerID }, () => {
-        document
-          .getElementById('inputServerIP')
-          .classList.add('serverPlaceholderConnected');
+        try {
+          document
+            .getElementById('inputServerIP')
+            .classList.add('serverPlaceholderConnected');
+        } catch(NotYetLoadedException) {
+          //
+        }
       });
     });
 

@@ -64,6 +64,7 @@
     "react-dom": "^16.8.6",
     "react-helmet": "^5.2.1",
     "react-inlinesvg": "^0.8.4",
+    "react-responsive": "^8.0.1",
     "react-router-dom": "^5.0.0",
     "recordrtc": "^5.5.8",
     "resolve": "1.10.0",

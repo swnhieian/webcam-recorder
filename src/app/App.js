@@ -1256,8 +1256,8 @@ class App extends React.Component {
             event.preventDefault();
           }
         } else if (key === 's') {
-          if (document.activeElement.nodeName.toLowerCase() !== 'input')
-            this.helper_toggleModal('overallStatus');
+          {/* if (document.activeElement.nodeName.toLowerCase() !== 'input') */}
+            {/* this.helper_toggleModal('overallStatus'); */}
         }
       } catch (NotYetLoadedException) {
         // console.error(NotYetLoadedException);

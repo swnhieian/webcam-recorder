@@ -10,6 +10,7 @@ export default function ProgressBar(props) {
       <pre style={{color: props.strokeColor}}>
         {props.title}: {props.curr} / {props.total + 1} ({percent}%)
       </pre>
+      <div style={{height: '7px'}}></div>
       {props.shape === 'line' &&
       <Line
         className="line-progress"

@@ -16,12 +16,12 @@ body {
 
 .hideDebug {
   // position: absolute;
-  transform: translate(0, -11vh);
+  transform: translate(0, -120px);
   transition: all 3s ease-in;
 }
 
 .hideBottom {
-  transform: translate(0, 23vh);
+  transform: translate(0, 240px);
   transition: all 0.3s ease-in;
 }
 
@@ -81,7 +81,8 @@ h3 {
 .debug-group {
   // margin-top: 1em;
   text-align: 'center';
-  display: inline-block;
+  display: fixed;
+  margin: auto;
   z-index: 5;
   position: relative;
   // max-width: 60vw;
@@ -89,6 +90,9 @@ h3 {
   background-color: rgba(0,0,0,0.3);
   border-radius: 0 0 3em 3em;
   width: 480px;
+}
+.contents {
+  display: fixed;
 }
 
 .panel_container {

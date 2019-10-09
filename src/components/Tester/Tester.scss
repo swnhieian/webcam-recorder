@@ -31,7 +31,7 @@
 
 .emoji-layout-container {
   font-size: 1.5em;
-  color: white;
+  // color: white;
 }
 
 .btn_highlight_green {
@@ -85,10 +85,11 @@
   opacity: 0.3 !important;
   transition: all 0.5s ease;
   -webkit-transition: all 0.5 ease;
+  padding-bottom: 0.5em;
 }
 
 .recorded_sentence_highlight {
-  color: #6EEB83;
+  color: #6EEB83 !important;
 }
 
 

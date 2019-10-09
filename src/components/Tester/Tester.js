@@ -81,6 +81,8 @@ function Tester(props) {
         strokeWidth={1.5}
         strokeColor='#3bb8ce'
       />}
+      <div></div>
+      {/* <span/> */}
       {props.comp_saveProgress()}
       <div className='middle'>
         <div className='inner'>{comp_inProcessScreen()}</div>

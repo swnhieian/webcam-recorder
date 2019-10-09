@@ -170,7 +170,7 @@ class App extends React.Component {
           curr={this.state.numFilesSavedInd}
           total={this.state.requiredNumCams - 1}
           align={'center'}
-          strokeWidth={8}
+          strokeWidth={17}
           shape='circle'
           strokeColor='lightgreen'
         /> : <></>

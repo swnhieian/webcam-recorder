@@ -39,7 +39,7 @@ class App extends React.Component {
    */
   sentencesPerPageInTable = 4; // sentences per page of Table
   curr_index = qs('sentence_index'); // extracts the curr index from URL
-  ip_address = 'http://192.168.0.101:5000'; // default IP address of server
+  ip_address = 'http://192.168.0.103:5000'; // default IP address of server
 
   /**
    * **CogoToast References to call to hide toasts**
@@ -116,7 +116,7 @@ class App extends React.Component {
         <Route path='/admin' exact component={this.main_adminView} />
          <div>
           <this.Desktop>{this.main_userView()}</this.Desktop>
-          <this.Tablet>Tablet</this.Tablet>
+          <this.Tablet>{this.main_userView()}</this.Tablet>
           <this.Mobile>
             {this.main_adminView()}
             <div className='mobileAdminView' style={{textAlign: 'center'}}>
@@ -138,7 +138,7 @@ class App extends React.Component {
 
             {this.comp_bottomAdmin()}
             </this.Mobile>
-          <this.Default>Not mobile (desktop or laptop or tablet)</this.Default>
+          <this.Default>{null}</this.Default>
         </div>
         {this.comp_modals()}
         {this.comp_completeAnimation()}

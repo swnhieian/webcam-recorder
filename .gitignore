@@ -23,8 +23,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 /.vscode
-server/nodejs_server/status.json
 
 # saved data
 server/data/*
-
+server/util/*

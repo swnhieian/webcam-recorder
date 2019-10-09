@@ -222,7 +222,7 @@ class App extends React.Component {
   }
 
   comp_saveProgress = override => {
-    return qs('name') || override ? <ProgressBar
+    return (qs('name') || override) && this.state.requiredNumCams !==1 ? <ProgressBar
           title="视频文件已保存"
           curr={this.state.numFilesSavedInd}
           total={this.state.requiredNumCams - 1}
@@ -347,7 +347,7 @@ class App extends React.Component {
         socket={this.state.socket}
         recordGreenLight={
           this.state.recordGreenLight &&
-          this.state.numFilesSavedTotal % this.state.requiredNumCams === 0
+          this.state.numFilesSavedTotal % this.state.requiredNumCams === 0 && this.state.detectedNumCams !== 0
         }
         debugMode={this.state.debugMode}
         numFilesSaved={this.state.numFilesSavedTotal}
@@ -639,43 +639,41 @@ class App extends React.Component {
 
   handler_fileSaveSuccess = numFiles => {
     this.updateFilesSaved(numFiles);
-    if (this.state.numFilesSavedInd === this.state.requiredNumCams) {
-      {
-        /* console.log('correct number of files saved'); */ }
-      try {
-        document.getElementById('showSavedFilesBtn').click();
-        document.getElementById('showSavedFilesBtn').disabled = true;
-        this.setState({
-            numFilesSavedInd: 0
-          },
-          () => {
-            cogoToast.success(
-              this.style_makeEmojiToastLayout(
-                ['视频已成功保存', '可继续录'],
-                '🔥'
-              ), {
-                hideAfter: 1,
-                onClick: hide => {
-                  hide();
-                }
-              }
-            );
-          }
-        );
-
-        this.updateGreenLightStatus(true);
-      } catch (Exception) {
-        console.error(Exception);
-      }
-    }
-
     this.setState(
       {
         numFilesSavedInd: this.state.numFilesSavedInd + 1
       },
       () => {
         {/* console.log('this occured: ' + this.state.numFilesSavedInd + ' times.'); */}
+        if (this.state.numFilesSavedInd === this.state.requiredNumCams) {
+          {
+            /* console.log('correct number of files saved'); */ }
+          try {
+            document.getElementById('showSavedFilesBtn').click();
+            document.getElementById('showSavedFilesBtn').disabled = true;
+            this.setState({
+                numFilesSavedInd: 0
+              },
+              () => {
+                cogoToast.success(
+                  this.style_makeEmojiToastLayout(
+                    ['视频已成功保存', '可继续录'],
+                    '🔥'
+                  ), {
+                    hideAfter: 1,
+                    onClick: hide => {
+                      hide();
+                    }
+                  }
+                );
+              }
+            );
 
+            this.updateGreenLightStatus(true);
+          } catch (Exception) {
+            console.error(Exception);
+          }
+        }
         try {
           document.getElementById('testerNextBtn').disabled = true;
         } catch (NotYetLoadedException) {

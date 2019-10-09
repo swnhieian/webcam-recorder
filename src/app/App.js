@@ -122,12 +122,13 @@ class App extends React.Component {
             <div className='mobileAdminView' style={{textAlign: 'center'}}>
               {/* <hr/> */}
               {/* <p><strong>Sentence: </strong></p> */}
-              <p style={{fontSize: '0.8em'}}>[{this.state.currSentenceIndex}]</p>
+              <p style={{fontSize: '0.8em'}}>句子索引: {this.state.currSentenceIndex}</p>
               {/* <hr/> */}
               {(this.state.pinyin) ? this.state.pinyin[this.state.currSentenceIndex]: ''}
               <br/>
               {this.state.currSentence}
               {/* <hr/> */}
+              <Status socket={this.state.socket}/>
               {this.comp_totalProgress(true, 4)}
               {/* <hr/> */}
               {this.comp_saveProgress(true)}
@@ -432,7 +433,7 @@ class App extends React.Component {
       < div className = 'debug-group hideDebug' >
         <label className='debug_label'>Admin: </label>
 
-        <button
+        {/* <button
           onClick={() => {
             this.helper_toggleModal('overallStatus');
             this.getStatus();
@@ -440,7 +441,7 @@ class App extends React.Component {
           className='debug_button'
         >
           Status
-        </button>
+        </button> */}
         <button
           id='resetCamsBtn'
           className='debug_button'

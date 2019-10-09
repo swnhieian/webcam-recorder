@@ -73,11 +73,15 @@ function Tester(props) {
   return (
     <div className='testing_screen'>
       {qs('name') && <ProgressBar
+        shape='line'
+        title={'读完句子的进度'}
         curr={props.recordedProgress}
         total={props.data_length - 1}
         align={'center'}
-        strokeWidth={2}
+        strokeWidth={1.5}
+        strokeColor='#3bb8ce'
       />}
+      {props.comp_saveProgress()}
       <div className='middle'>
         <div className='inner'>{comp_inProcessScreen()}</div>
       </div>
@@ -114,6 +118,7 @@ Tester.propTypes = {
   debugMode: PropTypes.bool.isRequired,
   connectedToServer: PropTypes.bool.isRequired,
   detectedNumCams: PropTypes.number.isRequired,
+  comp_saveProgress: PropTypes.func.isRequired,
 }
 
 export default Tester;

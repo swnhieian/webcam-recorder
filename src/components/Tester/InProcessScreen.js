@@ -81,9 +81,7 @@ export default function InProcessScreen(props) {
       <div className='emoji-layout-container'>
         <div className='emoji-layout-emoji-left'> {emoji}</div>
         <div>
-          {msg[0]}
-          <br />
-          {msg[1]}
+          {msg}
         </div>
         <div className='emoji-layout-emoji-right'> {emoji}</div>
       </div>
@@ -99,18 +97,17 @@ export default function InProcessScreen(props) {
     const emoji = recordedYet ? '↺' : '';
     let sentence = props.data[props.curr_sentence_index];
     if (sentence) {
-      const line1 = sentence.substring(0,10)
-      const line2 = sentence.substring(10);
-      sentence = makeEmojiLayout([line1, line2], emoji);
+      // const line1 = sentence.substring(0,10)
+      // const line2 = sentence.substring(10);
+      sentence = makeEmojiLayout(sentence, emoji);
     }
     
     // const sentence = recordedMessage + ' ' + props.data[props.curr_sentence_index] + ' ' + recordedMessage;
     const recordedClassName = recordedYet ? 'recorded_sentence_highlight sentence_to_be_read' : 'sentence_to_be_read'
     return (
       <div>
-        <br />
         <div className={recordedClassName}>
-          <p style={{fontSize: '16px'}}>[{props.curr_sentence_index}]</p>
+          {/* <p style={{fontSize: '16px'}}>[{props.curr_sentence_index}]</p> */}
           {sentence}
         </div>
       </div>
@@ -123,7 +120,7 @@ export default function InProcessScreen(props) {
     if (text === 'Done') {
       return '结束录制';
     } else if (text === 'Retry') {
-      return '重新录制';
+      return '开始录制';
     } else if (text === 'Record') {
       return '开始录制'
     } else {
@@ -178,7 +175,7 @@ export default function InProcessScreen(props) {
             className={
               getRecordState() === 'Done'
                 ? 'btn btn-danger'
-                : 'btn_highlight_green'
+                : 'btn btn_highlight_green'
             }
             onClick={record}
             disabled={

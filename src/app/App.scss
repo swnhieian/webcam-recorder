@@ -32,6 +32,8 @@ body {
   position: absolute;
   width: 100%;
   bottom: 0;
+  box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0.2);
+
 }
 .hideDebug .chevron, .hideBottom .chevron{
   transition: all 0.5s ease;
@@ -90,7 +92,24 @@ h3 {
   background-color: rgba(0,0,0,0.3);
   border-radius: 0 0 3em 3em;
   width: 480px;
+  box-shadow: 0 0 5px 2px rgba(255,255,255,0.2);
+
 }
+
+.debug-group:hover {
+  box-shadow: 0 0 5px 2px white;
+  transition: all 0.5 ease;
+  -webkit-transition: all 0.5 ease;
+  cursor: pointer;
+}
+
+.panel_BG:hover {
+  box-shadow: 0 -1px 4px 2px white;
+  transition: all 0.5 ease;
+  -webkit-transition: all 0.5 ease;
+  cursor: pointer;
+}
+
 .contents {
   display: fixed;
 }
@@ -336,24 +355,26 @@ h3 {
 .emoji-layout-container {
   display: grid;
   grid-template-columns: 10% auto 10%;
+  width: 100%;
   text-align: center;
   // width: 200px;
   color: lightgray;
 }
+
 
 .cogo-toast-emoji-left,
 .emoji-layout-emoji-left {
   margin-top: auto;
   margin-bottom: auto;
   text-align: right;
-  margin-right: 1em;
+  // margin-right: 1em;
 }
 .cogo-toast-emoji-right,
 .emoji-layout-emoji-right {
   margin-top: auto;
   margin-bottom: auto;
   text-align: left;
-  margin-left: 1em;
+  // margin-left: 1em;
 }
 
 #btn_tester {

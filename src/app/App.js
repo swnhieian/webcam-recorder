@@ -18,6 +18,7 @@ import Modal from '../components/Modal'
 import Status from '../components/Status'
 import Toggle from '../components/Toggle/Toggle'
 import CompleteAnimation from '../components/CompleteAnimation/CompleteAnimation'
+import ProgressBar from '../components/ProgressBar'
 
 // data
 import sentences from '../assets/data/sentences.txt';
@@ -163,6 +164,18 @@ class App extends React.Component {
     window.removeEventListener('keydown', this.handler_keydown);
   }
 
+  comp_saveProgress = () => {
+    return qs('name') ? <ProgressBar
+          title="视频文件已保存"
+          curr={this.state.numFilesSavedInd}
+          total={this.state.requiredNumCams - 1}
+          align={'center'}
+          strokeWidth={8}
+          shape='circle'
+          strokeColor='lightgreen'
+        /> : <></>
+  }
+
   /**
    * **Component: User Page**
    * Renders components for desktop view
@@ -175,14 +188,13 @@ class App extends React.Component {
         {/* </span> */}
         {this.comp_tester()}
         {/* <span id='bottom_hover_area'> */}
-          <div className='contents'>
+        
+        <div className='contents'>
             <div className="panel_BG hideBottom">
               <div style= {{marginTop: '-50px'}}>
                 <div style={{ width: '100vh', height: '50px', position: 'relative', top: '50px', left: '0'}} onClick={this.helper_toggleHideBottom}> </div>
                 <img style={{ position: 'relative', top: '0', left: '0'}} className='chevron' src={down_chevron}></img>
               </div>
-
-
               <div className='panel_container'>
                 <div className='left_panel'>{this.comp_dataCollection()}</div>
                 <div className='right_panel'>
@@ -273,6 +285,7 @@ class App extends React.Component {
         showFileSavingLoader={this.disp_showFileSavingLoader}
         connectedToServer={this.state.connectedToServer}
         detectedNumCams={this.state.detectedNumCams}
+        comp_saveProgress={this.comp_saveProgress}
       />
     );
   };
@@ -552,7 +565,8 @@ class App extends React.Component {
         numFilesSavedInd: this.state.numFilesSavedInd + 1
       },
       () => {
-        console.log('this occured: ' + this.state.numFilesSavedInd + ' times.');
+        {/* console.log('this occured: ' + this.state.numFilesSavedInd + ' times.'); */}
+
         try {
           document.getElementById('testerNextBtn').disabled = true;
         } catch (NotYetLoadedException) {

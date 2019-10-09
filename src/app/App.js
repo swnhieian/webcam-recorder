@@ -573,7 +573,7 @@ class App extends React.Component {
           //
         }
         if (this.state.numFilesSavedInd === this.state.requiredNumCams) {
-          console.log('correct number of files saved');
+          {/* console.log('correct number of files saved'); */}
           try {
             document.getElementById('showSavedFilesBtn').click();
             document.getElementById('showSavedFilesBtn').disabled = true;
@@ -757,7 +757,7 @@ class App extends React.Component {
     });
 
     this.state.socket.on('server: connected', computerID => {
-      console.log('detected server connected');
+      {/* console.log('detected server connected'); */}
       this.disp_showServerConencted();
       
       this.setState({ connectedToServer: true, computerID }, () => {
@@ -995,7 +995,7 @@ class App extends React.Component {
   };
 
   helper_showServerNotOnline = () => {
-    console.log('no server');
+    {/* console.log('no server'); */}
     return cogoToast.warn('Server is offline', {
       hideAfter: 0,
       position: 'top-right',

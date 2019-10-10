@@ -39,7 +39,7 @@ class App extends React.Component {
    */
   sentencesPerPageInTable = 4; // sentences per page of Table
   curr_index = qs('sentence_index'); // extracts the curr index from URL
-  ip_address = 'http://192.168.0.103:5000'; // default IP address of server
+  ip_address = 'http://192.168.0.101:5000'; // default IP address of server
 
   /**
    * **CogoToast References to call to hide toasts**
@@ -1036,7 +1036,7 @@ class App extends React.Component {
     this.state.socket.emit('client: delete total time');
     this.state.socket.emit('client: reset total files');
     this.state.socket.emit('client: save total start time', new Date());
-    window.location = window.location.origin;
+    window.location = window.location.origin + window.location.pathname;
     this.state.socket.emit('client: save total time', [0, 0, 0]);
   };
 

@@ -23,7 +23,7 @@ parentDir += '/webcam-recorder/server/';
 const RECORDING_STATUS_PATH = parentDir + 'util/recording_status.json'
 const PROGRESS_PATH = parentDir + 'util/progress.json'
 const CONNECTION_STATUS_PATH = parentDir + 'util/connection_status.json'
-const TOTAL_TIME_PATH = parentDir + 'util/ltime.json'
+const TOTAL_TIME_PATH = parentDir + 'util/time.json'
 const START_TIME_PATH = parentDir + 'util/start_time.json'
 const TOTAL_CAMS_PATH = parentDir + 'util/total_cams.json'
 

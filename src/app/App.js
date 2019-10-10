@@ -1,11 +1,12 @@
 /* eslint-disable no-console */
 import React from 'react';
+import { Helmet } from 'react-helmet'
 import update from 'react-addons-update'
 import qs from '../utils/qs'
 import cogoToast from 'cogo-toast';
 import { HashRouter as Router, Route } from "react-router-dom";
 import io from 'socket.io-client';
-
+import { useMediaQuery } from'react-responsive'
 // scss
 import './App.scss';
 
@@ -17,145 +18,306 @@ import Modal from '../components/Modal'
 import Status from '../components/Status'
 import Toggle from '../components/Toggle/Toggle'
 import CompleteAnimation from '../components/CompleteAnimation/CompleteAnimation'
+import ProgressBar from '../components/ProgressBar'
 
 // data
 import sentences from '../assets/data/sentences.txt';
+import pinyin from '../assets/data/sentences-pinyin-accent-nospecialchar.txt'
 // import sentences from '../assets/data/sentences-english-test.txt';
 
+// util
 import ip_util from '../utils/ip'
 
+// chevron
+import up_chevron from '../assets/svg/up-chevron.svg'
+import down_chevron from '../assets/svg/down-chevron.svg'
+
+
 class App extends React.Component {
-  per_page = 8;
-  curr_index = qs('sentence_index');
-  ip_address = 'http://192.168.0.103:5000'
   /**
+   * **Basic Configuration**
+   */
+  sentencesPerPageInTable = 4; // sentences per page of Table
+  curr_index = qs('sentence_index'); // extracts the curr index from URL
+  ip_address = 'http://192.168.0.103:5000'; // default IP address of server
+
+  /**
+   * **CogoToast References to call to hide toasts**
+   */
+  showNoCamsRef = undefined;
+  hideServerOfflineRef = undefined;
+
+  /**
+   * **ReactJS Framework Initializing States onCreate**
    * Constructor for main react App Component
-   * @param {object} props 
+   * @param {object} props
    */
   constructor(props) {
     super(props);
     this.state = {
-      requiredNumCams: 8,
-      curr_sentence: '',
-      curr_sentence_index: this.curr_index ? Number(this.curr_index) : 0,
-      data: [],
-      per_page: this.per_page,
-      curr_page: this.curr_index ? Math.floor(Number(this.curr_index) / this.per_page) + 1 : 1,
-      computerStatus: {},
-      recordGreenLight: false,
+      addCamState: false,
+      connectedOrderMap: {},
+      connectedToServer: false,
       computerID: -1,
+      computerStatus: {},
+      currSentence: '',
+      currSentenceIndex: this.curr_index ? Number(this.curr_index) : 0,
+      currPageInTable: this.curr_index
+        ? Math.floor(Number(this.curr_index) / this.sentencesPerPageInTable) + 1
+        : 1,
+      data: [],
+      detectedNumCams: 0,
+      debugMode: false,
+      ip: this.ip_address,
+      name: '',
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
-      connectedOrderMap: {},
-      recordedProgress: 0,
-      addCamState: false,
-      totalTime: [],
-      startTime: undefined,
-      totalWords: 0,
+      recordProgress: 0,
+      recordGreenLight: false,
       remainingWords: 0,
-      debugMode: false,
+      requiredNumCams: 8,
+      sentencesPerPageInTable: this.sentencesPerPageInTable, // sentences per page
+      startTime: undefined,
       socket: io(this.ip_address),
-      ip: this.ip_address,
-      connectedToServer: false,
-      detectedNumCams: 0
+      totalTime: [],
+      totalWords: 0
     };
   }
 
-  /**
-   * **ReactJS Framework Method**  
-   */
+  Desktop = ({ children }) => {
+  const isDesktop = useMediaQuery({ minWidth: 992 });
+  // if (isDesktop) {this.setState({viewMode: 'desktop'});}
+  // console.log('This is desktop mode');
+  return isDesktop ? children : null
+  }
+
+  Tablet = ({ children }) => {
+    const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 991 });
+    // console.log('isTablet: ', isTablet);
+    // if (isTablet) {this.setState({viewMode: 'tablet'})}
+    return isTablet ? children : null
+  }
+  Mobile = ({ children }) => {
+    const isMobile = useMediaQuery({ maxWidth: 767 });
+    // if (isMobile) {this.setState({viewMode: 'mobile'})}
+    return isMobile ? children : null
+  }
+  Default = ({ children }) => {
+    // console.log('This is not mobile mode');
+    const isNotMobile = useMediaQuery({ minWidth: 768 });
+    // if (isNotMobile) {this.setState({viewMode: 'default'})}
+    return isNotMobile ? children : null
+  }
+
   render() {
     return (
       <Router>
-        <Route path='/' exact component={this.main_userView} />
+        <Helmet><title>s3and0s—webcam recorder</title></Helmet>
+        {/* <Route path='/' exact component={} /> */}
         <Route path='/admin' exact component={this.main_adminView} />
-        <Route path='/playground' exact component={this.main_playground} />
+         <div>
+          <this.Desktop>{this.main_userView()}</this.Desktop>
+          <this.Tablet>{this.main_userView()}</this.Tablet>
+          <this.Mobile>
+            {this.main_adminView()}
+            <div className='mobileAdminView' style={{textAlign: 'center'}}>
+              {/* <hr/> */}
+              {/* <p><strong>Sentence: </strong></p> */}
+              <p style={{fontSize: '0.8em'}}>句子索引: {this.state.currSentenceIndex}</p>
+              {/* <hr/> */}
+              {(this.state.pinyin) ? this.state.pinyin[this.state.currSentenceIndex]: ''}
+              <br/>
+              {this.state.data[this.state.currSentenceIndex]}
+              {/* <hr/> */}
+              <Status socket={this.state.socket}/>
+              {this.comp_totalProgress(true, 4)}
+              {/* <hr/> */}
+              {this.comp_saveProgress(true)}
+              {/* <hr/> */}
+              {this.terminal()}
+            </div>
+
+            {this.comp_bottomAdmin()}
+            </this.Mobile>
+          <this.Default>{null}</this.Default>
+        </div>
         {this.comp_modals()}
         {this.comp_completeAnimation()}
       </Router>
     );
   }
 
-  /**
-   * **ReactJS Framework Method**
-   */
   componentDidMount() {
-    // console.log(ip.getIP());
-    console.log(ip_util);
-    this.helper_emitInitialSocketMessages();
-    this.readTextFile(sentences);
-    this.initSocketListeners();
     try {
-      document.getElementById('debug_mode').checked = this.state.requiredNumCams === 1
+      this.helper_emitInitialSocketMessages();
+      this.readTextFile(sentences, 'data');
+      this.readTextFile(pinyin, 'pinyin');
+
+      this.initSocketListeners();
+      document.getElementById('debug_mode').checked =
+        this.state.requiredNumCams === 1;
+      window.addEventListener('keydown', this.handler_keydown);
+      window.addEventListener('keyup', this.handler_keyup);
+      if (useMediaQuery({ minWidth: 768 })) {
+        this.showNoCamsRef = this.helper_showNoCamsConnected();
+      }
+      setTimeout(() => {
+        if (
+          !document
+          .getElementsByClassName('server_status')[0]
+          .className.includes('server_online')
+        ) {
+          this.hideServerOfflineRef = this.helper_showServerNotOnline();
+        }
+      }, 1000);
     } catch (NotYetLoadedException) {
-      //
+      // console.error(NotYetLoadedException)
     }
-    // this.pingServer();
-    window.addEventListener('keydown', this.handler_keydown);
-    window.addEventListener('keyup', this.handler_keyup);
   }
 
+  terminal = () => {}
+
+  handler_hoverMouseOutDebug = () => {
+    try {
+      document.getElementsByClassName('debug-group')[0].className +=
+        ' ' + 'hideDebug';
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException);
+    }
+  };
+
+  handler_hoverMouseOverDebug = () => {
+    try {
+      document
+        .getElementsByClassName('debug-group')[0]
+        .classList.remove('hideDebug');
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException);
+    }
+  };
+
+  handler_hoverMouseOutBottom = () => {
+    try {
+      document.getElementsByClassName('panel_BG')[0].className +=
+        ' ' + 'hideBottom';
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException);
+    }
+  };
+
+  handler_hoverMouseOverBottom = () => {
+    try {
+      document
+        .getElementsByClassName('panel_BG')[0]
+        .classList.remove('hideBottom');
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException);
+    }
+  };
+
   /**
-   * **ReactJS Framework Method** 
+   * **ReactJS Framework Method**
    */
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handler_keydown);
   }
 
+  comp_saveProgress = override => {
+    return (qs('name') || override) && this.state.requiredNumCams !==1 ? <ProgressBar
+          title="视频文件已保存"
+          curr={this.state.numFilesSavedInd}
+          total={this.state.requiredNumCams - 1}
+          align={'center'}
+          strokeWidth={17}
+          shape='circle'
+          strokeColor='lightgreen'
+        /> : <></>
+  }
+
   /**
-   * **Component: User Page** 
+   * **Component: User Page**
    * Renders components for desktop view
    */
   main_userView = () => {
     return (
       <div className='container'>
-        {this.comp_debug()}
+        {/* <span id='debug_hover_area'> */}
+          {this.comp_debug()}
+        {/* </span> */}
         {this.comp_tester()}
-        {this.comp_userResearchHeader()}
-        <div className='contents'>
-          <div className='left_panel'>{this.comp_dataCollection()}</div>
-          <div className='right_panel cameras_container'>
-            {this.comp_cameraList()}
-          </div>
-          <div className=''></div>
-        </div>
+        {/* <span id='bottom_hover_area'> */}
+        
+        {this.comp_bottomAdmin(true)}
+        {/* </span> */}
       </div>
     );
   };
+
+  comp_totalProgress = (override, strokeWidth) => {
+    return (qs('name') || override) ? <ProgressBar
+        shape='line'
+        title={'读完句子的进度'}
+        curr={this.state.recordProgress}
+        total={this.state.data.length - 1}
+        align={'center'}
+        strokeWidth={strokeWidth}
+        strokeColor='#3bb8ce'
+      /> : <></>
+  }
+
+  comp_bottomAdmin = (isMobile) => {
+    return <div className='contents'>
+            <div className="panel_BG hideBottom">
+              <div style= {{marginTop: '-50px'}}>
+                <div style={{ width: '100vw', height: '50px', position: 'relative', top: '50px', left: '0'}} onClick={this.helper_toggleHideBottom}> </div>
+                <img style={{ position: 'relative', top: '0', left: '0'}} className='chevron' src={down_chevron}></img>
+              </div>
+              <div className='panel_container'>
+                <div className='left_panel'>{this.comp_dataCollection()}</div>
+                {isMobile &&
+                <div className='right_panel'>
+                  <h3>Cameras</h3>
+                  <div className='cameras_container'>
+                    {this.comp_cameraList()}
+                  </div>
+                </div>
+                }
+              </div>
+            </div>
+          </div>
+  }
 
   /**
    * **Component: Admin Page**
    * Renders components for mobile view
    */
   main_adminView = () => {
-    return <div style={{textAlign: 'center'}}>{this.comp_debug()}</div>;
+    return <div style={{ textAlign: 'center' }}>{this.comp_debug()}</div>;
   };
 
-  /** 
+  /**
    * **Component: PlaygroundPage**
    * Renders components for experimental purposes
    */
+  main_playground = () => {
+    return <Toggle />;
+  };
 
-   main_playground = () => {
-     return (
-       <Toggle />
-     )
-   }
+  comp_debugHover = () => {};
+
   /**
    * **Component: Animation for Study Completion**
    */
   comp_completeAnimation = () => {
-    if (this.state.recordedProgress + 1 === this.state.data.length) {
+    if (this.state.recordProgress + 1 === this.state.data.length) {
       try {
         document.getElementById('testerNextBtn').disabled = true;
-      } catch(NotYetLoadedException) {
+      } catch (NotYetLoadedException) {
         //
       }
-      return (
-        <CompleteAnimation />
-      )
+      return <CompleteAnimation />;
     }
-  }
+  };
 
   // * COMPONENT * //
   comp_dataCollection = () => {
@@ -163,11 +325,12 @@ class App extends React.Component {
       <DataCollection
         data={this.state.data}
         updateName={this.updateName}
-        curr_sentence={this.state.curr_sentence}
+        curr_sentence={this.state.currSentence}
         socket={this.state.socket}
-        curr_sentence_index={this.state.curr_sentence_index}
-        curr_page={this.state.curr_page}
+        curr_sentence_index={this.state.currSentenceIndex}
+        curr_page={this.state.currPageInTable}
         updatePage={this.updatePage}
+        sentencesPerPageInTable={this.state.sentencesPerPageInTable}
       />
     );
   };
@@ -178,35 +341,29 @@ class App extends React.Component {
       <Tester
         updateSentence={this.updateSentence}
         data={this.state.data}
-        curr_sentence_index={this.state.curr_sentence_index}
+        curr_sentence_index={this.state.currSentenceIndex}
         data_length={this.state.data.length}
-        first_sentence={this.state.data[this.state.curr_sentence_index]}
-        curr_sentence={this.state.curr_sentence}
+        first_sentence={this.state.data[this.state.currSentenceIndex]}
+        curr_sentence={this.state.currSentence}
         socket={this.state.socket}
         recordGreenLight={
           this.state.recordGreenLight &&
           this.state.numFilesSavedTotal % this.state.requiredNumCams === 0
         }
+        debugMode={this.state.debugMode}
         numFilesSaved={this.state.numFilesSavedTotal}
-        numCams={this.state.requiredNumCams}
+        requiredNumCams={this.state.requiredNumCams}
         updateGreenLightStatus={this.updateGreenLightStatus}
-        recordedProgress={this.state.recordedProgress}
+        recordedProgress={this.state.recordProgress}
         updateRecordProgress={this.updateRecordProgress}
         totalTime={this.state.totalTime}
         updateTotalTime={this.updateTotalTime}
         showFileSavingLoader={this.disp_showFileSavingLoader}
+        connectedToServer={this.state.connectedToServer}
+        detectedNumCams={this.state.detectedNumCams}
+        comp_saveProgress={this.comp_saveProgress}
+        comp_totalProgress={this.comp_totalProgress}
       />
-    );
-  };
-
-  // * COMPONENT * //
-  comp_userResearchHeader = () => {
-    return (
-      <div>
-        <br />
-        <h1>For User Researcher Purpose Only</h1>
-        <hr />
-      </div>
     );
   };
 
@@ -221,6 +378,7 @@ class App extends React.Component {
         addCamState={this.state.addCamState}
         toggleCamState={this.helper_toggleCamState}
         updateDetectedNumCams={this.updateDetectedNumCams}
+        addCam={this.admin_resetCams}
       />
     );
   };
@@ -231,7 +389,7 @@ class App extends React.Component {
       <Status
         totalWords={this.state.totalWords}
         data_length={this.state.data.length}
-        recordedProgress={this.state.recordedProgress}
+        recordedProgress={this.state.recordProgress}
         helper_checkIfMobileView={this.helper_checkIfMobileView}
         recordGreenLight={this.state.recordGreenLight}
         socket={this.state.socket}
@@ -266,13 +424,17 @@ class App extends React.Component {
     );
   };
 
-  
+  updateDebugMode = () => {
+    this.setState({ debugMode: !this.state.debugMode });
+  };
 
   // * COMPONENT * //
   comp_debug = () => {
     return (
-      <div className="debug-group">
-        <button
+      < div className = 'debug-group hideDebug' >
+        <label className='debug_label'>Admin: </label>
+
+        {/* <button
           onClick={() => {
             this.helper_toggleModal('overallStatus');
             this.getStatus();
@@ -280,13 +442,13 @@ class App extends React.Component {
           className='debug_button'
         >
           Status
-        </button>
+        </button> */}
         <button
           id='resetCamsBtn'
           className='debug_button'
           onClick={this.admin_resetCams}
         >
-          Reset Cams
+          Add Webcam
         </button>
         <button
           className='debug_button'
@@ -296,25 +458,59 @@ class App extends React.Component {
         >
           Reset Progress
         </button>
-        
-        
-        <div className="debug_inline_group">
-          <label className="debug_label">Debug Mode: </label>
-          <Toggle id='debug_mode' onChangeFunc={this.handler_debugToggle} />
+
+        <div className='debug_inline_group'>
+          <label className='debug_label'>Debug: </label>
+          <Toggle
+            id='debug_mode'
+            onChangeFunc={this.handler_debugToggle}
+            checked={this.state.debugMode}
+            updateDebugMode={this.updateDebugMode}
+          />
+        </div>
+       {/* {(useMediaQuery({ minWidth: 768 })) &&<br/> } */}
+        <div className='debug_inline_group'>
+          <label htmlFor='' className='debug_label'>
+            Cams:{' '}
+          </label>
+          <input
+            id='numCamsInput'
+            type='text'
+            className='debug_text_input debug_sm_input warning_message'
+            value={this.state.detectedNumCams}
+            readOnly
+          />
         </div>
 
-        <div className="debug_inline_group">
-          <label htmlFor="" className="debug_label">Server: </label>
-          <span className="server_status"></span>
-          <input id="inputServerIP" type="text" className="debug_text_input" value={this.state.ip} onChange={this.handler_IPOnChange}/>
+        <div className='debug_inline_group'>
+            <label htmlFor='' className='debug_label'>
+            Server:{' '}
+          </label>
+          <span className='server_status'></span>
+          <input
+            id='inputServerIP'
+            type='text'
+            className='debug_text_input warning_message'
+            value={this.state.ip}
+            onChange={this.handler_IPOnChange}
+          />
+          <button
+            className='debug_button'
+            onClick={this.handler_useThisCompAsServer}
+          >
+            {' '}
+            📡{' '}
+          </button>
         </div>
-        <button className='debug_button' onClick={this.handler_useThisCompAsServer()}>🖥</button>
 
-        <div className="debug_inline_group">
-          <label htmlFor="" className="debug_label">Cams: </label>
-          <input type="text" className="debug_text_input debug_sm_input" value={this.state.detectedNumCams} readOnly/>
+
+        <div
+          style={{ width: '100%', height: '100%' }}
+          onClick={this.helper_toggleHideDebug}
+        >
+          <img className='chevron top-chevron' src={up_chevron}></img>
+          <div style={{height: '0.3em'}}></div>
         </div>
-
 
         {/* <button className='debug_button' onClick={this.admin_refreshAll}>
           Refresh All
@@ -334,36 +530,46 @@ class App extends React.Component {
   };
 
   // * UTILITY * //
-  readTextFile(file) {
-    return fetch(file)
+  readTextFile(file, stateName) {
+    fetch(file)
       .then(response => response.text())
       .then(text => {
-        this.setState({ data: text.split('\n') }, () => {
-          let curr_sentence = qs('sentence_index')
-            ? this.state.data[Number(qs('sentence_index'))]
-            : this.state.data[0];
-          this.setState({ curr_sentence }, () => {
-            // console.log(this.state.curr_sentence)
+        if (stateName === 'data') {
+          this.setState({ data: text.split('\n') }, () => {
+            let currSentence = qs('sentence_index')
+              ? this.state.data[Number(qs('sentence_index'))]
+              : this.state.data[0];
+            this.setState({ currSentence }, () => {
+              // console.log(this.state.curr_sentence)
+            });
+            this.setState({
+              totalWords: this.state.data.reduce(
+                (sum, sentence) => sum + sentence.length,
+                0
+              )
+            });
           });
-          this.setState({
-            totalWords: this.state.data.reduce((sum, sentence) => sum + sentence.length, 0)
-          })
-        });
+        } else {
+          this.setState({ pinyin: text.split('\n') })
+        }
       });
   }
 
   /**
-   * * UPDATE * 
-   * 
+   * * UPDATE *
+   *
    */
   updateFilesSaved = numFiles => {
     const successMessage =
       numFiles % this.state.requiredNumCams === 0
         ? ' (successful)'
-        : ' (not all cams saved!!)';
+        : ' (not all saved)';
     this.setState({
       numFilesSavedTotal: numFiles
     });
+    if (successMessage === ' (successful)') {
+      this.updateGreenLightStatus(true);
+    }
     try {
       document.getElementById('num_files_saved').innerHTML =
         'Total Files Saved: ' + numFiles + successMessage;
@@ -373,38 +579,76 @@ class App extends React.Component {
   };
 
   handler_useThisCompAsServer = () => {
-
-  }
-
-  handler_IPOnChange = e => {
-    this.setState({ip: e.target.value})
-  }
-  handler_debugToggle = debugMode => {
-    this.setState({debugMode}, () => {
-      if (debugMode) {
-        this.setState({requiredNumCams: 1});
-      } else {
-        this.setState({requiredNumCams: 8});
+    ip_util.clientGetIP(ip => {
+      console.log(ip);
+      if (ip.split('.').length === 4) {
+        ip = 'http://' + ip + ':5000';
+        cogoToast.loading(ip, {
+          position: 'top-right',
+          hideAfter: 3,
+          onClick: hide => {
+            hide();
+          }
+        });
+        this.helper_setServerIP(ip);
+        // if (!this.hideServerOfflineRef) {
+        //   this.hideServerOfflineRef = this.helper_showServerNotOnline();
+        // } else {
+        //   this.hideServerOfflineRef();
+        // }
       }
     });
+    // const [ip_v6, ip_v4] = [temp[0], temp[1]]
+    // console.log(ip_v4);
+  };
+
+  handler_IPOnChange = e => {
+    this.setState({ ip: e.target.value });
+  };
+
+  debugCogoToastOnRef = undefined;
+  debugCogoToastOffRef = undefined;
+  
+  showDebugOn = () => {
+    return cogoToast.success(<p>Debug on. <br/>Required Cams: 1</p>, { hideAfter: 1, onClick: hide => hide() });
   }
+
+  showDebugOff = () => {
+    return cogoToast.warn(<p>Debug off. <br/>Required Cams: 8</p>, { hideAfter: 1, onClick: hide => hide() });
+  }
+
+  handler_debugToggle = debugMode => {
+    console.log('toggling debug mode');
+    this.setState({ debugMode }, () => {
+      if (debugMode) {
+        this.setState({ requiredNumCams: 1 });
+        this.debugCogoToastOnRef = this.showDebugOn();
+        {/* if (this.debugCogoToastOffRef) {this.debugCogoToastOffRef()} */}
+        {/* console.log(this.debugCogoToastOffRef); */}
+        {/* this.helper_removeHoverEventListeners(); */}
+      } else {
+        this.setState({ requiredNumCams: 8 });
+        this.debugCogoToastOffRef = this.showDebugOff();
+        {/* if (this.debugCogoToastOnRef) {this.debugCogoToastOnRef()} */}
+        {/* console.log(this.debugCogoToastOnRef); */}
+
+        // this.helper_addHoverEventListeners();
+        this.handler_hoverMouseOutBottom();
+      }
+    });
+  };
 
   handler_fileSaveSuccess = numFiles => {
     this.updateFilesSaved(numFiles);
-    this.setState({
+    this.setState(
+      {
         numFilesSavedInd: this.state.numFilesSavedInd + 1
       },
       () => {
-        console.log(
-          'this occured: ' + this.state.numFilesSavedInd + ' times.'
-        );
-        try {
-          document.getElementById('testerNextBtn').disabled = true;
-        } catch (NotYetLoadedException) {
-          //
-        }
+        {/* console.log('this occured: ' + this.state.numFilesSavedInd + ' times.'); */}
         if (this.state.numFilesSavedInd === this.state.requiredNumCams) {
-          console.log('correct number of files saved');
+          {
+            /* console.log('correct number of files saved'); */ }
           try {
             document.getElementById('showSavedFilesBtn').click();
             document.getElementById('showSavedFilesBtn').disabled = true;
@@ -417,7 +661,10 @@ class App extends React.Component {
                     ['视频已成功保存', '可继续录'],
                     '🔥'
                   ), {
-                    hideAfter: 2
+                    hideAfter: 1,
+                    onClick: hide => {
+                      hide();
+                    }
                   }
                 );
               }
@@ -427,37 +674,38 @@ class App extends React.Component {
           } catch (Exception) {
             console.error(Exception);
           }
-          try {
-            if (this.helper_checkIfMobileView()) {
-              // console.log('here here??');
-              cogoToast.info(
-                'Completed @ Sentence [' + this.state.recordedProgress + ']', {
-                  hideAfter: 0.75
-                }
-              );
-            }
-          } catch (NotYetLoadedException) {
-            console.error(NotYetLoadedException);
-          }
         }
+        try {
+          document.getElementById('testerNextBtn').disabled = true;
+        } catch (NotYetLoadedException) {
+          //
+        }
+        
       }
     );
-  }
+  };
 
   updateDetectedNumCams = detectedNumCams => {
     this.setState({ detectedNumCams });
+    this.state.socket.emit('client: updateTotalCams', () => [this.state.computerID, detectedNumCams]);
+    this.updateGreenLightStatus(true);
+    if (this.showNoCamsRef) {this.showNoCamsRef();}
     try {
-      document.getElementsByClassName('debug_sm_input')[0].className += (this.state.detectedNumCams > 0) ? " serverPlaceholderConnected" : ""
+      document.getElementsByClassName('debug_sm_input')[0].className +=
+        this.state.detectedNumCams > 0 ? ' serverPlaceholderConnected' : '';
+      document
+        .getElementById('numCamsInput')
+        .classList.remove('warning_message');
     } catch (NotYetLoadedException) {
       //
     }
-  }
+  };
 
-  /** 
+  /**
    * * UPDATE *
    * Updates the state computerID with param id
-   * @param {string} id 
-  */
+   * @param {string} id
+   */
   updateCompID = id => {
     const status = {};
     this.setState({ computerID: id });
@@ -498,7 +746,12 @@ class App extends React.Component {
   disp_showFileSavingLoader = () => {
     this.ref_hideLoader = cogoToast.loading(
       this.style_makeEmojiToastLayout(['视频正在保存', '请耐心等待'], '⌛️'),
-      { hideAfter: 5 }
+      {
+        hideAfter: 0,
+        onClick: hide => {
+          hide();
+        }
+      }
     );
     // setTimeout(hideLoader, 2000);
     // hideLoader();
@@ -507,6 +760,10 @@ class App extends React.Component {
     // });
   };
 
+
+  /**
+   * Hides file saved loader
+   */
   disp_showFileSavedMessage = () => {
     try {
       this.ref_hideLoader();
@@ -515,33 +772,85 @@ class App extends React.Component {
     }
   };
 
+  disp_showServerConencted = () => {
+    cogoToast.success('Server is online.', {
+      position: 'top-right',
+      hideAfter: 0,
+      onClick: hide => {
+        hide();
+      }
+    });
+    if (this.hideServerOfflineRef) this.hideServerOfflineRef();
+    try {
+      document
+        .getElementsByClassName('server_status')[0]
+        .classList.add('server_online');
+      document
+        .getElementById('inputServerIP')
+        .classList.add('serverPlaceholderConnected');
+      document
+        .getElementById('inputServerIP')
+        .classList.remove('warning_message');
+    } catch (NotYetLoadedException) {
+      //
+    }
+  }
+
+
   /**
-   * **Socket Listeners**
-   * Adds socket listeners to the page to respond to messages sent
-   * from server
+   * Socket Listeners — adds socket listeners to the page to respond to 
+   * messages sent from server
    */
   initSocketListeners = () => {
     this.state.socket.on('server: online', () => {
-      console.log('server online!')
-      document.getElementsByClassName('server_status')[0].classList.add('server_online');
-      document.getElementById('inputServerIP').classList.add('serverPlaceholderConnected');
+      {/* console.log('did this happen?') */}
+      {/* if (useMediaQuery({ minWidth: 768 })) { */}
+        this.disp_showServerConencted();
+      {/* } */}
     });
 
+    this.state.socket.on('server: sync name, sentence index', data => {
+      const name = data.name;
+      const currSentenceIndex = data.currSentenceIndex;
+      {/* if (this.state.currSentenceIndex === 0 ) { */}
+      this.setState({name, currSentenceIndex});
+      {/* } */}
+    })
+
+    if (!this.hideServerOfflineRef) {
+      this.hideServerOfflineRef = this.helper_showServerNotOnline();
+    } else {
+      this.hideServerOfflineRef();
+    }
+
     this.state.socket.on('server: disconnected', () => {
-      this.setState({ connectedToServer: false}, () => {
-        document.getElementsByClassName('server_status')[0].classList.remove('server_online');
-        document.getElementById('inputServerIP').classList.remove('serverPlaceholderConnected')
+      this.setState({ connectedToServer: false }, () => {
+        document
+          .getElementsByClassName('server_status')[0]
+          .classList.remove('server_online');
+        document
+          .getElementById('inputServerIP')
+          .classList.remove('serverPlaceholderConnected');
       });
     });
 
     this.state.socket.on('server: connected', computerID => {
-      console.log('detected server connected')
-      this.setState({ connectedToServer: true, computerID}, () => {
-        document.getElementsByClassName('server_status')[0].classList.add('server_online');
-        document.getElementById('inputServerIP').classList.add('serverPlaceholderConnected')
+      {/* console.log('detected server connected'); */}
+      {/* if (useMediaQuery({ minWidth: 768 })) { */}
+        this.disp_showServerConencted();
+      {/* } */}
+      
+      this.setState({ connectedToServer: true, computerID }, () => {
+        try {
+          document
+            .getElementById('inputServerIP')
+            .classList.add('serverPlaceholderConnected');
+        } catch(NotYetLoadedException) {
+          //
+        }
       });
     });
-    
+
     this.state.socket.on('server: connected sync id', id => {
       if (this.updateCompID) this.updateCompID(id);
       this.updateCompID = null;
@@ -565,7 +874,7 @@ class App extends React.Component {
     });
 
     this.state.socket.on('server: response for progress', progress => {
-      this.setState({ recordedProgress: progress ? progress : 0 });
+      this.setState({ recordProgress: progress ? progress : 0 });
     });
 
     this.state.socket.on('server: response for numFilesSaved', numFiles => {
@@ -612,35 +921,34 @@ class App extends React.Component {
   }
 
   /**
-   * **Update: Sentence** 
-   * Sent as a prop to components to update app-level state of 
-   * curr_sentence_index, and updates server with new index. It also updates 
+   * **Update: Sentence**
+   * Sent as a prop to components to update app-level state of
+   * curr_sentence_index, and updates server with new index. It also updates
    * url query without refreshing to reflect current index.
    * @param {string} curr_sentence
    */
-  updateSentence = curr_sentence => {
-    if (curr_sentence === '$next') {
-      this.setState({curr_sentence_index: this.state.curr_sentence_index + 1},
+  updateSentence = currSentence => {
+    if (currSentence === '$next') {
+      this.setState(
+        { currSentenceIndex: this.state.currSentenceIndex + 1 },
         () => {
-          this.updateSentence(
-            this.state.data[this.state.curr_sentence_index]
-          );
+          this.updateSentence(this.state.data[this.state.currSentenceIndex]);
           this.state.socket.emit('client: update sentence_index', {
             name: qs('name'),
-            curr_sentence_index: this.state.curr_sentence_index
+            currSentenceIndex: this.state.currSentenceIndex
           });
         }
       );
-    } else if (curr_sentence === '$prev') {
+    } else if (currSentence === '$prev') {
       this.setState(
         {
-          curr_sentence_index: Math.max(this.state.curr_sentence_index - 1, 0)
+          currSentenceIndex: Math.max(this.state.currSentenceIndex - 1, 0)
         },
         () => {
-          this.updateSentence(this.state.data[this.state.curr_sentence_index]);
+          this.updateSentence(this.state.data[this.state.currSentenceIndex]);
           this.state.socket.emit('client: update sentence_index', {
             name: qs('name'),
-            curr_sentence_index: this.state.curr_sentence_index
+            currSentenceIndex: this.state.currSentenceIndex
           });
         }
       );
@@ -651,14 +959,14 @@ class App extends React.Component {
         '?name=' +
           qs('name') +
           '&sentence_index=' +
-          this.state.curr_sentence_index
+          this.state.currSentenceIndex
       );
       // console.log(curr_sentence);
       this.setState({
-        curr_sentence,
-        curr_page:
+        currSentence,
+        currPageInTable:
           Math.floor(
-            Number(this.state.curr_sentence_index) / this.state.per_page
+            Number(this.state.currSentenceIndex) / this.state.sentencesPerPageInTable
           ) + 1
       });
     }
@@ -670,20 +978,20 @@ class App extends React.Component {
     }
     console.log('update page', new_page);
     this.setState({
-      curr_page: new_page >= 1 ? new_page : 1
+      currPageInTable: new_page >= 1 ? new_page : 1
     });
   };
 
-  updateRecordProgress = curr_sentence_index => {
+  updateRecordProgress = currSentenceIndex => {
     // { <sentence_index> : <bool: recorded/not> }
     this.setState(
       {
-        recordedProgress: curr_sentence_index
+        recordProgress: currSentenceIndex
       },
       () => {
         this.state.socket.emit(
           'client: update recording progress',
-          curr_sentence_index
+          currSentenceIndex
         );
       }
     );
@@ -693,8 +1001,7 @@ class App extends React.Component {
     if (this.state.computerStatus[this.state.computerID]) {
       const status = {};
       status[this.state.computerID] = recordingStatus;
-      this.setState({ computerStatus: status }, () => {
-      });
+      this.setState({ computerStatus: status }, () => {});
       this.state.socket.emit('client: update recording status', status);
     }
     this.getStatus();
@@ -715,8 +1022,9 @@ class App extends React.Component {
   };
 
   admin_resetCams = () => {
+    // cogoToast.info('Adding Cam', {hideAfter: 1})
     // this.state.socket.emit('client: stop cams');
-    this.updateGreenLightStatus(true);
+    // this.updateGreenLightStatus(true);
     this.state.socket.emit('client: reset cams');
     try {
       document.getElementById('addCamBtn').click();
@@ -725,11 +1033,7 @@ class App extends React.Component {
     }
     this.state.socket.emit('client: dummy vid, do not save');
     // cogoToast.info('Cams are reset', { hideAfter: 0.3 });
-
-    const resetBtn = document.getElementById('resetCamsBtn');
-    if (!resetBtn.className.includes('btn-active')) {
-      document.getElementById('resetCamsBtn').className += (' btn-active');
-    }
+    // setTimeout(() => document.getElementById('resetCamsBtn').classList.remove('btn-active'), 1000);
   };
 
   admin_refreshAll = () => {
@@ -741,7 +1045,7 @@ class App extends React.Component {
     this.state.socket.emit('client: delete total time');
     this.state.socket.emit('client: reset total files');
     this.state.socket.emit('client: save total start time', new Date());
-    window.location = window.location.origin;
+    window.location = window.location.origin + window.location.pathname;
     this.state.socket.emit('client: save total time', [0, 0, 0]);
   };
 
@@ -749,14 +1053,14 @@ class App extends React.Component {
     if (!this.helper_checkIfMobileView) {
       this.state.socket.emit('client: update sentence_index', {
         name: qs('name'),
-        curr_sentence_index: this.state.curr_sentence_index
+        currSentenceIndex: this.state.currSentenceIndex
       });
     } else {
       this.state.socket.emit('client: ask for recording status');
     }
     this.state.socket.emit('client: check for progress');
     this.state.socket.emit('client: ask for sync id');
-  }
+  };
 
   helper_toggleModal = id => {
     document.getElementById(id).click();
@@ -764,6 +1068,133 @@ class App extends React.Component {
 
   helper_checkIfMobileView = () => {
     return window.location.href.includes('mobile');
+  };
+
+  helper_showNoCamsConnected = () => {
+    return cogoToast.warn('No Webcams', {
+      hideAfter: 0,
+      position: 'top-left',
+      onClick: this.admin_resetCams
+    });
+  };
+
+  helper_showServerNotOnline = () => {
+    {/* console.log('no server'); */}
+    return cogoToast.warn('Server is offline', {
+      hideAfter: 0,
+      position: 'top-right',
+      onClick: hide => {
+        this.handler_useThisCompAsServer();
+        hide();
+      }
+    });
+  };
+
+  helper_setServerIP = ip => {
+    this.state.socket.disconnect();
+    try {
+      document
+        .getElementsByClassName('server_status')[0]
+        .classList.remove('server_online');
+      document
+        .getElementById('inputServerIP')
+        .classList.remove('serverPlaceholderConnected');
+    } catch (NotYetLoadedException) {
+      //
+    }
+    this.setState({
+      socket: io(ip),
+      ip: ip
+    });
+    this.state.socket.emit('client: check server connection');
+    // if (hideLoadServer) {hideLoadServer()}
+    setTimeout(() => {
+      if (
+        !document
+          .getElementsByClassName('server_status')[0]
+          .className.includes('server_online')
+      ) {
+        this.hideServerOfflineRef = this.helper_showServerNotOnline();
+      }
+    }, 3000);
+    this.initSocketListeners();
+  };
+
+  helper_addHoverEventListeners = () => {
+    const debugHoverArea = document.getElementById('debug_hover_area');
+    const bottomHoverArea = document.getElementById('bottom_hover_area');
+    debugHoverArea.addEventListener(
+      'mouseout',
+      this.handler_hoverMouseOutDebug
+    );
+    debugHoverArea.addEventListener(
+      'mouseover',
+      this.handler_hoverMouseOverDebug
+    );
+    bottomHoverArea.addEventListener(
+      'mouseout',
+      this.handler_hoverMouseOutBottom
+    );
+    bottomHoverArea.addEventListener(
+      'mouseover',
+      this.handler_hoverMouseOverBottom
+    );
+  };
+
+  helper_removeHoverEventListeners = () => {
+    const debugHoverArea = document.getElementById('debug_hover_area');
+    const bottomHoverArea = document.getElementById('bottom_hover_area');
+    debugHoverArea.removeEventListener(
+      'mouseout',
+      this.handler_hoverMouseOutDebug
+    );
+    debugHoverArea.removeEventListener(
+      'mouseover',
+      this.handler_hoverMouseOverDebug
+    );
+    bottomHoverArea.removeEventListener(
+      'mouseout',
+      this.handler_hoverMouseOutBottom
+    );
+    bottomHoverArea.removeEventListener(
+      'mouseover',
+      this.handler_hoverMouseOverBottom
+    );
+    this.handler_hoverMouseOverBottom();
+  };
+
+  helper_toggleHideDebug = () => {
+    {/* console.log('toggling'); */}
+    try {
+      if (
+        document
+          .getElementsByClassName('debug-group')[0]
+          .className.includes('hideDebug')
+      ) {
+        this.handler_hoverMouseOverDebug();
+      } else {
+        this.handler_hoverMouseOutDebug();
+      }
+    } catch (NotYetLoadedException) {
+      //
+    }
+  };
+
+  helper_toggleHideBottom = () => {
+    console.log('toggling hide bottom');
+    try {
+      if (
+        document
+          .getElementsByClassName('panel_BG')[0]
+          .className.includes('hideBottom')
+      ) {
+        this.handler_hoverMouseOverBottom();
+      } else {
+        this.handler_hoverMouseOutBottom();
+      }
+    } catch (NotYetLoadedException) {
+      //
+    }
   };
 
   helper_toggleCamState = () => {
@@ -776,47 +1207,56 @@ class App extends React.Component {
     }
   }
 
-  handler_keydown = (event) => {
+  handler_keydown = event => {
     let key = event.key;
-    if ([' ', 'ArrowLeft', 'ArrowRight', 'Escape', 'Enter', 's'].includes(key)) {
+    const inputServerIP = document.getElementById('inputServerIP');
+
+    if (
+      [' ', 'ArrowLeft', 'ArrowRight', 'Escape', 'Enter', 's'].includes(key)
+    ) {
       try {
         if (key === ' ') {
           document.getElementById('testerRecordBtn').click();
           event.preventDefault();
         } else if (key === 'ArrowLeft') {
-          document.getElementById('testerPrevBtn').click();
-          event.preventDefault();
+          if (document.activeElement !== inputServerIP) {
+            document.getElementById('testerPrevBtn').click();
+            event.preventDefault();
+          }
         } else if (key === 'ArrowRight') {
-          console.log('detected right arrow key');
-          document.getElementById('testerNextBtn').click();
-          event.preventDefault();
+          if (document.activeElement !== inputServerIP) {
+            document.getElementById('testerNextBtn').click();
+            event.preventDefault();
+          }
         } else if (key === 'Escape') {
           document.getElementById('resetCamsBtn').click();
           event.preventDefault();
         } else if (key === 'Enter') {
           console.log('detected enter key');
           if (document.getElementsByClassName('modali-button-destructive')[0]) {
-            document.getElementsByClassName('modali-button-destructive')[0].click();
+            document
+              .getElementsByClassName('modali-button-destructive')[0]
+              .click();
             this.admin_resetProgress();
           }
-          const inputServerIP = document.getElementById('inputServerIP');
           if (document.activeElement === inputServerIP) {
-            this.state.socket.disconnect();
-            document.getElementsByClassName('server_status')[0].classList.remove('server_online');
-            document.getElementById('inputServerIP').classList.remove('serverPlaceholderConnected');
-            console.log(inputServerIP.value);
-            this.setState({socket: io(inputServerIP.value), ip: inputServerIP.value});
-            this.state.socket.emit('client: check server connection')
+            this.helper_setServerIP(inputServerIP.value);
+            cogoToast.info('Updated IP: ' + inputServerIP.value, {
+              onClick: hide => {
+                hide();
+              }
+            });
             event.preventDefault();
           }
         } else if (key === 's') {
-          if (document.activeElement !== document.getElementById('name')) this.helper_toggleModal('overallStatus');
+          {/* if (document.activeElement.nodeName.toLowerCase() !== 'input') */}
+            {/* this.helper_toggleModal('overallStatus'); */}
         }
       } catch (NotYetLoadedException) {
-        console.error(NotYetLoadedException);
+        // console.error(NotYetLoadedException);
       }
     }
-  }
+  };
 }
 
 export default App;

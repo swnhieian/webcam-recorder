@@ -26,16 +26,16 @@ export default function CameraList(props) {
   }
   const helper_addToVideoDevices = (device, videodevices) => {
     device = helper_extractRelevantCamInfo(device);
-    console.log(availableCams);
+    // console.log(availableCams);
     const devicePrior = availableCams.filter(cam => {
       return cam.camera_info.id === device.camera_info.id
     })[0];
-    console.log(devicePrior);
+    // console.log(devicePrior);
     if (devicePrior) {
-      console.log('found prior device');
+      // console.log('found prior device');
       device.mic_info = devicePrior.mic_info;
     } else {
-      console.log('using first cam mic!!!')
+      // console.log('using first cam mic!!!')
       device.mic_info = availableMics[0];
     }
     videodevices.push(device);
@@ -51,6 +51,7 @@ export default function CameraList(props) {
     props.updateDetectedNumCams(num);
     return num;
   }
+
   const initCams = () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
       console.log('enumerateDevices() not supported.');
@@ -58,9 +59,9 @@ export default function CameraList(props) {
       navigator.mediaDevices.enumerateDevices().then(devices => {
         let videoDevices = [];
         let micDevices = [];
-        const numCams = helper_getNumCams(devices);
+        helper_getNumCams(devices);
 
-        console.log("number of cams detected: " + numCams);
+        // console.log("number of cams detected: " + numCams);
         devices.map(function(device) {
           if (device.kind === 'audioinput') {
             if (
@@ -143,6 +144,8 @@ export default function CameraList(props) {
     })
   }
 
+  let isMac = false;
+
   const startFaceTimeCam = (faceTimeDevice, defaultMic) => {
     if (faceTimeDevice) {
       const device = helper_extractRelevantCamInfo(faceTimeDevice)
@@ -152,11 +155,21 @@ export default function CameraList(props) {
       document.getElementById('startBtn').click();
       document.getElementById('dummyBtn').disabled = false;
       document.getElementById('dummyBtn').click();
-      cogoToast.success('Mac FaceTime Camera started', {hideAfter: 0.3});
+      cogoToast.success('Mac FaceTime Camera started', {
+        position: 'top-left',
+        hideAfter: 1,
+        onClick: hide => {
+          hide()
+        }
+      });
+      props.updateDetectedNumCams(1);
+      isMac = true;
     }
   }
 
+
   const addNewCamMic = () => {
+    // let isMac = false;
     try {
       checkIfMac(startFaceTimeCam);
     } catch (Exception) {
@@ -181,6 +194,8 @@ export default function CameraList(props) {
       const newPluggedInID = idAoni.diff(pluggedInDevices);
       if (newPluggedInID.length === 0) {
         // console.log('no new devices detected');
+        if (!isMac) 
+          cogoToast.warn('No additional webcams detected.', {hideAfter: 1});
       } else if (newPluggedInID.length === 2) {
         detectedTwoDevices = true;
         // console.log(
@@ -199,9 +214,20 @@ export default function CameraList(props) {
           let temp = availableCams;
           temp.push(newCamDevice);
           setAvailableCams(temp);
-          cogoToast.success(
-            'New camera: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.'
-          ), {hideAfter: 1};
+          // cogoToast.success(
+          //   'New webcam: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.'
+          // ), {
+          //   hideAfter: 0.5,
+          //   position: 'top-left',
+          //   onClick: hide => {
+          //     hide();
+          //   }
+          // };
+          cogoToast.success('Webcam: ' + newCamDevice.camera_info.id.substring(0, 5) + ' added.', {
+            hideAfter: 1,
+            position: 'top-left',
+            onClick: hide => hide()
+          });
           document.getElementById('startBtn').disabled = false;
           initCams();
           setPluggedInDevices(idAoni);
@@ -317,7 +343,12 @@ export default function CameraList(props) {
       setRecordingStatus(temp);
       props.updateConnectionStatus(temp);
     } catch (NotYetLoadedException) {
-      cogoToast.warn('Camera not yet loaded!', {hideAfter: 0});
+      cogoToast.warn('Camera not yet loaded!', {
+        hideAfter: 0,
+        onClick: hide => {
+          hide()
+        }
+      });
     }
   }
 
@@ -330,7 +361,12 @@ export default function CameraList(props) {
       try {
         state = recorder.getState();
       } catch {
-        cogoToast.warn("Camera not yet loaded!", {hideAfter: 0});
+        cogoToast.warn("Camera not yet loaded!", {
+          hideAfter: 0,
+          onClick: hide => {
+            hide()
+          }
+        });
       }
       if (state === "paused") {
         recorder.resumeRecording();
@@ -338,7 +374,12 @@ export default function CameraList(props) {
         try {
           recorder.startRecording();
         } catch (NotYetLoadedException) {
-          cogoToast.warn('Camera not yet loaded!', {hideAfter: 0});
+          cogoToast.warn('Camera not yet loaded!', {
+            hideAfter: 0,
+            onClick: hide => {
+              hide()
+            }
+          });
         }
       }
       triggerRecordStatusUpdate(temp, recorder, cam);
@@ -350,23 +391,35 @@ export default function CameraList(props) {
 
   // dummy to fix bug of first video
   props.socket.on('server: dummy vid, do not save', function() {
-    document.getElementById('dummyBtn').click();
-    document.getElementById('dummyBtn').disabled = true;
+    try {
+      document.getElementById('dummyBtn').click();
+      document.getElementById('dummyBtn').disabled = true;
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException);
+    }
   });
 
   // this is actually what calls start cams
   props.socket.on('server: start cams', function () {
-    document.getElementById("resumeBtn").click();
-    document.getElementById("resumeBtn").disabled = true;
-    document.getElementById('stopBtn').disabled = false;
+    try {
+      document.getElementById("resumeBtn").click();
+      document.getElementById("resumeBtn").disabled = true;
+      document.getElementById('stopBtn').disabled = false;
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException)
+    }
 
   });
 
   // this is actually what calls stop cams
   props.socket.on('server: stop cams', function () {
-    document.getElementById('stopBtn').click();
-    document.getElementById('stopBtn').disabled = true;
-    document.getElementById("resumeBtn").disabled = false;
+    try {
+      document.getElementById('stopBtn').click();
+      document.getElementById('stopBtn').disabled = true;
+      document.getElementById("resumeBtn").disabled = false;
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException)
+    }
   });
 
   const debugControls = (debug) => {
@@ -374,22 +427,22 @@ export default function CameraList(props) {
       return (
         <div>
           {/* <p>Don't click these while actual testing</p> */}
-          <button id='dummyBtn' onClick={initCamsDummy}>
+          <button id='dummyBtn' className="hidden_button" onClick={initCamsDummy}>
             dummy reset
           </button>
-          <button id='startBtn' onClick={startAllCams}>
+          <button id='startBtn' className="hidden_button" onClick={startAllCams}>
             start and pause all cams
           </button>
-          <button id='resumeBtn' onClick={resumeAllCams}>
+          <button id='resumeBtn' className="hidden_button" onClick={resumeAllCams}>
             resume all cams
           </button>
-          <button id='stopBtn' onClick={stopAllCams}>
+          <button id='stopBtn' className="hidden_button" onClick={stopAllCams}>
             stop all cams
           </button>
           <button
             id='addCamBtn'
             className='hidden_button'
-            onClick={addNewCamMic}
+            onClick={addNewCamMic} 
           >
             Add Cam
           </button>
@@ -399,10 +452,9 @@ export default function CameraList(props) {
     }
   }
 
-  const renderCams = () => {
+  const renderCams = addCam => {
 
-    // initMics();
-
+    // initMics()
     const debug = true;
     let i = 0; 
     const comp_camsList = availableCams.map(cam => {
@@ -414,17 +466,18 @@ export default function CameraList(props) {
         />
       );
     });
-
+      
 
     return (
       <div id='camera_list'>
         {debugControls(debug)}
         <div>
+          <button className='debug_button' style={{marginBottom: '1em'}} onClick={addCam}>Add Webcam</button>
           <div className='cameras'>{comp_camsList}</div>
         </div>
       </div>
     );
   };
   
-  return renderCams();
+  return renderCams(props.addCam);
 }

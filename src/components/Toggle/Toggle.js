@@ -33,8 +33,8 @@ export default function Toggle(props) {
     <div className="switch-wrapper">
       <div className="switch">
       <div className="invisible_pushdown"></div>
-        <input type="checkbox" name="toggle" id={props.id}/>
-        <label htmlFor="toggle" className="inset-toggle"><i>🕷</i></label>
+        <input type="checkbox" name="toggle" id={props.id}  checked={props.checked} onChange={props.updateDebugMode}/>
+        <label htmlFor="toggle" className="inset-toggle"><i></i></label>
       </div>  
     </div>
   )
@@ -42,5 +42,7 @@ export default function Toggle(props) {
 
 Toggle.propTypes = {
   id: PropTypes.string.isRequired,
-  onChangeFunc: PropTypes.func.isRequired
+  onChangeFunc: PropTypes.func.isRequired,
+  checked: PropTypes.bool.isRequired,
+  updateDebugMode: PropTypes.func.isRequired
 }

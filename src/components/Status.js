@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import qs from '../utils/qs';
 import PropTypes from 'prop-types';
-import ProgressBar from './ProgressBar';
 
 export default function Status(props) {
   const [remainingWords, setRemainingWords] = useState(Infinity)
 
   let intervalID = undefined
 
-  let i = 0; 
   useEffect(() => {
     // console.log('status page loaded');
     clearInterval(intervalID);
@@ -41,8 +38,9 @@ export default function Status(props) {
 
   const displayTime = time => {
     try {
+      document.getElementById('total_time_elapsed').style.color = 'rgba(255,255,255,0.8';
       document.getElementById('total_time_elapsed').innerText =
-        'Total Recording Time—' +
+        '总记录时间: ' +
         ('0' + time[0]).slice(-2) +
         ':' +
         ('0' + time[1]).slice(-2) +
@@ -107,27 +105,7 @@ export default function Status(props) {
 
   return (
     <div>
-      <ProgressBar
-        curr={props.recordedProgress}
-        total={props.data_length - 1}
-        align={'left'}
-        strokeWidth={3}
-      />
-      <pre id='total_time_elapsed'>00:00:00</pre>
-      <pre id="total_words"> / {props.totalWords}</pre>
-      <pre id='connection_status'></pre>
-      <pre id='num_files_saved'></pre>
-      {i++}
-      <pre
-        hidden={
-          props.recordGreenLight ||
-          props.helper_checkIfMobileView() ||
-          !qs('name')
-        }
-        className='warning_message'
-      >
-        Please Click Reset!
-      </pre>
+      <pre id='total_time_elapsed' style={{color: 'rgba(255,255,255,0.8'}}>总记录时间: 00:00:00</pre>
       <button
         onClick={helper_showTime}
         id='showTimeBtn'
@@ -138,11 +116,11 @@ export default function Status(props) {
 }
 
 Status.propTypes = {
-  recordedProgress: PropTypes.number.isRequired,
-  data_length: PropTypes.number.isRequired,
-  recordGreenLight: PropTypes.bool.isRequired,
-  helper_checkIfMobileView: PropTypes.func.isRequired,
+  // recordedProgress: PropTypes.number.isRequired,
+  // data_length: PropTypes.number.isRequired,
+  // recordGreenLight: PropTypes.bool.isRequired,
+  // helper_checkIfMobileView: PropTypes.func.isRequired,
   socket: PropTypes.object.isRequired,
-  totalWords: PropTypes.number.isRequired
+  // totalWords: PropTypes.number.isRequired
 
 };

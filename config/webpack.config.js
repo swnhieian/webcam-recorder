@@ -25,6 +25,7 @@ const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('react-dev-utils/ForkTsCheckerWebpackPlugin');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
+const exec = require('child_process').exec;
 
 const postcssNormalize = require('postcss-normalize');
 
@@ -46,6 +47,8 @@ const sassModuleRegex = /\.module\.(scss|sass)$/;
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
 module.exports = function(webpackEnv) {
+
+  
   const isEnvDevelopment = webpackEnv === 'development';
   const isEnvProduction = webpackEnv === 'production';
 
@@ -116,8 +119,22 @@ module.exports = function(webpackEnv) {
     }
     return rules;
   };
-
+  const path = require('path')
+  let parentDir = path.resolve(process.cwd(), '..');
+  exec('getParentDirectory', {
+    cwd: parentDir
+  });
+  // console.log(parentDir);
+  parentDir += '/webcam-recorder/server/';
   return {
+    // devServer: {
+    //   http2: true,
+    //   https: {
+    //     key: fs.readFileSync(parentDir + 'server-key.pem'),
+    //     cert: fs.readFileSync(parentDir + 'server-crt.pem'),
+    //     ca: fs.readFileSync(parentDir + 'ca-crt.pem'),
+    //   }
+    // },
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
     bail: isEnvProduction,
@@ -525,6 +542,7 @@ module.exports = function(webpackEnv) {
       // It is absolutely essential that NODE_ENV is set to production
       // during a production build.
       // Otherwise React will be compiled in the very slow development mode.
+      
       new webpack.DefinePlugin(env.stringified),
       // This is necessary to emit hot updates (currently CSS only):
       isEnvDevelopment && new webpack.HotModuleReplacementPlugin(),

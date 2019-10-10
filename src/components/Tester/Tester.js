@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import './Tester.scss';
 import PropTypes from 'prop-types';
 import InProcessScreen from './InProcessScreen.js';
-import Timer from '../Timer.js'
 import qs from '../../utils/qs'
-import ProgressBar from '../ProgressBar'
+// import ProgressBar from '../ProgressBar'
 
 function Tester(props) {
   const [intervalID, setIntervalID] = useState(undefined);
@@ -21,12 +20,15 @@ function Tester(props) {
         recordGreenLight={props.recordGreenLight}
         updateGreenLightStatus={props.updateGreenLightStatus}
         numFilesSaved={props.numFilesSaved}
-        numCams={props.numCams}
+        requiredNumCams={props.requiredNumCams}
         stopTimer={stopTimer}
         startTimer={startTimer}
         recordedProgress={props.recordedProgress}
         updateRecordProgress={props.updateRecordProgress}
         showFileSavingLoader={props.showFileSavingLoader}
+        debugMode={props.debugMode}
+        connectedToServer={props.connectedToServer}
+        detectedNumCams={props.detectedNumCams}
       />
     );
   }
@@ -70,19 +72,10 @@ function Tester(props) {
 
   return (
     <div className='testing_screen'>
-      <Timer
-          name={'total_timer'}
-          socket={props.socket}
-          totalTime={props.totalTime}
-          updateTotalTime={props.updateTotalTime}
-        />
-      <pre id='total_timer'>00:00:00</pre>
-      <ProgressBar
-        curr={props.recordedProgress}
-        total={props.data_length - 1}
-        align={'center'}
-        strokeWidth={2}
-      />
+      {props.comp_totalProgress(false, 1.5)}
+      <div></div>
+      {/* <span/> */}
+      {props.comp_saveProgress()}
       <div className='middle'>
         <div className='inner'>{comp_inProcessScreen()}</div>
       </div>
@@ -110,12 +103,17 @@ Tester.propTypes = {
   recordGreenLight: PropTypes.bool.isRequired,
   updateGreenLightStatus: PropTypes.func.isRequired,
   numFilesSaved: PropTypes.number.isRequired,
-  numCams: PropTypes.number.isRequired,
+  requiredNumCams: PropTypes.number.isRequired,
   recordedProgress: PropTypes.number.isRequired,
   updateRecordProgress: PropTypes.func.isRequired,
   totalTime: PropTypes.array.isRequired,
   updateTotalTime: PropTypes.func.isRequired,
-  showFileSavingLoader: PropTypes.func.isRequired
-};
+  showFileSavingLoader: PropTypes.func.isRequired,
+  debugMode: PropTypes.bool.isRequired,
+  connectedToServer: PropTypes.bool.isRequired,
+  detectedNumCams: PropTypes.number.isRequired,
+  comp_saveProgress: PropTypes.func.isRequired,
+  comp_totalProgress: PropTypes.func.isRequired,
+}
 
 export default Tester;

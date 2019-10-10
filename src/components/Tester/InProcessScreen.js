@@ -61,16 +61,18 @@ export default function InProcessScreen(props) {
 
   
   function disableNextButtonIfCurrNotRead() {
-    const recordedYet =
+    if (!props.debugMode) {
+      const recordedYet =
       props.recordedProgress > props.curr_sentence_index;
-    try {
-      if (recordedYet) {
-        document.getElementById('testerNextBtn').disabled = false;
-      } else {
-        document.getElementById('testerNextBtn').disabled = true;
+      try {
+        if (recordedYet) {
+          document.getElementById('testerNextBtn').disabled = false;
+        } else {
+          document.getElementById('testerNextBtn').disabled = true;
+        }
+      } catch (Exception) {
+        // console.log(Exception);
       }
-    } catch (Exception) {
-      // console.log(Exception);
     }
   }
 
@@ -79,9 +81,7 @@ export default function InProcessScreen(props) {
       <div className='emoji-layout-container'>
         <div className='emoji-layout-emoji-left'> {emoji}</div>
         <div>
-          {msg[0]}
-          <br />
-          {msg[1]}
+          {msg}
         </div>
         <div className='emoji-layout-emoji-right'> {emoji}</div>
       </div>
@@ -97,17 +97,17 @@ export default function InProcessScreen(props) {
     const emoji = recordedYet ? '↺' : '';
     let sentence = props.data[props.curr_sentence_index];
     if (sentence) {
-      const line1 = sentence.substring(0,10)
-      const line2 = sentence.substring(10);
-      sentence = makeEmojiLayout([line1, line2], emoji);
+      // const line1 = sentence.substring(0,10)
+      // const line2 = sentence.substring(10);
+      sentence = makeEmojiLayout(sentence, emoji);
     }
     
     // const sentence = recordedMessage + ' ' + props.data[props.curr_sentence_index] + ' ' + recordedMessage;
     const recordedClassName = recordedYet ? 'recorded_sentence_highlight sentence_to_be_read' : 'sentence_to_be_read'
     return (
       <div>
-        <br />
         <div className={recordedClassName}>
+          {/* <p style={{fontSize: '16px'}}>[{props.curr_sentence_index}]</p> */}
           {sentence}
         </div>
       </div>
@@ -120,7 +120,7 @@ export default function InProcessScreen(props) {
     if (text === 'Done') {
       return '结束录制';
     } else if (text === 'Retry') {
-      return '重新录制';
+      return '开始录制';
     } else if (text === 'Record') {
       return '开始录制'
     } else {
@@ -175,12 +175,13 @@ export default function InProcessScreen(props) {
             className={
               getRecordState() === 'Done'
                 ? 'btn btn-danger'
-                : 'btn_highlight_green'
+                : 'btn btn_highlight_green'
             }
             onClick={record}
             disabled={
               !props.recordGreenLight ||
-              props.numFilesSaved % props.numCams !== 0
+              props.numFilesSaved % props.requiredNumCams !== 0 || 
+              !props.connectedToServer
             }
           >
             {trans(getRecordState())}
@@ -193,7 +194,7 @@ export default function InProcessScreen(props) {
             disabled={
               props.curr_sentence_index === 0 ||
               !props.recordGreenLight ||
-              props.numFilesSaved % props.numCams !== 0 ||
+              props.numFilesSaved % props.requiredNumCams !== 0 ||
               recording
             }
           >
@@ -206,12 +207,14 @@ export default function InProcessScreen(props) {
             disabled={
               props.curr_sentence_index === props.data_length - 1 ||
               !props.recordGreenLight ||
-              props.numFilesSaved % props.numCams !== 0 ||
+              props.numFilesSaved % props.requiredNumCams !== 0 ||
               recording
             }
           >
             下一句➡
           </button>
+          {(props.detectedNumCams === 0) && <p className="warning_message">请加摄像头</p>}
+          {(!props.connectedToServer) && <p className="warning_message">请确认您链接到服务器</p>}
         </div>
       );
     }
@@ -234,10 +237,13 @@ InProcessScreen.propTypes = {
   updateGreenLightStatus: PropTypes.func.isRequired,
   recordGreenLight: PropTypes.bool.isRequired,
   numFilesSaved: PropTypes.number.isRequired,
-  numCams: PropTypes.number.isRequired,
+  requiredNumCams: PropTypes.number.isRequired,
   stopTimer: PropTypes.func.isRequired,
   startTimer: PropTypes.func.isRequired,
   recordedProgress: PropTypes.number.isRequired,
   updateRecordProgress: PropTypes.func.isRequired,
   showFileSavingLoader: PropTypes.func.isRequired,
+  debugMode: PropTypes.bool.isRequired,
+  connectedToServer: PropTypes.bool.isRequired,
+  detectedNumCams: PropTypes.number.isRequired,
 };

@@ -23,7 +23,11 @@ export default function Modal(props) {
         onClick={() => {
           if (props.confirmFunc) props.confirmFunc();
           toggleCompleteModal();
-          if (props.toast) cogoToast.info(props.toast);
+          if (props.toast) cogoToast.info(props.toast, {
+            onClick: hide => {
+              hide()
+            }
+          });
         }}
         hidden={!props.buttonConfirm}
         key={props.buttonConfirm}

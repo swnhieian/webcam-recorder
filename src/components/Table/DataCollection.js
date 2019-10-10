@@ -8,8 +8,6 @@ export default class DataCollection extends Component {
   render() {
     return (
       <div>
-        <div className='name_field'>
-        </div>
         <div className='data_table'>
           <Table
             data={this.props.data}
@@ -18,6 +16,7 @@ export default class DataCollection extends Component {
             }
             curr_page={this.props.curr_page}
             updatePage={this.props.updatePage}
+            sentencesPerPageInTable={this.props.sentencesPerPageInTable}
           />
         </div>
       </div>
@@ -30,5 +29,6 @@ DataCollection.propTypes = {
   curr_sentence_index: PropTypes.number.isRequired,
   socket: PropTypes.object.isRequired,
   updatePage: PropTypes.func.isRequired,
-  curr_page: PropTypes.number.isRequired
+  curr_page: PropTypes.number.isRequired,
+  sentencesPerPageInTable: PropTypes.number.isRequired,
 };

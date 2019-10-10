@@ -391,23 +391,35 @@ export default function CameraList(props) {
 
   // dummy to fix bug of first video
   props.socket.on('server: dummy vid, do not save', function() {
-    document.getElementById('dummyBtn').click();
-    document.getElementById('dummyBtn').disabled = true;
+    try {
+      document.getElementById('dummyBtn').click();
+      document.getElementById('dummyBtn').disabled = true;
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException);
+    }
   });
 
   // this is actually what calls start cams
   props.socket.on('server: start cams', function () {
-    document.getElementById("resumeBtn").click();
-    document.getElementById("resumeBtn").disabled = true;
-    document.getElementById('stopBtn').disabled = false;
+    try {
+      document.getElementById("resumeBtn").click();
+      document.getElementById("resumeBtn").disabled = true;
+      document.getElementById('stopBtn').disabled = false;
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException)
+    }
 
   });
 
   // this is actually what calls stop cams
   props.socket.on('server: stop cams', function () {
-    document.getElementById('stopBtn').click();
-    document.getElementById('stopBtn').disabled = true;
-    document.getElementById("resumeBtn").disabled = false;
+    try {
+      document.getElementById('stopBtn').click();
+      document.getElementById('stopBtn').disabled = true;
+      document.getElementById("resumeBtn").disabled = false;
+    } catch (NotYetLoadedException) {
+      console.error(NotYetLoadedException)
+    }
   });
 
   const debugControls = (debug) => {

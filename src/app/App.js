@@ -39,7 +39,7 @@ class App extends React.Component {
    */
   sentencesPerPageInTable = 4; // sentences per page of Table
   curr_index = qs('sentence_index'); // extracts the curr index from URL
-  ip_address = 'http://192.168.0.101:5000'; // default IP address of server
+  ip_address = 'http://192.168.0.103:5000'; // default IP address of server
 
   /**
    * **CogoToast References to call to hide toasts**

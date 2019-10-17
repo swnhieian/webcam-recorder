@@ -320,6 +320,7 @@ io.on('connection', function (socket) {
       sentence_index: data.currSentenceIndex
     }
     saveData(newStatus, RECORDING_STATUS_PATH);
+    io.emit('server: sync name, sentence index', data);
   });
 
   let resetTime = false;

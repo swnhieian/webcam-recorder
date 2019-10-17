@@ -69,6 +69,7 @@ class App extends React.Component {
       detectedNumCams: 0,
       debugMode: false,
       ip: this.ip_address,
+      name: '',
       numFilesSavedTotal: 0,
       numFilesSavedInd: 0,
       recordProgress: 0,
@@ -126,7 +127,7 @@ class App extends React.Component {
               {/* <hr/> */}
               {(this.state.pinyin) ? this.state.pinyin[this.state.currSentenceIndex]: ''}
               <br/>
-              {this.state.currSentence}
+              {this.state.data[this.state.currSentenceIndex]}
               {/* <hr/> */}
               <Status socket={this.state.socket}/>
               {this.comp_totalProgress(true, 4)}
@@ -825,6 +826,14 @@ class App extends React.Component {
       {/* } */}
     });
 
+    this.state.socket.on('server: sync name, sentence index', data => {
+      const name = data.name;
+      const currSentenceIndex = data.currSentenceIndex;
+      {/* if (this.state.currSentenceIndex === 0 ) { */}
+      this.setState({name, currSentenceIndex});
+      {/* } */}
+    })
+
     if (!this.hideServerOfflineRef) {
       this.hideServerOfflineRef = this.helper_showServerNotOnline();
     } else {
@@ -1172,7 +1181,7 @@ class App extends React.Component {
   };
 
   helper_toggleHideDebug = () => {
-    console.log('toggling');
+    {/* console.log('toggling'); */}
     try {
       if (
         document

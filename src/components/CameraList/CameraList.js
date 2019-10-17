@@ -26,16 +26,16 @@ export default function CameraList(props) {
   }
   const helper_addToVideoDevices = (device, videodevices) => {
     device = helper_extractRelevantCamInfo(device);
-    console.log(availableCams);
+    // console.log(availableCams);
     const devicePrior = availableCams.filter(cam => {
       return cam.camera_info.id === device.camera_info.id
     })[0];
-    console.log(devicePrior);
+    // console.log(devicePrior);
     if (devicePrior) {
-      console.log('found prior device');
+      // console.log('found prior device');
       device.mic_info = devicePrior.mic_info;
     } else {
-      console.log('using first cam mic!!!')
+      // console.log('using first cam mic!!!')
       device.mic_info = availableMics[0];
     }
     videodevices.push(device);
@@ -59,9 +59,9 @@ export default function CameraList(props) {
       navigator.mediaDevices.enumerateDevices().then(devices => {
         let videoDevices = [];
         let micDevices = [];
-        const numCams = helper_getNumCams(devices);
+        helper_getNumCams(devices);
 
-        console.log("number of cams detected: " + numCams);
+        // console.log("number of cams detected: " + numCams);
         devices.map(function(device) {
           if (device.kind === 'audioinput') {
             if (

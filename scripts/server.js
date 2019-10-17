@@ -363,6 +363,18 @@ io.on('connection', function (socket) {
     if (!fs.existsSync(nameDir + sentenceDir)) {
       fs.mkdirSync(nameDir + sentenceDir)
     }
+
+    let contentName = nameDir + sentenceDir + "/content.txt";
+    
+    fs.writeFile(contentName, data.sentence_content, function(err){
+      if (err) {
+        return console.log(err)
+      }
+      console.log(colors.magenta(
+        colors.bold('📂 file content  : /') + contentName.substring(1)
+      ));
+    })
+  
     
     const fullPath = nameDir + sentenceDir + fileName
     fs.writeFile(fullPath, blob, function (err) {

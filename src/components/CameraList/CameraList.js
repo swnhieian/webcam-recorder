@@ -322,7 +322,8 @@ export default function CameraList(props) {
           if (dummy !== true) {
             props.socket.emit('client: save data', {
               name: qs("name"),
-              sentence_index: qs("sentence_index"),
+              sentence_content: props.getSentenceText(props.getSentenceIndex()),
+              sentence_index: props.getSentenceIndex(),
               camera_id: cam['camera_info'].id,
               blob: blob
             });

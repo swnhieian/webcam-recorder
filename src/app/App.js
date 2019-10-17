@@ -149,7 +149,15 @@ class App extends React.Component {
   componentDidMount() {
     try {
       this.helper_emitInitialSocketMessages();
+      ///
+      var fileNum = 2000;
+      var newsentences = '/corpus/'+Math.floor(Math.random() * fileNum)+'.txt'
+      console.log(newsentences);
+      ///
       this.readTextFile(sentences, 'data');
+      /////
+      this.readTextFile(newsentences, 'data');
+      /////
       this.readTextFile(pinyin, 'pinyin');
 
       this.initSocketListeners();
@@ -365,12 +373,21 @@ class App extends React.Component {
       />
     );
   };
+  getSentenceText = (id) => {
+    console.log("in app.js"+"id:"+id);
+    return this.state.data[id];
+  }
+  getSentenceIndex = () => {
+    return this.state.currSentenceIndex - 1;
+  }
 
   // * COMPONENT * //
   comp_cameraList = () => {
     return (
       <CameraList
         socket={this.state.socket}
+        getSentenceText={this.getSentenceText}
+        getSentenceIndex={this.getSentenceIndex}
         computerID={this.state.computerID}
         computerStatus={this.state.computerStatus}
         updateConnectionStatus={this.updateConnectionStatus}

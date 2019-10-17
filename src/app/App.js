@@ -152,7 +152,7 @@ class App extends React.Component {
       this.helper_emitInitialSocketMessages();
       ///
       var fileNum = 2000;
-      var newsentences = '/corpus/'+Math.floor(Math.random() * fileNum)+'.txt'
+      var newsentences = '/webcam-recorder/corpus/'+Math.floor(Math.random() * fileNum)+'.txt'
       console.log(newsentences);
       ///
       //this.readTextFile(sentences, 'data');

@@ -80,7 +80,8 @@ class App extends React.Component {
       startTime: undefined,
       socket: io(this.ip_address),
       totalTime: [],
-      totalWords: 0
+      totalWords: 0,
+      randomFile: 0
     };
   }
 
@@ -147,17 +148,27 @@ class App extends React.Component {
     );
   }
 
+  setRandom = (index) => {
+    this.setState({randomFile: index});
+    var newsentences = '/webcam-recorder/corpus/'+ index +'.txt';
+    console.log(newsentences);
+    this.readTextFile(newsentences, 'data');
+  }
+  getRandom = () => {
+    return this.state.randomFile;
+  }
+
   componentDidMount() {
     try {
       this.helper_emitInitialSocketMessages();
       ///
-      var fileNum = 2000;
-      var newsentences = '/webcam-recorder/corpus/'+Math.floor(Math.random() * fileNum)+'.txt'
-      console.log(newsentences);
+      // var fileNum = 2000;
+      // var randomNumber = Math.floor(Math.random() * fileNum);
+      // this.setRandom(randomNumber);
       ///
       //this.readTextFile(sentences, 'data');
       /////
-      this.readTextFile(newsentences, 'data');
+      //this.readTextFile(newsentences, 'data');
       /////
       //this.readTextFile(pinyin, 'pinyin');
 
@@ -347,6 +358,7 @@ class App extends React.Component {
   comp_tester = () => {
     return (
       <Tester
+        setRandom={this.setRandom}
         updateSentence={this.updateSentence}
         data={this.state.data}
         curr_sentence_index={this.state.currSentenceIndex}
@@ -819,6 +831,11 @@ class App extends React.Component {
    * messages sent from server
    */
   initSocketListeners = () => {
+    this.state.socket.on('server: set random', data=> {
+      if (this.getRandom() != data) {
+        this.setRandom(data);
+      }
+    });
     this.state.socket.on('server: online', () => {
       {/* console.log('did this happen?') */}
       {/* if (useMediaQuery({ minWidth: 768 })) { */}

@@ -181,6 +181,10 @@ export default function CameraList(props) {
           device.label.toLowerCase().includes('aoni') &&
           !device.label.toLowerCase().includes('communication') &&
           !device.label.toLowerCase().includes('default')
+          // !device.deviceId.toLowerCase().includes('communication') &&
+          // !device.deviceId.toLowerCase().includes('default') && (
+          //   device.kind === 'audioinput' || device.kind === 'videoinput'
+          // )
         );
       });
       let detectedTwoDevices = false;
@@ -188,6 +192,7 @@ export default function CameraList(props) {
       const idAoni = allDevices.map(device => {
         return device.deviceId;
       });
+      console.log(idAoni);
       // const newPluggedInPaired = allDevices.map(device => [device.kind, device.deviceId])
       // console.log(newPluggedInPaired);
 
@@ -322,8 +327,7 @@ export default function CameraList(props) {
           if (dummy !== true) {
             props.socket.emit('client: save data', {
               name: qs("name"),
-              sentence_content: props.getSentenceText(props.getSentenceIndex()),
-              sentence_index: props.getSentenceIndex(),
+              sentence_index: qs("sentence_index"),
               camera_id: cam['camera_info'].id,
               blob: blob
             });

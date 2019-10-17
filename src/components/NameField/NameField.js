@@ -6,6 +6,10 @@ export default class NameField extends Component {
   saveName = () => {
     let name = document.getElementById("name").value;
     // document.location.search = "name=" + name + "&sentence_index=0";
+    var fileNum = 2000;
+    var randomNumber = Math.floor(Math.random() * fileNum);
+    this.props.setRandom(randomNumber);
+    this.props.socket.emit('client: set random', {no:randomNumber, name:name});
     let url_state = '?name=' + name + '&sentence_index=0'
     window.history.pushState(
       null,
@@ -79,6 +83,7 @@ export default class NameField extends Component {
 }
 
 NameField.propTypes = {
+  setRandom: PropTypes.func.isRequired,
   socket: PropTypes.object.isRequired,
   updateTesterContents: PropTypes.func.isRequired,
   updateGreenLightStatus: PropTypes.func.isRequired,

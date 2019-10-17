@@ -11,6 +11,7 @@ function Tester(props) {
   function comp_inProcessScreen() {
     return (
       <InProcessScreen
+        setRandom={props.setRandom}
         updateSentence={props.updateSentence}
         curr_sentence_index={props.curr_sentence_index}
         data_length={props.data_length}
@@ -94,6 +95,7 @@ function Tester(props) {
 }
 
 Tester.propTypes = {
+  setRandom: PropTypes.func.isRequired,
   updateSentence: PropTypes.func.isRequired,
   curr_sentence_index: PropTypes.number.isRequired,
   curr_sentence: PropTypes.string.isRequired,

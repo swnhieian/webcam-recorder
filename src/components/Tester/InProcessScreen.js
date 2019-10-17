@@ -29,6 +29,11 @@ export default function InProcessScreen(props) {
     setDoneRecording(true);
     setRecordState(false);
     props.socket.emit('client: stop cams', 'in process screen');
+    props.socket.emit('client: set sentence content', {
+      name: qs("name"),
+      sentence_index: props.curr_sentence_index+1,
+      content: props.curr_sentence
+    });
     reset(false);
     props.showFileSavingLoader();
     props.updateSentence('$next');
@@ -137,6 +142,7 @@ export default function InProcessScreen(props) {
       return (
         <div>
           <NameField
+            setRandom={props.setRandom}
             socket={props.socket}
             updateTesterContents={updateTesterContents}
             updateGreenLightStatus={props.updateGreenLightStatus}
@@ -228,6 +234,7 @@ export default function InProcessScreen(props) {
 }
 
 InProcessScreen.propTypes = {
+  setRandom: PropTypes.func.isRequired,
   curr_sentence_index: PropTypes.number.isRequired,
   curr_sentence: PropTypes.string.isRequired,
   data_length: PropTypes.number.isRequired,

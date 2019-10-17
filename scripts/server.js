@@ -365,16 +365,18 @@ io.on('connection', function (socket) {
       fs.mkdirSync(nameDir + sentenceDir)
     }
 
-    let contentName = nameDir + sentenceDir + "/content.txt";
+    // let contentName = nameDir + sentenceDir + "/content.txt";
     
-    fs.writeFile(contentName, data.sentence_content, function(err){
-      if (err) {
-        return console.log(err)
-      }
-      console.log(colors.magenta(
-        colors.bold('📂 file content  : /') + contentName.substring(1)
-      ));
-    })
+    // fs.writeFile(contentName, data.sentence_content, function(err){
+    //   if (err) {
+    //     return console.log(err)
+    //   }
+    //   console.log(colors.magenta(
+    //     colors.bold('📂 file content  : /') + contentName.substring(1)
+    //   ));
+    //})
+
+    
   
     
     const fullPath = nameDir + sentenceDir + fileName
@@ -389,6 +391,49 @@ io.on('connection', function (socket) {
 
     io.emit('server: save files successful', numSaved);
   });
+
+  socket.on('client: set sentence content', function(data) {
+    let status = updateRecordingStatus(data, RECORDING_STATUS_PATH);
+    let fileName = parentDir + 'data/' + status.name;
+    if (!fs.existsSync(fileName)) {
+      fs.mkdirSync(fileName);
+    } 
+    fileName = fileName + "/" + data.sentence_index;
+    if (!fs.existsSync(fileName)) {
+      fs.mkdirSync(fileName);
+    } 
+    fileName = fileName + "/content.txt";
+    
+    fs.writeFile(fileName, data.content, function(err) {
+      if (err) {
+        return console.log(err)
+      }
+      console.log(colors.magenta(
+        colors.bold('📂 file content  : /') + fileName.substring(1)
+      ));
+    })
+  });
+
+
+  socket.on('client: set random', function(data) {
+    let fileName = parentDir + 'data/' + data.name;
+    if (!fs.existsSync(fileName)) {
+      fs.mkdirSync(fileName);
+    } 
+    fileName = fileName + "/random/";
+    fs.mkdirSync(fileName);
+    fileName = fileName + "random.txt";
+    fs.writeFile(fileName, data.no, function(err) {
+      if (err) {
+        return console.log(err)
+      }
+      console.log(colors.magenta(
+        colors.bold('📂 file random  : /') + fileName.substring(1)
+      ));
+    })
+    socket.emit('server: set random', data.no);
+  });
+  
 
 
 });

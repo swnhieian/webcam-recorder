@@ -21,8 +21,8 @@ import CompleteAnimation from '../components/CompleteAnimation/CompleteAnimation
 import ProgressBar from '../components/ProgressBar'
 
 // data
-import sentences from '../assets/data/sentences.txt';
-import pinyin from '../assets/data/sentences-pinyin-accent-nospecialchar.txt'
+//import sentences from '../assets/data/sentences.txt';
+//import pinyin from '../assets/data/sentences-pinyin-accent-nospecialchar.txt'
 // import sentences from '../assets/data/sentences-english-test.txt';
 
 // util
@@ -155,11 +155,11 @@ class App extends React.Component {
       var newsentences = '/corpus/'+Math.floor(Math.random() * fileNum)+'.txt'
       console.log(newsentences);
       ///
-      this.readTextFile(sentences, 'data');
+      //this.readTextFile(sentences, 'data');
       /////
       this.readTextFile(newsentences, 'data');
       /////
-      this.readTextFile(pinyin, 'pinyin');
+      //this.readTextFile(pinyin, 'pinyin');
 
       this.initSocketListeners();
       document.getElementById('debug_mode').checked =

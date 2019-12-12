@@ -1,25 +1,25 @@
 {
   "files": {
-    "main.css": "/webcam-recorder/static/css/main.b6ec8538.chunk.css",
-    "main.js": "/webcam-recorder/static/js/main.ef206be3.chunk.js",
-    "main.js.map": "/webcam-recorder/static/js/main.ef206be3.chunk.js.map",
+    "main.css": "/webcam-recorder/static/css/main.bc725096.chunk.css",
+    "main.js": "/webcam-recorder/static/js/main.9cca1c69.chunk.js",
+    "main.js.map": "/webcam-recorder/static/js/main.9cca1c69.chunk.js.map",
     "runtime~main.js": "/webcam-recorder/static/js/runtime~main.34a2a1d2.js",
     "runtime~main.js.map": "/webcam-recorder/static/js/runtime~main.34a2a1d2.js.map",
     "static/css/2.57125576.chunk.css": "/webcam-recorder/static/css/2.57125576.chunk.css",
     "static/js/2.90461de6.chunk.js": "/webcam-recorder/static/js/2.90461de6.chunk.js",
     "static/js/2.90461de6.chunk.js.map": "/webcam-recorder/static/js/2.90461de6.chunk.js.map",
     "index.html": "/webcam-recorder/index.html",
-    "precache-manifest.f0550ca0ea594adfd58bdc076de4ff3c.js": "/webcam-recorder/precache-manifest.f0550ca0ea594adfd58bdc076de4ff3c.js",
+    "precache-manifest.5218aee3110f47c05fe9032f38ee4077.js": "/webcam-recorder/precache-manifest.5218aee3110f47c05fe9032f38ee4077.js",
     "service-worker.js": "/webcam-recorder/service-worker.js",
     "static/css/2.57125576.chunk.css.map": "/webcam-recorder/static/css/2.57125576.chunk.css.map",
-    "static/css/main.b6ec8538.chunk.css.map": "/webcam-recorder/static/css/main.b6ec8538.chunk.css.map",
+    "static/css/main.bc725096.chunk.css.map": "/webcam-recorder/static/css/main.bc725096.chunk.css.map",
     "static/media/beg.svg": "/webcam-recorder/static/media/beg.26ab4fd7.svg",
     "static/media/collapse-chevron.svg": "/webcam-recorder/static/media/collapse-chevron.f7659f72.svg",
     "static/media/down-chevron.svg": "/webcam-recorder/static/media/down-chevron.8bbb95c1.svg",
     "static/media/end.svg": "/webcam-recorder/static/media/end.782b7486.svg",
     "static/media/expand-chevron.svg": "/webcam-recorder/static/media/expand-chevron.bab69e8c.svg",
     "static/media/sentences-pinyin-accent-nospecialchar.txt": "/webcam-recorder/static/media/sentences-pinyin-accent-nospecialchar.4fd3afa3.txt",
-    "static/media/sentences.txt": "/webcam-recorder/static/media/sentences.2feab48d.txt",
+    "static/media/sentences.txt": "/webcam-recorder/static/media/sentences.0a15cfc0.txt",
     "static/media/up-chevron.svg": "/webcam-recorder/static/media/up-chevron.2c8a940e.svg"
   }
 }

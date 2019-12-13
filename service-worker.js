@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/webcam-recorder/precache-manifest.3a2c4601d996f7cf5e73f8e9354a39d3.js"
+  "/webcam-recorder/precache-manifest.4bfb37788fadd28dc2ad4c24e748ea1f.js"
 );
 
 self.addEventListener('message', (event) => {

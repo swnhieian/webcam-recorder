@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "/webcam-recorder/static/css/main.70b9e599.chunk.css",
+    "main.css": "/webcam-recorder/static/css/main.8b435dfb.chunk.css",
     "main.js": "/webcam-recorder/static/js/main.116957eb.chunk.js",
     "main.js.map": "/webcam-recorder/static/js/main.116957eb.chunk.js.map",
     "runtime~main.js": "/webcam-recorder/static/js/runtime~main.34a2a1d2.js",
@@ -9,10 +9,10 @@
     "static/js/2.90461de6.chunk.js": "/webcam-recorder/static/js/2.90461de6.chunk.js",
     "static/js/2.90461de6.chunk.js.map": "/webcam-recorder/static/js/2.90461de6.chunk.js.map",
     "index.html": "/webcam-recorder/index.html",
-    "precache-manifest.6d3f4f218e918e764f5d2cbe1543a4b1.js": "/webcam-recorder/precache-manifest.6d3f4f218e918e764f5d2cbe1543a4b1.js",
+    "precache-manifest.2434888fa605990ec257e10167834b7b.js": "/webcam-recorder/precache-manifest.2434888fa605990ec257e10167834b7b.js",
     "service-worker.js": "/webcam-recorder/service-worker.js",
     "static/css/2.57125576.chunk.css.map": "/webcam-recorder/static/css/2.57125576.chunk.css.map",
-    "static/css/main.70b9e599.chunk.css.map": "/webcam-recorder/static/css/main.70b9e599.chunk.css.map",
+    "static/css/main.8b435dfb.chunk.css.map": "/webcam-recorder/static/css/main.8b435dfb.chunk.css.map",
     "static/media/beg.svg": "/webcam-recorder/static/media/beg.26ab4fd7.svg",
     "static/media/collapse-chevron.svg": "/webcam-recorder/static/media/collapse-chevron.f7659f72.svg",
     "static/media/down-chevron.svg": "/webcam-recorder/static/media/down-chevron.8bbb95c1.svg",
